@@ -3,7 +3,7 @@
 # SPDX-FileCopyrightText: 2024 Edrick Sinsuan
 # SPDX-License-Identifier: Apache-2.0
 
-source xect
+source setup_env
 
 decho "Executing build script..."
 
@@ -15,7 +15,7 @@ sudo echo -17 > /proc/$$/oom_adj
 #
 
 define_log() {
-	if [ ! -d $LOG_DIR ]; then
+	if ! check_dir $LOG_DIR; then
 		create_dir $LOG_DIR
 	fi
 
@@ -129,7 +129,7 @@ build_func() {
 
 	define_env
 
-	if [ -d "$OUT" ]; then
+	if check_dir "$OUT"; then
 		time make_cmd clean
 		time make_cmd mrproper 
 	else
@@ -155,7 +155,7 @@ build_func() {
 }
 
 zip_func() {
-	if [ ! -d $ZIP_DIR ]; then
+	if ! check_dir $ZIP_DIR; then
 		decho_log "There's no zip directory, abort!"
 		err_tg_msg
 		exit 1
@@ -163,7 +163,7 @@ zip_func() {
 
 	cd $ZIP_DIR
 
-	if [ ! -d $PUSH_DIR ]; then
+	if ! check_dir $PUSH_DIR; then
 		create_dir $PUSH_DIR
 	fi
 
@@ -186,7 +186,7 @@ zip_func() {
 }
 
 main_func() {
-	if [ ! -d $SRC_DIR ] || [[ $SRCN == "" ]]; then
+	if ! check_dir $SRC_DIR || [[ $SRCN == "" ]]; then
 		decho_log "Abort, source directory must exist and source name must be defined."
 		exit 1
 	fi

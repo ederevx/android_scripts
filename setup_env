@@ -46,6 +46,15 @@ decho_log() {
     decho "$1" >> $LOG
 }
 
+check_dir() {
+	if [ ! -d $1 ]; then 
+		echo "Can't find $1"
+		return 1
+	else
+		return 0
+	fi
+}
+
 create_dir() {
 	decho "No $1 directory found! Creating $1"
 	mkdir -p $1
