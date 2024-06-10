@@ -8,7 +8,7 @@ if ! cd "$1"; then
     exit 1
 fi
 
-for x in bluetooth cts_uicc_2021 shared media networkstack platform sdk_sandbox shared testkey; do
+for x in bluetooth media networkstack platform sdk_sandbox shared; do
     echo ${x}_key_release=\"$(openssl x509 -pubkey -noout -in $x.x509.pem | grep -v '-' | tr -d '\n')\"
     echo ${x}_cert_release=\"$(openssl x509 -outform der -in $x.x509.pem | xxd -p  | tr -d '\n')\"
 done

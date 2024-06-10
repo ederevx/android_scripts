@@ -35,7 +35,7 @@ else
     backup_certs ~/.android-certs
 fi
 
-for x in bluetooth cts_uicc_2021 shared media networkstack platform sdk_sandbox shared testkey; do
+for x in bluetooth cts_uicc_2021 media networkstack platform sdk_sandbox shared testkey releasekey; do
     $ROM_PATH/development/tools/make_key ~/.android-certs/$x "$subject"; \
 done
 
