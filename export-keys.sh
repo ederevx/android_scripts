@@ -5,7 +5,7 @@
 
 source setup_env
 
-if ! check_dir "$1"; then
+if ! check_dir "$1" || ! cd "$1"; then
     echo "USAGE: $0 PATH"
     exit 1
 fi
