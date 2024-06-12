@@ -18,15 +18,14 @@ CLANG_DIR=$KERNEL_PARENT_DIR/toolchain/clang
 GCC_DIR=$KERNEL_PARENT_DIR/toolchain/gcc
 
 # Default properties
+LOG=/dev/null
 TEST_BUILD=y
 DEBUG=n
 
-JN=12
-LN=10
+JN=$(nproc)
 
 SRCN="x-ft"
 DC="msm8998_oneplus_debug_android_defconfig"
-HEAD_VER=1
 BRNCH_VER=$CURR_DATE
 VER=1
 
@@ -34,12 +33,10 @@ AF="arch/arm64/configs"
 ARCH="arm64"
 SUBARCH=$ARCH
 LWIMG="Image.gz-dtb"
-USE_CLANG=y
 
-CLANG_PATH="$CLANG_DIR/clang-r450784e/bin"
+CLANG_PATH="$CLANG_DIR/clang-r458507/bin"
 GCC_PATH="${GCC_DIR}64/bin:${GCC_DIR}32/bin"
 CC_PATH="$CLANG_PATH:$GCC_PATH"
-export PATH="/usr/local/bin:$CC_PATH:$PATH"
 
 C64="aarch64-linux-gnu-"
 C32="arm-linux-gnueabi-"
@@ -69,12 +66,8 @@ define_log() {
 }
 
 define_kname() {
-    SRC_VER="v$HEAD_VER-$BRNCH_VER"
-    KNAME="$SRCN-$SRC_BRNCH-$SRC_VER-$VER"
-    KNAME_S="$SRCN-$SRC_VER-$VER"
-    if [[ $TEST_BUILD == "y" ]]; then
-        KNAME="$KNAME-test"
-    fi
+    KNAME="$SRCN-$SRC_BRNCH-$BRNCH_VER-$VER"
+    KNAME_S="$SRCN-$BRNCH_VER-$VER"
 }
 
 define_clang() {
@@ -107,7 +100,7 @@ define_env() {
     border
 
     OUT=$OUT_DIR/$SRCN/$SRC_BRNCH
-    BTI=$OUT/arch/arm64/boot
+    BTI=$OUT/arch/$ARCH/boot
 
     define_kname
 
@@ -120,7 +113,6 @@ define_env() {
     fi
 
     if [[ $CONFIGURE == "y" ]]; then
-        LOG=/dev/null
         echo "Configure only, no builds will be made..."
     else
         LOG=$LOG_DIR/$KNAME.log
@@ -138,7 +130,7 @@ define_env() {
     CF="$($CC --version | head -1)"
     decho_log "Compiler being used: $CF"
 
-    BUILD_STR="$SRCN release: $SRC_BRNCH-$SRC_VER-$VER built using $CF | Date: $DATE_FULL"
+    BUILD_STR="$SRCN release: $SRC_BRNCH-$BRNCH_VER-$VER built using $CF | Date: $DATE_FULL"
 
     MKP=" \
         $CLANGMKP \
@@ -151,8 +143,17 @@ define_env() {
         LOCALVERSION=-$KNAME_S \
         O=$OUT \
         -j$JN \
-        -l$LN \
         "
+
+    if [[ $SRCN == "wsl2-kernel" ]]; then
+        MKP=" \
+            $CLANGMKP \
+            $DEBUGMKP \
+            LOCALVERSION=-$KNAME_S \
+            O=$OUT \
+            -j$JN \
+            "
+    fi
 
     decho "Make variables: $MKP" >> $LOG
 }
@@ -167,7 +168,18 @@ build_func() {
         time make_cmd mrproper 
     fi
 
+    if [[ $CONFIGURE == "y" ]]; then
+        time make_cmd $DC menuconfig
+        cp -v $OUT/.config $SRC_DIR/$AF/$DC
+        decho "Copied .config to $DC"
+        exit 0
+    fi
+
     time make_cmd $DC
+
+    if [[ $SRCN == "wsl2-kernel" ]]; then
+        return
+    fi
 
     if [[ $MAKE_ONLY == "y" ]]; then
         decho_log "Done generating .config at $OUT"
@@ -175,17 +187,17 @@ build_func() {
         exit 0
     fi
 
-    if [[ $CONFIGURE == "y" ]]; then
-        time make_cmd menuconfig
-        cp -v $OUT/.config $SRC_DIR/$AF/$DC
-        decho "Copied .config to $DC"
-        exit 0
-    fi
-
     time make_cmd
 }
 
-zip_func() {
+export_img() {
+    if [[ $SRCN == "wsl2-kernel" ]]; then
+        decho "Copying $BTI/$LWIMG to $C_USER_DIR/WSL"
+        cp $BTI/$LWIMG $C_USER_DIR/WSL/$KNAME_S
+        code $C_USER_DIR/.wslconfig
+        return
+    fi
+
     if ! check_dir $ZIP_DIR; then
         decho_log "There's no zip directory, abort!"
         exit 1
@@ -214,23 +226,15 @@ zip_func() {
 }
 
 main_func() {
-    if ! check_dir $SRC_DIR || [[ $SRCN == "" ]]; then
-        decho_log "Abort, source directory must exist and source name must be defined."
+    if ! check_dir $SRC_DIR; then
+        decho_log "Abort, source directory must exist."
         exit 1
     fi
 
     build_func
 
-    if ! check_file "$BTI/$LWIMG"; then
-        decho_log "There's no image found in $OUT!"
-    else
-        zip_func
-
-        if [[ $TEST_BUILD != "y" ]]; then
-            cd $REL_DIR
-            git checkout -b $SRCN-$SRC_VER-$VER
-            commit_repo "$(pwd)" -m "$BUILD_STR" -a
-        fi
+    if check_file "$BTI/$LWIMG"; then
+        export_img
     fi
 
     decho_log "Build done: $DATE_FULL"
@@ -309,11 +313,23 @@ else
 fi
 
 if [[ $SRCN == "x-ft" ]]; then
-    CLANG_PATH="$CLANG_DIR/clang-r458507/bin"
-    CC_PATH="$CLANG_PATH:$GCC_PATH"
+    USE_CLANG=y
     export PATH="/usr/local/bin:$CC_PATH:$PATH"
+    main_func
+    exit 0
 fi
 
-main_func
+if [[ $SRCN == "wsl2-kernel" ]]; then
+    AF="arch/x86/configs"
+    DC="KCONFIG_CONFIG=$AF/config-wsl-x86"
+    ARCH="x86"
+    LWIMG="bzImage"
+    USE_CLANG=y
+    export PATH="/usr/lib/ccache:$PATH"
+    main_func
+    exit 0
+fi
 
-exit 0
+decho "SRCN=$SRCN is unknown, please define in $0!"
+
+exit 1

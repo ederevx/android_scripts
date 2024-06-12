@@ -7,11 +7,12 @@
 export PATH=$PATH:~/scripts:~/repo/bin
 
 # Environment directories
-SHARED_TEST_DIR=/mnt/c/Users/evcsi/WSL-Shared
+C_USER_DIR=/mnt/c/Users/evcsi
+SHARED_TEST_DIR=$C_USER_DIR/WSL-Shared
 
 # Git properties
-CURR_DATE="$(date +'%Y%m%d')"
-DATE_FULL="$(date -R)"
+CURR_DATE=$(date +'%Y%m%d')
+DATE_FULL=$(date -R)
 AUTH_STR="Edrick Sinsuan <evcsinsuan@gmail.com>"
 
 #
@@ -38,7 +39,7 @@ decho_log() {
 
 check_dir() {
     if [ ! -d $1 ]; then 
-        echo "Can't find $1"
+        decho "Can't find $1"
         return 1
     else
         return 0
@@ -47,7 +48,7 @@ check_dir() {
 
 check_file() {
     if [ ! -f $1 ]; then 
-        echo "Can't find $1"
+        decho "Can't find $1"
         return 1
     else
         return 0
