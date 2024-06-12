@@ -33,11 +33,13 @@ rising_copy_target() {
     if check_file "$RISING_OUT"; then
         decho "Copying $RISING_OUT to $RISING_COMMON_DIR"
         cp $RISING_PRODUCT_DIR/$1/Rising*.zip* $RISING_COMMON_DIR
+        mkdir -p $SHARED_TEST_DIR/roms >> /dev/null
+        cp $RISING_PRODUCT_DIR/$1/Rising*.zip $SHARED_TEST_DIR/roms/
     fi
 }
 
 rising_build() {
-    decho "Building RisingOS: $1 - $2"
+    decho "Building RisingOS: $1 - $2 WITH_GMS=$WITH_GMS"
     export WITH_GMS
     riseup $1 $2
     rise b

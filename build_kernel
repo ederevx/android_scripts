@@ -16,7 +16,6 @@ ZIP_DIR=$KERNEL_PARENT_DIR/zip
 LOG_DIR=$KERNEL_PARENT_DIR/buildlog
 CLANG_DIR=$KERNEL_PARENT_DIR/toolchain/clang
 GCC_DIR=$KERNEL_PARENT_DIR/toolchain/gcc
-SHARED_TEST_DIR=/mnt/c/Users/evcsi/WSL-Shared
 
 # Default properties
 TEST_BUILD=y

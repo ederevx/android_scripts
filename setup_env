@@ -6,6 +6,9 @@
 # Clone the script repo to ~/scripts and repo to ~/repo/bin
 export PATH=$PATH:~/scripts:~/repo/bin
 
+# Environment directories
+SHARED_TEST_DIR=/mnt/c/Users/evcsi/WSL-Shared
+
 # Git properties
 CURR_DATE="$(date +'%Y%m%d')"
 DATE_FULL="$(date -R)"
@@ -57,11 +60,10 @@ create_dir() {
 }
 
 update_repo() {
-    if ! check_dir "$1/.git" || ! cd "$1/.git"; then
+    if ! check_dir "$1/.git" || ! cd "$1"; then
         return 
     fi
 
-    cd $1
     decho "Updating $1 repository..."
 
     if [[ $1 == "$ZIP_DIR" ]]; then
@@ -91,7 +93,7 @@ check_valid() {
 }
 
 commit_repo() {
-    if ! check_dir "$1/.git" || ! cd "$1/.git"; then
+    if ! check_dir "$1/.git" || ! cd "$1"; then
         return 
     fi
 
