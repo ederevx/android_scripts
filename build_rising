@@ -1,0 +1,108 @@
+#!/bin/bash
+
+# SPDX-FileCopyrightText: 2024 Edrick Sinsuan
+# SPDX-License-Identifier: Apache-2.0
+
+source setup_env
+
+# Rising directories
+RISING_DIR=$HOME/repo/rising
+RISING_PRODUCT_DIR=$RISING_DIR/out/target/product
+RISING_COMMON_DIR=$RISING_PRODUCT_DIR/msm8998-common
+
+if ! check_dir "$RISING_DIR" || ! cd "$RISING_DIR"; then
+    exit 1
+fi
+
+source build/envsetup.sh
+
+# Default properties
+WITH_GMS=false
+BUILD_DEVICE=dumpling
+BUILD_TYPE=userdebug
+
+#
+# Build functions
+#
+
+rising_copy_target() {
+    if ! check_dir "$RISING_COMMON_DIR"; then
+        mkdir $RISING_COMMON_DIR
+    fi
+    RISING_OUT=$(find $RISING_PRODUCT_DIR/$1/Rising*.zip)
+    if check_file "$RISING_OUT"; then
+        decho "Copying $RISING_OUT to $RISING_COMMON_DIR"
+        cp $RISING_PRODUCT_DIR/$1/Rising*.zip* $RISING_COMMON_DIR
+    fi
+}
+
+rising_build() {
+    decho "Building RisingOS: $1 - $2"
+    export WITH_GMS
+    riseup $1 $2
+    rise b
+    rising_copy_target $1
+}
+
+rising_build_gms() {
+    WITH_GMS=true
+    rising_build "$@"
+}
+
+rising_build_vanilla() {
+    WITH_GMS=false
+    rising_build "$@"
+}
+
+rising_build_both() {
+    rising_build_gms "$@"
+    rising_build_vanilla "$@"
+}
+
+param_func() {
+    while [[ $# -gt 0 ]]
+        do
+        key="$1"
+
+        case $key in
+            -d|--device)
+                if check_valid "$2"; then
+                    BUILD_DEVICE="$2"
+                    shift
+                fi
+            ;;            
+            -t|--type)
+                if check_valid "$2"; then
+                    BUILD_TYPE="$2"
+                    shift
+                fi
+            ;;
+            -g|--google)
+                WITH_GMS=true
+            ;;
+            -a|--all)
+                BUILD_ALL=y
+            ;;
+        esac
+        shift
+    done
+}
+
+#
+# Build start
+#
+
+param_func "$@"
+
+if [[ $BUILD_ALL == "y" ]]; then
+    DEVICES_LIST=(
+        "dumpling"
+        "cheeseburger"
+    )
+    for DEVICE in ${DEVICES_LIST[@]}; do
+        rising_build_both $DEVICE $BUILD_TYPE
+    done
+    exit 0
+fi
+
+rising_build $BUILD_DEVICE $BUILD_TYPE

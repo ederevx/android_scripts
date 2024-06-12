@@ -3,29 +3,16 @@
 # SPDX-FileCopyrightText: 2024 Edrick Sinsuan
 # SPDX-License-Identifier: Apache-2.0
 
-#
-# Variable declarations
-#
+# Clone the script repo to ~/scripts and repo to ~/repo/bin
+export PATH=$PATH:~/scripts:~/repo/bin
 
-PARENT_DIR=$HOME/kernel
-
-SRC_DIR=$PARENT_DIR
-OUT_DIR=$PARENT_DIR/output
-REL_DIR=$PARENT_DIR/releases
-TEST_DIR=$PARENT_DIR/test
-SRT_DIR=$PARENT_DIR/scripts
-ZIP_DIR=$PARENT_DIR/zip
-LOG_DIR=$PARENT_DIR/buildlog
-CLANG_DIR=$PARENT_DIR/toolchain/clang
-GCC_DIR=$PARENT_DIR/toolchain/gcc
-SHARED_TEST_DIR=/mnt/c/Users/evcsi/WSL-Shared
+# Git properties
 CURR_DATE="$(date +'%Y%m%d')"
 DATE_FULL="$(date -R)"
-
 AUTH_STR="Edrick Sinsuan <evcsinsuan@gmail.com>"
 
 #
-# Function declarations
+# Utility functions
 #
 
 border() {
@@ -37,7 +24,7 @@ border() {
 
 decho() {
     border
-	echo $1
+    echo $1
     border
 }
 
@@ -47,33 +34,42 @@ decho_log() {
 }
 
 check_dir() {
-	if [ ! -d $1 ]; then 
-		echo "Can't find $1"
-		return 1
-	else
-		return 0
-	fi
+    if [ ! -d $1 ]; then 
+        echo "Can't find $1"
+        return 1
+    else
+        return 0
+    fi
+}
+
+check_file() {
+    if [ ! -f $1 ]; then 
+        echo "Can't find $1"
+        return 1
+    else
+        return 0
+    fi
 }
 
 create_dir() {
-	decho "No $1 directory found! Creating $1"
-	mkdir -p $1
+    decho "No $1 directory found! Creating $1"
+    mkdir -p $1
 }
 
 update_repo() {
-	if [ ! -d $1/.git ]; then 
-		return 
-	fi
+    if ! check_dir "$1/.git" || ! cd "$1/.git"; then
+        return 
+    fi
 
-	cd $1
-	decho "Updating $1 repository..."
+    cd $1
+    decho "Updating $1 repository..."
 
-	if [[ $1 == "$ZIP_DIR" ]]; then
-		git pull --no-rebase upstream master
-		git merge FETCH_HEAD
-	fi
+    if [[ $1 == "$ZIP_DIR" ]]; then
+        git pull --no-rebase upstream master
+        git merge FETCH_HEAD
+    fi
 
-	git pull --ff-only
+    git pull --ff-only
 }
 
 update_linux() {
@@ -83,54 +79,54 @@ update_linux() {
     sudo apt-get dist-upgrade
     sudo apt-get autoremove
     sudo apt-get clean
+    sudo hwclock -s
 }
 
 check_valid() {
-	if [[ ${1:0:1} != "-" ]] && [[ $1 != "" ]]; then
-		return 0
-	else
-		return 1
-	fi
+    if [[ ${1:0:1} != "-" ]] && [[ $1 != "" ]]; then
+        return 0
+    else
+        return 1
+    fi
 }
 
 commit_repo() {
-	if [ ! -d $1/.git ]; then 
-		return 
-	fi
+    if ! check_dir "$1/.git" || ! cd "$1/.git"; then
+        return 
+    fi
 
-    cd $1
     decho "Commiting in $1 repository..."
 
-	C_CMD=""
-	AUTH_STR_OVRID="$AUTH_STR"
-	while [[ $# -gt 0 ]]
-		do
-		key="$1"
+    C_CMD=""
+    AUTH_STR_OVRID="$AUTH_STR"
+    while [[ $# -gt 0 ]]
+        do
+        key="$1"
 
-		case $key in
-			-a|--add)
-				git add -A
-			;;
-			--author)
-				if check_valid "$2"; then
-					AUTH_STR_OVRID="$2"
-					shift
-				fi
-			;;
-			-m|--message)
-				if check_valid "$2"; then
-					C_MSG="$2"
-					shift
-				fi
-			;;
-			-e|--edit)
-				C_CMD="-e $C_CMD"
-			;;
-		esac
-		shift
-	done
+        case $key in
+            -a|--add)
+                git add -A
+            ;;
+            --author)
+                if check_valid "$2"; then
+                    AUTH_STR_OVRID="$2"
+                    shift
+                fi
+            ;;
+            -m|--message)
+                if check_valid "$2"; then
+                    C_MSG="$2"
+                    shift
+                fi
+            ;;
+            -e|--edit)
+                C_CMD="-e $C_CMD"
+            ;;
+        esac
+        shift
+    done
 
-	git commit $C_CMD -s -m "$C_MSG" --author="$AUTH_STR_OVRID" --date="$DATE_FULL"
+    git commit $C_CMD -s -m "$C_MSG" --author="$AUTH_STR_OVRID" --date="$DATE_FULL"
 }
 
 make_cmd() {
@@ -143,50 +139,5 @@ zip_image() {
     zip -r9 $1.zip * -x .git README.md 2>> $LOG
 }
 
-param_func() {
-	while [[ $# -gt 0 ]]
-		do
-		key="$1"
-
-		case $key in
-			-s|--source)
-				if check_valid "$2"; then
-					SRCN="$2"
-					shift
-				fi
-			;;
-			-b|--branch)
-				if check_valid "$2"; then
-					SRC_BRNCH="$2"
-					shift
-				fi
-			;;
-			-v|--version)
-				if check_valid "$2"; then
-					FORCE_VER=y
-					VER="$2"
-					shift
-				fi
-			;;
-			-cl|--clang)
-				USE_CLANG=y
-			;;
-			-a|--all)
-				BUILD_ALL=y
-			;;
-			-c|--configure)
-				CONFIGURE=y
-			;;
-			-r|--release)
-				TEST_BUILD=n
-			;;
-			-d|--debug)
-				DEBUG=y
-			;;
-			-mo|--make-only)
-				MAKE_ONLY=y
-			;;
-		esac
-		shift
-	done
-}
+# Update environment at setup
+update_linux
