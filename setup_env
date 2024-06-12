@@ -55,8 +55,12 @@ check_file() {
 }
 
 create_dir() {
-    decho "No $1 directory found! Creating $1"
-    mkdir -p $1
+    if ! check_dir "$1"; then
+        mkdir -p $1
+        return 1
+    else
+        return 0
+    fi
 }
 
 update_repo() {
@@ -81,7 +85,6 @@ update_linux() {
     sudo apt-get dist-upgrade
     sudo apt-get autoremove
     sudo apt-get clean
-    sudo hwclock -s
 }
 
 check_valid() {
@@ -141,5 +144,5 @@ zip_image() {
     zip -r9 $1.zip * -x .git README.md 2>> $LOG
 }
 
-# Update environment at setup
-update_linux
+# Update hwclock prior to executing scripts
+sudo hwclock -s

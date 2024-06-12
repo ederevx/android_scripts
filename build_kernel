@@ -24,6 +24,7 @@ DEBUG=n
 JN=12
 LN=10
 
+SRCN="x-ft"
 DC="msm8998_oneplus_debug_android_defconfig"
 HEAD_VER=1
 BRNCH_VER=$CURR_DATE
@@ -33,6 +34,7 @@ AF="arch/arm64/configs"
 ARCH="arm64"
 SUBARCH=$ARCH
 LWIMG="Image.gz-dtb"
+USE_CLANG=y
 
 CLANG_PATH="$CLANG_DIR/clang-r450784e/bin"
 GCC_PATH="${GCC_DIR}64/bin:${GCC_DIR}32/bin"
@@ -48,9 +50,7 @@ CC="${C64}gcc"
 #
 
 define_log() {
-    if ! check_dir "$LOG_DIR"; then
-        create_dir "$LOG_DIR"
-    fi
+    create_dir "$LOG_DIR"
 
     if ! check_file "$LOG"; then
         touch "$LOG_DIR/$KNAME.log"
@@ -162,11 +162,9 @@ build_func() {
 
     define_env
 
-    if check_dir "$OUT"; then
+    if create_dir "$OUT"; then
         time make_cmd clean
         time make_cmd mrproper 
-    else
-        create_dir $OUT
     fi
 
     time make_cmd $DC
@@ -190,15 +188,12 @@ build_func() {
 zip_func() {
     if ! check_dir $ZIP_DIR; then
         decho_log "There's no zip directory, abort!"
-        err_tg_msg
         exit 1
     fi
 
     cd $ZIP_DIR
 
-    if ! check_dir $PUSH_DIR; then
-        create_dir $PUSH_DIR
-    fi
+    create_dir $PUSH_DIR
 
     mv -f $BTI/$LWIMG $ZIP_DIR
     touch version
@@ -211,7 +206,7 @@ zip_func() {
     } >> version
 
     zip_image $PUSH_DIR/$KNAME
-    mkdir -p $SHARED_TEST_DIR/builds >> /dev/null
+    create_dir $SHARED_TEST_DIR/builds
     cp $PUSH_DIR/$KNAME.zip $SHARED_TEST_DIR/builds/
 
     rm -f $LWIMG
@@ -240,7 +235,7 @@ main_func() {
 
     decho_log "Build done: $DATE_FULL"
     decho "$BUILD_STR"
-    mkdir -p $SHARED_TEST_DIR/logs >> /dev/null
+    create_dir $SHARED_TEST_DIR/logs
     cp $LOG $SHARED_TEST_DIR/logs/
 }
 
@@ -311,23 +306,6 @@ if [[ $TEST_BUILD == "y" ]]; then
     PUSH_DIR=$TEST_DIR
 else
     PUSH_DIR=$REL_DIR
-fi
-
-# x extension
-if [[ $SRCN == "x" ]]; then
-    DC="oneplus5_defconfig"
-    HEAD_VER=3
-    if [[ $BUILD_ALL == "y" ]]; then
-        decho "Building all branches"
-        BRNCH_LIST=(
-            "base"
-            "old"
-        )
-        for BRNCH in ${BRNCH_LIST[@]}; do
-            param_main_func -b $BRNCH
-        done
-        exit 0
-    fi
 fi
 
 if [[ $SRCN == "x-ft" ]]; then
