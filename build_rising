@@ -31,9 +31,11 @@ rising_copy_target() {
     if check_file "$RISING_OUT"; then
         decho "Copying $RISING_OUT to $RISING_COMMON_DIR"
         cp $RISING_PRODUCT_DIR/$1/Rising*.zip* $RISING_COMMON_DIR
-        decho "Copying $RISING_OUT to $SHARED_TEST_DIR/roms"
-        create_dir "$SHARED_TEST_DIR/roms"
-        cp $RISING_PRODUCT_DIR/$1/Rising*.zip $SHARED_TEST_DIR/roms/
+        if [[ $1 == "dumpling" ]] && [[ $WITH_GMS == "true" ]]; then
+            decho "Copying $RISING_OUT to $SHARED_TEST_DIR/roms"
+            create_dir "$SHARED_TEST_DIR/roms"
+            cp $RISING_PRODUCT_DIR/$1/Rising*.zip $SHARED_TEST_DIR/roms/
+        fi
     fi
 }
 
@@ -42,7 +44,7 @@ rising_build() {
     export WITH_GMS
     riseup $1 $2
     rise b
-    rising_copy_target $1
+    rising_copy_target $1 $2
 }
 
 rising_build_gms() {
