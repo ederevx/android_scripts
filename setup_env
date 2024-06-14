@@ -137,7 +137,7 @@ commit_repo() {
 
 make_cmd() {
     decho_log "Executing make $1..."
-    make $MKP $1 2>> $LOG
+    make $MKP "$@" 2>> $LOG
 }
 
 zip_image() {

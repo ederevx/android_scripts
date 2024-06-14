@@ -170,6 +170,9 @@ build_func() {
 
     if [[ $CONFIGURE == "y" ]]; then
         time make_cmd $DC menuconfig
+        if [[ $SRCN == "wsl2-kernel" ]]; then
+            DC=$DCF
+        fi
         cp -v $OUT/.config $SRC_DIR/$AF/$DC
         decho "Copied .config to $DC"
         exit 0
@@ -194,7 +197,12 @@ export_img() {
     if [[ $SRCN == "wsl2-kernel" ]]; then
         decho "Copying $BTI/$LWIMG to $C_USER_DIR/WSL"
         cp $BTI/$LWIMG $C_USER_DIR/WSL/$KNAME_S
-        code $C_USER_DIR/.wslconfig
+
+        decho "Updating kernel in .wslconfig"
+        sed -i '/kernel=/d' $C_USER_DIR/.wslconfig
+        WSLKDIR='C:\\Users\\evcsi\\WSL\\'
+        echo "kernel=$WSLKDIR$KNAME_S" >> $C_USER_DIR/.wslconfig
+        cat $C_USER_DIR/.wslconfig
         return
     fi
 
@@ -321,7 +329,8 @@ fi
 
 if [[ $SRCN == "wsl2-kernel" ]]; then
     AF="arch/x86/configs"
-    DC="KCONFIG_CONFIG=$AF/config-wsl-x86"
+    DCF="config-wsl-x86"
+    DC="KCONFIG_CONFIG=$AF/$DCF"
     ARCH="x86"
     LWIMG="bzImage"
     USE_CLANG=y
