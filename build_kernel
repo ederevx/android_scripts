@@ -17,6 +17,9 @@ LOG_DIR=$KERNEL_PARENT_DIR/buildlog
 CLANG_DIR=$KERNEL_PARENT_DIR/toolchain/clang
 GCC_DIR=$KERNEL_PARENT_DIR/toolchain/gcc
 
+# WSL directory
+WSLKDIR='C:\\Users\\evcsi\\WSL\\'
+
 # Default properties
 LOG=/dev/null
 TEST_BUILD=y
@@ -198,11 +201,11 @@ build_func() {
 export_img() {
     if [[ $SRCN == "wsl2-kernel" ]]; then
         decho "Copying $BTI/$LWIMG to $C_USER_DIR/WSL"
-        cp $BTI/$LWIMG $C_USER_DIR/WSL/$KNAME_S
+        # Destination must be the same as $WSLKDIR
+        cp $BTI/$LWIMG $C_USER_DIR/WSL/$KNAME_S 
 
         decho "Updating kernel in .wslconfig"
         sed -i '/kernel=/d' $C_USER_DIR/.wslconfig
-        WSLKDIR='C:\\Users\\evcsi\\WSL\\'
         echo "kernel=$WSLKDIR$KNAME_S" >> $C_USER_DIR/.wslconfig
         cat $C_USER_DIR/.wslconfig
         return

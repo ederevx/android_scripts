@@ -6,6 +6,9 @@
 # Clone the script repo to ~/scripts and repo to ~/repo/bin
 export PATH=$PATH:~/scripts:~/repo/bin
 
+# Identifier
+USERHOST=$(whoami)
+
 # Environment directories
 C_USER_DIR=/mnt/c/Users/evcsi
 SHARED_TEST_DIR=$C_USER_DIR/WSL-Shared
@@ -13,7 +16,7 @@ SHARED_TEST_DIR=$C_USER_DIR/WSL-Shared
 # Git properties
 CURR_DATE=$(date +'%Y%m%d')
 DATE_FULL=$(date -R)
-AUTH_STR="Edrick Sinsuan <evcsinsuan@gmail.com>"
+AUTH_STR="$(git config --get user.name) <$(git config --get user.email)>"
 
 #
 # Utility functions
