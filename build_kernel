@@ -70,7 +70,7 @@ define_log() {
 
 define_kname() {
     KHASH=$(git rev-parse --short HEAD)
-    KNAME="$SRCN-$SRC_BRNCH-$BRNCH_VER-$KHASH-$VER"
+    KNAME="$USERHOST-$SRCN-$SRC_BRNCH-$BRNCH_VER-$KHASH-$VER"
     KNAME_S="$SRCN-$BRNCH_VER-$VER"
 }
 
@@ -224,7 +224,7 @@ export_img() {
     touch version
 
     {
-        echo "$SRCN kernel by ederevx"
+        echo "$SRCN kernel by $USERHOST"
         border
         echo "Build code: $SRC_BRNCH-$BRNCH_VER-$VER"
         echo "Date: $DATE_FULL"
