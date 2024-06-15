@@ -66,7 +66,8 @@ define_log() {
 }
 
 define_kname() {
-    KNAME="$SRCN-$SRC_BRNCH-$BRNCH_VER-$VER"
+    KHASH=$(git rev-parse --short HEAD)
+    KNAME="$SRCN-$SRC_BRNCH-$BRNCH_VER-$KHASH-$VER"
     KNAME_S="$SRCN-$BRNCH_VER-$VER"
 }
 
@@ -130,7 +131,8 @@ define_env() {
     CF="$($CC --version | head -1)"
     decho_log "Compiler being used: $CF"
 
-    BUILD_STR="$SRCN release: $SRC_BRNCH-$BRNCH_VER-$VER built using $CF | Date: $DATE_FULL"
+    BUILD_STR="$SRCN release: $SRC_BRNCH-$BRNCH_VER-$VER built using $CF | \
+        Date: $DATE_FULL | Hash: $KHASH"
 
     MKP=" \
         $CLANGMKP \
@@ -219,10 +221,11 @@ export_img() {
     touch version
 
     {
-        echo "$SRCN kernel by ederekun"
+        echo "$SRCN kernel by ederevx"
         border
         echo "Build code: $SRC_BRNCH-$BRNCH_VER-$VER"
         echo "Date: $DATE_FULL"
+        echo "Hash: $KHASH"
     } >> version
 
     zip_image $PUSH_DIR/$KNAME
