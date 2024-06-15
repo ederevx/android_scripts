@@ -6,6 +6,9 @@
 # Clone the script repo to ~/scripts and repo to ~/repo/bin
 export PATH=$PATH:~/scripts:~/repo/bin
 
+# Update hwclock prior to executing scripts
+sudo hwclock -s
+
 # Identifier
 USERHOST=$(whoami)
 
@@ -147,6 +150,3 @@ zip_image() {
     decho_log "Zipping the image..."
     zip -r9 $1.zip * -x .git README.md 2>> $LOG
 }
-
-# Update hwclock prior to executing scripts
-sudo hwclock -s

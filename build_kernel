@@ -17,33 +17,70 @@ LOG_DIR=$KERNEL_PARENT_DIR/buildlog
 CLANG_DIR=$KERNEL_PARENT_DIR/toolchain/clang
 GCC_DIR=$KERNEL_PARENT_DIR/toolchain/gcc
 
-# WSL directory
-WSLKDIR='C:\\Users\\evcsi\\WSL\\'
-
 # Default properties
-LOG=/dev/null
 TEST_BUILD=y
 DEBUG=n
 
-JN=$(nproc)
-
-SRCN="x-ft"
-DC="msm8998_oneplus_debug_android_defconfig"
+LOG=/dev/null
 BRNCH_VER=$CURR_DATE
 VER=1
 
-AF="arch/arm64/configs"
-ARCH="arm64"
-SUBARCH=$ARCH
-LWIMG="Image.gz-dtb"
+JN=$(nproc)
 
-CLANG_PATH="$CLANG_DIR/clang-r458507/bin"
-GCC_PATH="${GCC_DIR}64/bin:${GCC_DIR}32/bin"
-CC_PATH="$CLANG_PATH:$GCC_PATH"
+# Build x-ft by default
+SRCN="x-ft"
 
-C64="aarch64-linux-gnu-"
-C32="arm-linux-gnueabi-"
-CC="${C64}gcc"
+#
+# Defined SRCN properties
+#
+
+define_x-ft() {
+    DC="msm8998_oneplus_debug_android_defconfig"
+    AF="arch/arm64/configs"
+    ARCH="arm64"
+    SUBARCH=$ARCH
+    LWIMG="Image.gz-dtb"
+
+    CLANG_PATH="$CLANG_DIR/clang-r458507/bin"
+    GCC_PATH="${GCC_DIR}64/bin:${GCC_DIR}32/bin"
+    CC_PATH="$CLANG_PATH:$GCC_PATH"
+
+    C64="aarch64-linux-gnu-"
+    C32="arm-linux-gnueabi-"
+    CC="${C64}gcc"
+
+    USE_CLANG=y
+    export PATH="/usr/local/bin:$CC_PATH:$PATH"
+}
+
+define_wsl2-kernel() {
+    DCF="config-wsl-x86"
+    AF="arch/x86/configs"
+    DC="KCONFIG_CONFIG=$AF/$DCF"
+    ARCH="x86"
+    LWIMG="bzImage"
+
+    # WSL directory (windows and linux) for wsl2-kernel
+    WSLKDIRW='C:\\Users\\evcsi\\WSL\\'
+    WSLKDIRL=$C_USER_DIR/WSL
+
+    USE_CLANG=y
+    export PATH="/usr/lib/ccache:$PATH"
+}
+
+check_srcn() {
+    if [[ $SRCN == "x-ft" ]]; then
+        define_x-ft
+        return 0
+    fi
+
+    if [[ $SRCN == "wsl2-kernel" ]]; then
+        define_wsl2-kernel
+        return 0
+    fi
+
+    return 1
+}
 
 #
 # Build functions
@@ -201,12 +238,11 @@ build_func() {
 export_img() {
     if [[ $SRCN == "wsl2-kernel" ]]; then
         decho "Copying $BTI/$LWIMG to $C_USER_DIR/WSL"
-        # Destination must be the same as $WSLKDIR
-        cp $BTI/$LWIMG $C_USER_DIR/WSL/$KNAME_S 
+        cp $BTI/$LWIMG $WSLKDIRL/$KNAME_S 
 
         decho "Updating kernel in .wslconfig"
         sed -i '/kernel=/d' $C_USER_DIR/.wslconfig
-        echo "kernel=$WSLKDIR$KNAME_S" >> $C_USER_DIR/.wslconfig
+        echo "kernel=$WSLKDIRW$KNAME_S" >> $C_USER_DIR/.wslconfig
         cat $C_USER_DIR/.wslconfig
         return
     fi
@@ -318,29 +354,15 @@ decho "Executing build script..."
 
 param_func "$@"
 
-SRC_DIR=$SRC_DIR/$SRCN
+if check_srcn; then
+    SRC_DIR=$SRC_DIR/$SRCN
 
-if [[ $TEST_BUILD == "y" ]]; then
-    PUSH_DIR=$TEST_DIR
-else
-    PUSH_DIR=$REL_DIR
-fi
+    if [[ $TEST_BUILD == "y" ]]; then
+        PUSH_DIR=$TEST_DIR
+    else
+        PUSH_DIR=$REL_DIR
+    fi
 
-if [[ $SRCN == "x-ft" ]]; then
-    USE_CLANG=y
-    export PATH="/usr/local/bin:$CC_PATH:$PATH"
-    main_func
-    exit 0
-fi
-
-if [[ $SRCN == "wsl2-kernel" ]]; then
-    AF="arch/x86/configs"
-    DCF="config-wsl-x86"
-    DC="KCONFIG_CONFIG=$AF/$DCF"
-    ARCH="x86"
-    LWIMG="bzImage"
-    USE_CLANG=y
-    export PATH="/usr/lib/ccache:$PATH"
     main_func
     exit 0
 fi
