@@ -107,7 +107,7 @@ define_log() {
 
 define_kname() {
     KHASH=$(git rev-parse --short HEAD)
-    KNAME="$USERHOST-$SRCN-$SRC_BRNCH-$BRNCH_VER-$KHASH-$VER"
+    KNAME="$USERHOST-$SRCN-$SRC_BRNCH-$BRNCH_VER-$VER"
     KNAME_S="$SRCN-$BRNCH_VER-$VER"
 }
 
