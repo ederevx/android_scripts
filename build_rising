@@ -43,7 +43,7 @@ rising_build() {
     decho "Building RisingOS: $1 - $2 WITH_GMS=$WITH_GMS"
     export WITH_GMS
     riseup $1 $2
-    rise b
+    rise sb
     rising_copy_target $1 $2
 }
 

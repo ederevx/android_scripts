@@ -5,7 +5,27 @@
 
 source setup_env
 
+param_func() {
+    while [[ $# -gt 0 ]]
+        do
+        key="$1"
+
+        case $key in
+            -r|--replace)
+                REPLACE=y
+            ;;
+        esac
+        shift
+    done
+}
+
 backup_certs() {
+    if [[ $REPLACE != "y" ]]; then
+        return
+    fi
+
+    decho "Backing up certificates..."
+
     if ! check_dir "$1"; then
         echo "USAGE: $0 ROM_PATH"
         exit 1
@@ -25,26 +45,52 @@ if ! check_dir "$1"; then
 fi
 
 ROM_PATH=$1
+VENDOR_PRIV_DIR=$ROM_PATH/vendor/lineage-priv
 
-if ! check_dir "$ROM_PATH/vendor/lineage-priv"; then
-    echo "The script assumes lineage-priv has been setup, set it up first!"
+if ! check_dir "$VENDOR_PRIV_DIR"; then
+    echo "The script assumes $VENDOR_PRIV_DIR has been setup, set it up first!"
     exit 1
 fi
 
-if ! check_dir ~/.android-certs; then
-    mkdir ~/.android-certs
-else
-    backup_certs ~/.android-certs
+if check_dir ~/.android-certs; then
+    rm -rf ~/.android-certs
 fi
+
+mkdir ~/.android-certs
 
 subject='/C=US/ST=Florida/L=Tallahassee/O=Edrick Sinsuan/OU=Edrick Sinsuan/CN=Edrick Sinsuan/emailAddress=evcsinsuan@gmail.com'
 
 for x in bluetooth cts_uicc_2021 media networkstack platform sdk_sandbox shared testkey releasekey; do
+    if [[ $REPLACE != "y" ]]; then
+        if check_file "$VENDOR_PRIV_DIR/keys/$x.pk8"; then
+            continue
+        fi
+    fi
     $ROM_PATH/development/tools/make_key ~/.android-certs/$x "$subject"; \
 done
 
-# Backup all former keys
-backup_certs $ROM_PATH/vendor/lineage-priv/keys
+cp $ROM_PATH/development/tools/make_key ~/.android-certs/
 
-mv -f ~/.android-certs/*.pem $ROM_PATH/vendor/lineage-priv/keys
-mv -f ~/.android-certs/*.pk8 $ROM_PATH/vendor/lineage-priv/keys
+# Modify the key size in the make_key tool from 2048 to 4096
+sed -i 's|2048|4096|g' ~/.android-certs/make_key
+
+for apex in com.android.adbd com.android.adservices com.android.adservices.api com.android.appsearch com.android.art com.android.bluetooth com.android.btservices com.android.cellbroadcast com.android.compos com.android.configinfrastructure com.android.connectivity.resources com.android.conscrypt com.android.devicelock com.android.extservices com.android.graphics.pdf com.android.hardware.biometrics.face.virtual com.android.hardware.biometrics.fingerprint.virtual com.android.hardware.boot com.android.hardware.cas com.android.hardware.wifi com.android.healthfitness com.android.hotspot2.osulogin com.android.i18n com.android.ipsec com.android.media com.android.media.swcodec com.android.mediaprovider com.android.nearby.halfsheet com.android.networkstack.tethering com.android.neuralnetworks com.android.ondevicepersonalization com.android.os.statsd com.android.permission com.android.resolv com.android.rkpd com.android.runtime com.android.safetycenter.resources com.android.scheduling com.android.sdkext com.android.support.apexer com.android.telephony com.android.telephonymodules com.android.tethering com.android.tzdata com.android.uwb com.android.uwb.resources com.android.virt com.android.vndk.current com.android.vndk.current.on_vendor com.android.wifi com.android.wifi.dialog com.android.wifi.resources com.google.pixel.camera.hal com.google.pixel.vibrator.hal com.qorvo.uwb; do
+    if [[ $REPLACE != "y" ]]; then
+        if check_file "$VENDOR_PRIV_DIR/keys/$apex.pk8"; then
+            continue
+        fi
+    fi
+    subject='/C=US/ST=Florida/L=Tallahassee/O=Edrick Sinsuan/OU=Edrick Sinsuan/CN='$apex'/emailAddress=evcsinsuan@gmail.com'
+    ~/.android-certs/make_key ~/.android-certs/$apex "$subject"
+    openssl pkcs8 -in ~/.android-certs/$apex.pk8 -inform DER -nocrypt -out ~/.android-certs/$apex.pem
+done
+
+# Backup all former keys
+backup_certs $VENDOR_PRIV_DIR/keys
+
+decho "Moving certificates..."
+
+mv -f ~/.android-certs/*.pem $VENDOR_PRIV_DIR/keys
+mv -f ~/.android-certs/*.pk8 $VENDOR_PRIV_DIR/keys
+
+decho "Complete!"
