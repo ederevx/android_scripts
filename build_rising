@@ -20,6 +20,7 @@ source build/envsetup.sh
 WITH_GMS=false
 BUILD_DEVICE=dumpling
 BUILD_TYPE=userdebug
+BUILD_CMD=b
 
 #
 # Build functions
@@ -27,14 +28,16 @@ BUILD_TYPE=userdebug
 
 rising_copy_target() {
     create_dir "$RISING_COMMON_DIR"
+    create_dir "$RISING_COMMON_DIR/$2"
     RISING_OUT=$(find $RISING_PRODUCT_DIR/$1/Rising*.zip)
     if check_file "$RISING_OUT"; then
         decho "Copying $RISING_OUT to $RISING_COMMON_DIR"
-        cp $RISING_PRODUCT_DIR/$1/Rising*.zip* $RISING_COMMON_DIR
+        cp $RISING_PRODUCT_DIR/$1/Rising*.zip* $RISING_COMMON_DIR/$2
         if [[ $1 == "dumpling" ]] && [[ $WITH_GMS == "true" ]]; then
             decho "Copying $RISING_OUT to $SHARED_TEST_DIR/roms"
             create_dir "$SHARED_TEST_DIR/roms"
-            cp $RISING_PRODUCT_DIR/$1/Rising*.zip $SHARED_TEST_DIR/roms/
+            create_dir "$SHARED_TEST_DIR/roms/$2"
+            cp $RISING_PRODUCT_DIR/$1/Rising*.zip $SHARED_TEST_DIR/roms/$2
         fi
     fi
 }
@@ -42,9 +45,9 @@ rising_copy_target() {
 rising_build() {
     decho "Building RisingOS: $1 - $2 WITH_GMS=$WITH_GMS"
     export WITH_GMS
-    riseup $1 $2
-    rise sb
-    rising_copy_target $1 $2
+    riseup "$@"
+    rise $BUILD_CMD
+    rising_copy_target "$@"
 }
 
 rising_build_gms() {
@@ -85,6 +88,9 @@ param_func() {
             ;;
             -a|--all)
                 BUILD_ALL=y
+            ;;
+            -s|--sign)
+                BUILD_CMD=sb
             ;;
         esac
         shift
