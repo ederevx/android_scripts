@@ -6,9 +6,10 @@
 source setup_env
 
 # Rising directories
-RISING_DIR=$HOME/repo/rising
-RISING_PRODUCT_DIR=$RISING_DIR/out/target/product
-RISING_COMMON_DIR=$RISING_PRODUCT_DIR/msm8998-common
+RISING_DIR="$HOME/repo/rising"
+RISING_PRODUCT_DIR="$RISING_DIR/out/target/product"
+RISING_COMMON_DIR="$RISING_PRODUCT_DIR/msm8998-common"
+SHARED_ROMS_DIR="$SHARED_TEST_DIR/roms"
 
 if ! check_dir "$RISING_DIR" || ! cd "$RISING_DIR"; then
     exit 1
@@ -27,17 +28,17 @@ BUILD_CMD=b
 #
 
 rising_copy_target() {
-    create_dir "$RISING_COMMON_DIR"
-    create_dir "$RISING_COMMON_DIR/$2"
     RISING_OUT=$(find $RISING_PRODUCT_DIR/$1/Rising*.zip)
     if check_file "$RISING_OUT"; then
+        RISING_COMMON_DIR="$RISING_COMMON_DIR/$2"
+        create_dir "$RISING_COMMON_DIR"
         decho "Copying $RISING_OUT to $RISING_COMMON_DIR"
         cp $RISING_PRODUCT_DIR/$1/Rising*.zip* $RISING_COMMON_DIR/$2
         if [[ $1 == "dumpling" ]] && [[ $WITH_GMS == "true" ]]; then
-            decho "Copying $RISING_OUT to $SHARED_TEST_DIR/roms"
-            create_dir "$SHARED_TEST_DIR/roms"
-            create_dir "$SHARED_TEST_DIR/roms/$2"
-            cp $RISING_PRODUCT_DIR/$1/Rising*.zip $SHARED_TEST_DIR/roms/$2
+            SHARED_ROMS_DIR="$SHARED_ROMS_DIR/$2"
+            decho "Copying $RISING_OUT to $SHARED_ROMS_DIR"
+            create_dir "$SHARED_ROMS_DIR"
+            cp $RISING_PRODUCT_DIR/$1/Rising*.zip $SHARED_ROMS_DIR
         fi
     fi
 }
