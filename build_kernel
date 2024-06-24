@@ -217,7 +217,7 @@ build_func() {
         fi
         cp -v $OUT/.config $SRC_DIR/$AF/$DC
         decho "Copied .config to $DC"
-        exit 0
+        exit_timestamp 0
     fi
 
     time make_cmd $DC
@@ -229,7 +229,7 @@ build_func() {
     if [[ $MAKE_ONLY == "y" ]]; then
         decho_log "Done generating .config at $OUT"
         code $OUT/.config
-        exit 0
+        exit_timestamp 0
     fi
 
     time make_cmd
@@ -249,7 +249,7 @@ export_img() {
 
     if ! check_dir $ZIP_DIR; then
         decho_log "There's no zip directory, abort!"
-        exit 1
+        exit_timestamp 1
     fi
 
     cd $ZIP_DIR
@@ -278,7 +278,7 @@ export_img() {
 main_func() {
     if ! check_dir $SRC_DIR; then
         decho_log "Abort, source directory must exist."
-        exit 1
+        exit_timestamp 1
     fi
 
     build_func
@@ -364,9 +364,9 @@ if check_srcn; then
     fi
 
     main_func
-    exit 0
+    exit_timestamp 0
 fi
 
 decho "SRCN=$SRCN is unknown, please define in $0!"
 
-exit 1
+exit_timestamp 1

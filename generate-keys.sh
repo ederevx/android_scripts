@@ -28,7 +28,7 @@ backup_certs() {
 
     if ! check_dir "$1"; then
         echo "USAGE: $0 ROM_PATH"
-        exit 1
+        exit_timestamp 1
     fi
 
     if ! check_dir "$1/backup"; then
@@ -41,7 +41,7 @@ backup_certs() {
 
 if ! check_dir "$1"; then
     echo "USAGE: $0 ROM_PATH"
-    exit 1
+    exit_timestamp 1
 fi
 
 ROM_PATH=$1
@@ -49,7 +49,7 @@ VENDOR_PRIV_DIR=$ROM_PATH/vendor/lineage-priv
 
 if ! check_dir "$VENDOR_PRIV_DIR"; then
     echo "The script assumes $VENDOR_PRIV_DIR has been setup, set it up first!"
-    exit 1
+    exit_timestamp 1
 fi
 
 if check_dir ~/.android-certs; then
@@ -94,3 +94,5 @@ mv -f ~/.android-certs/*.pem $VENDOR_PRIV_DIR/keys
 mv -f ~/.android-certs/*.pk8 $VENDOR_PRIV_DIR/keys
 
 decho "Complete!"
+
+exit_timestamp 0

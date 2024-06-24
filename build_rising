@@ -12,7 +12,7 @@ RISING_COMMON_DIR="$RISING_PRODUCT_DIR/msm8998-common"
 SHARED_ROMS_DIR="$SHARED_TEST_DIR/roms"
 
 if ! check_dir "$RISING_DIR" || ! cd "$RISING_DIR"; then
-    exit 1
+    exit_timestamp 1
 fi
 
 source build/envsetup.sh
@@ -112,7 +112,9 @@ if [[ $BUILD_ALL == "y" ]]; then
     for DEVICE in ${DEVICES_LIST[@]}; do
         rising_build_both $DEVICE $BUILD_TYPE
     done
-    exit 0
+    exit_timestamp 0
 fi
 
 rising_build $BUILD_DEVICE $BUILD_TYPE
+
+exit_timestamp 0

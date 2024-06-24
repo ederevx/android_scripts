@@ -34,7 +34,7 @@ border() {
 
 decho() {
     border
-    echo $1
+    echo "$1"
     border
 }
 
@@ -149,4 +149,9 @@ make_cmd() {
 zip_image() {
     decho_log "Zipping the image..."
     zip -r9 $1.zip * -x .git README.md 2>> $LOG
+}
+
+exit_timestamp() {
+    decho "$(date -R)"
+    exit $1
 }

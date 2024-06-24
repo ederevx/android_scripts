@@ -7,7 +7,7 @@ source setup_env
 
 if ! check_dir "$1" || ! cd "$1"; then
     echo "USAGE: $0 PATH"
-    exit 1
+    exit_timestamp 1
 fi
 
 for x in bluetooth media networkstack platform sdk_sandbox shared; do
@@ -21,3 +21,5 @@ echo release_cert=\"$(openssl x509 -outform der -in releasekey.x509.pem | xxd -p
 border
 echo test_key=\"$(openssl x509 -pubkey -noout -in testkey.x509.pem | grep -v '-' | tr -d '\n')\"
 echo test_cert=\"$(openssl x509 -outform der -in testkey.x509.pem | xxd -p  | tr -d '\n')\"
+
+exit_timestamp 0
