@@ -33,7 +33,7 @@ rising_copy_target() {
         RISING_COMMON_DIR="$RISING_COMMON_DIR/$2"
         create_dir "$RISING_COMMON_DIR"
         decho "Copying $RISING_OUT to $RISING_COMMON_DIR"
-        cp $RISING_PRODUCT_DIR/$1/Rising*.zip* $RISING_COMMON_DIR/$2
+        cp $RISING_PRODUCT_DIR/$1/Rising*.zip* $RISING_COMMON_DIR
         if [[ $1 == "dumpling" ]] && [[ $WITH_GMS == "true" ]]; then
             SHARED_ROMS_DIR="$SHARED_ROMS_DIR/$2"
             decho "Copying $RISING_OUT to $SHARED_ROMS_DIR"

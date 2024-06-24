@@ -31,7 +31,7 @@ derp_copy_target() {
         DERP_COMMON_DIR="$DERP_COMMON_DIR/$2"
         create_dir "$DERP_COMMON_DIR"
         decho "Copying $DERP_OUT to $DERP_COMMON_DIR"
-        cp $DERP_PRODUCT_DIR/$1/Derp*.zip* $DERP_COMMON_DIR/$2
+        cp $DERP_PRODUCT_DIR/$1/Derp*.zip* $DERP_COMMON_DIR
         if [[ $1 == "dumpling" ]]; then
             SHARED_ROMS_DIR="$SHARED_ROMS_DIR/$2"
             decho "Copying $DERP_OUT to $SHARED_ROMS_DIR"
