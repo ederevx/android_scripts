@@ -15,6 +15,8 @@ USERHOST=$(whoami)
 # Environment directories
 C_USER_DIR=/mnt/c/Users/evcsi
 SHARED_TEST_DIR=$C_USER_DIR/WSL-Shared
+SHARED_ROMS_DIR="$SHARED_TEST_DIR/roms"
+SHARED_CP_ROM=false
 
 # Git properties
 CURR_DATE=$(date +'%Y%m%d')
@@ -149,6 +151,22 @@ make_cmd() {
 zip_image() {
     decho_log "Zipping the image..."
     zip -r9 $1.zip * -x .git README.md 2>> $LOG
+}
+
+rom_copy_target() {
+    if check_file "$ROM_OUT"; then
+        ROM_COMMON_DIR="$ROM_COMMON_DIR/$2"
+        create_dir "$ROM_COMMON_DIR"
+        decho "Copying $ROM_OUT to $ROM_COMMON_DIR"
+        cp $ROM_OUT* $ROM_COMMON_DIR
+        if [[ $SHARED_CP_ROM == "true" ]]; then
+            SHARED_CP_ROM=false
+            SHARED_ROMS_DIR="$SHARED_ROMS_DIR/$2"
+            decho "Copying $ROM_OUT to $SHARED_ROMS_DIR"
+            create_dir "$SHARED_ROMS_DIR"
+            cp $ROM_OUT $SHARED_ROMS_DIR
+        fi
+    fi
 }
 
 exit_timestamp() {

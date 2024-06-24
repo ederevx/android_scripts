@@ -6,12 +6,11 @@
 source setup_env
 
 # Derp directories
-DERP_DIR="$HOME/repo/derp"
-DERP_PRODUCT_DIR="$DERP_DIR/out/target/product"
-DERP_COMMON_DIR="$DERP_PRODUCT_DIR/msm8998-common"
-SHARED_ROMS_DIR="$SHARED_TEST_DIR/roms"
+ROM_DIR="$HOME/repo/derp"
+ROM_PRODUCT_DIR="$ROM_DIR/out/target/product"
+ROM_COMMON_DIR="$ROM_PRODUCT_DIR/msm8998-common"
 
-if ! check_dir "$DERP_DIR" || ! cd "$DERP_DIR"; then
+if ! check_dir "$ROM_DIR" || ! cd "$ROM_DIR"; then
     exit_timestamp 1
 fi
 
@@ -25,27 +24,15 @@ BUILD_TYPE=userdebug
 # Build functions
 #
 
-derp_copy_target() {
-    DERP_OUT=$(find $DERP_PRODUCT_DIR/$1/Derp*.zip)
-    if check_file "$DERP_OUT"; then
-        DERP_COMMON_DIR="$DERP_COMMON_DIR/$2"
-        create_dir "$DERP_COMMON_DIR"
-        decho "Copying $DERP_OUT to $DERP_COMMON_DIR"
-        cp $DERP_PRODUCT_DIR/$1/Derp*.zip* $DERP_COMMON_DIR
-        if [[ $1 == "dumpling" ]]; then
-            SHARED_ROMS_DIR="$SHARED_ROMS_DIR/$2"
-            decho "Copying $DERP_OUT to $SHARED_ROMS_DIR"
-            create_dir "$SHARED_ROMS_DIR"
-            cp $DERP_PRODUCT_DIR/$1/Derp*.zip $SHARED_ROMS_DIR
-        fi
-    fi
-}
-
 derp_build() {
     decho "Building DerpFest: $1 - $2"
     lunch derp_$1-$2
     mka derp
-    derp_copy_target "$@"
+    if [[ $1 == "dumpling" ]]; then
+        SHARED_CP_ROM=true
+    fi
+    ROM_OUT=$(find $ROM_PRODUCT_DIR/$1/Derp*.zip)
+    rom_copy_target "$@"
 }
 
 param_func() {

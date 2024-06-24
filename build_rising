@@ -6,12 +6,11 @@
 source setup_env
 
 # Rising directories
-RISING_DIR="$HOME/repo/rising"
-RISING_PRODUCT_DIR="$RISING_DIR/out/target/product"
-RISING_COMMON_DIR="$RISING_PRODUCT_DIR/msm8998-common"
-SHARED_ROMS_DIR="$SHARED_TEST_DIR/roms"
+ROM_DIR="$HOME/repo/rising"
+ROM_PRODUCT_DIR="$ROM_DIR/out/target/product"
+ROM_COMMON_DIR="$ROM_PRODUCT_DIR/msm8998-common"
 
-if ! check_dir "$RISING_DIR" || ! cd "$RISING_DIR"; then
+if ! check_dir "$ROM_DIR" || ! cd "$ROM_DIR"; then
     exit_timestamp 1
 fi
 
@@ -27,28 +26,16 @@ BUILD_CMD=b
 # Build functions
 #
 
-rising_copy_target() {
-    RISING_OUT=$(find $RISING_PRODUCT_DIR/$1/Rising*.zip)
-    if check_file "$RISING_OUT"; then
-        RISING_COMMON_DIR="$RISING_COMMON_DIR/$2"
-        create_dir "$RISING_COMMON_DIR"
-        decho "Copying $RISING_OUT to $RISING_COMMON_DIR"
-        cp $RISING_PRODUCT_DIR/$1/Rising*.zip* $RISING_COMMON_DIR
-        if [[ $1 == "dumpling" ]] && [[ $WITH_GMS == "true" ]]; then
-            SHARED_ROMS_DIR="$SHARED_ROMS_DIR/$2"
-            decho "Copying $RISING_OUT to $SHARED_ROMS_DIR"
-            create_dir "$SHARED_ROMS_DIR"
-            cp $RISING_PRODUCT_DIR/$1/Rising*.zip $SHARED_ROMS_DIR
-        fi
-    fi
-}
-
 rising_build() {
     decho "Building RisingOS: $1 - $2 WITH_GMS=$WITH_GMS"
     export WITH_GMS
     riseup "$@"
     rise $BUILD_CMD
-    rising_copy_target "$@"
+    if [[ $1 == "dumpling" ]] && [[ $WITH_GMS == "true" ]]; then
+        SHARED_CP_ROM=true
+    fi
+    ROM_OUT=$(find $ROM_PRODUCT_DIR/$1/Rising*.zip)
+    rom_copy_target "$@"
 }
 
 rising_build_gms() {
