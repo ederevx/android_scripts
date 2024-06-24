@@ -1,0 +1,96 @@
+#!/bin/bash
+
+# SPDX-FileCopyrightText: 2024 Edrick Sinsuan
+# SPDX-License-Identifier: Apache-2.0
+
+source setup_env
+
+# Derp directories
+DERP_DIR="$HOME/repo/derp"
+DERP_PRODUCT_DIR="$DERP_DIR/out/target/product"
+DERP_COMMON_DIR="$DERP_PRODUCT_DIR/msm8998-common"
+SHARED_ROMS_DIR="$SHARED_TEST_DIR/roms"
+
+if ! check_dir "$DERP_DIR" || ! cd "$DERP_DIR"; then
+    exit_timestamp 1
+fi
+
+source build/envsetup.sh
+
+# Default properties
+BUILD_DEVICE=dumpling
+BUILD_TYPE=userdebug
+
+#
+# Build functions
+#
+
+derp_copy_target() {
+    DERP_OUT=$(find $DERP_PRODUCT_DIR/$1/Derp*.zip)
+    if check_file "$DERP_OUT"; then
+        DERP_COMMON_DIR="$DERP_COMMON_DIR/$2"
+        create_dir "$DERP_COMMON_DIR"
+        decho "Copying $DERP_OUT to $DERP_COMMON_DIR"
+        cp $DERP_PRODUCT_DIR/$1/Derp*.zip* $DERP_COMMON_DIR/$2
+        if [[ $1 == "dumpling" ]]; then
+            SHARED_ROMS_DIR="$SHARED_ROMS_DIR/$2"
+            decho "Copying $DERP_OUT to $SHARED_ROMS_DIR"
+            create_dir "$SHARED_ROMS_DIR"
+            cp $DERP_PRODUCT_DIR/$1/Derp*.zip $SHARED_ROMS_DIR
+        fi
+    fi
+}
+
+derp_build() {
+    decho "Building DerpFest: $1 - $2"
+    lunch derp_$1-$2
+    mka derp
+    derp_copy_target "$@"
+}
+
+param_func() {
+    while [[ $# -gt 0 ]]
+        do
+        key="$1"
+
+        case $key in
+            -d|--device)
+                if check_valid "$2"; then
+                    BUILD_DEVICE="$2"
+                    shift
+                fi
+            ;;            
+            -t|--type)
+                if check_valid "$2"; then
+                    BUILD_TYPE="$2"
+                    shift
+                fi
+            ;;
+            -a|--all)
+                BUILD_ALL=y
+            ;;
+        esac
+        shift
+    done
+}
+
+#
+# Build start
+#
+
+param_func "$@"
+
+if [[ $BUILD_ALL == "y" ]]; then
+    DEVICES_LIST=(
+        "dumpling"
+        "cheeseburger"
+    )
+    for DEVICE in ${DEVICES_LIST[@]}; do
+        derp_build $DEVICE $BUILD_TYPE
+    done
+    exit_timestamp 0
+fi
+
+derp_build $BUILD_DEVICE $BUILD_TYPE
+
+exit_timestamp 0
