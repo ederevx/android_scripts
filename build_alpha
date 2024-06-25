@@ -34,7 +34,7 @@ alpha_build() {
     if [[ $1 == "dumpling" ]] && [[ $TARGET_BUILD_PACKAGE == "3" ]]; then
         SHARED_CP_ROM=true
     fi
-    ROM_OUT=$(find $ROM_PRODUCT_DIR/$1/Alpha*.zip)
+    ROM_OUT="$ROM_PRODUCT_DIR/$1/Alpha*.zip"
     rom_copy_target $BUILD_TYPE
 }
 

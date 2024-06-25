@@ -31,7 +31,7 @@ derp_build() {
     if [[ $1 == "dumpling" ]]; then
         SHARED_CP_ROM=true
     fi
-    ROM_OUT=$(find $ROM_PRODUCT_DIR/$1/Derp*.zip)
+    ROM_OUT="$ROM_PRODUCT_DIR/$1/Derp*.zip"
     rom_copy_target $BUILD_TYPE
 }
 

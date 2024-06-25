@@ -9,8 +9,7 @@ source setup_env
 KERNEL_PARENT_DIR=$HOME/kernel
 SRC_DIR=$KERNEL_PARENT_DIR
 OUT_DIR=$KERNEL_PARENT_DIR/output
-REL_DIR=$KERNEL_PARENT_DIR/releases
-TEST_DIR=$KERNEL_PARENT_DIR/test
+TARGET_DIR=$KERNEL_PARENT_DIR/test
 SRT_DIR=$KERNEL_PARENT_DIR/scripts
 ZIP_DIR=$KERNEL_PARENT_DIR/zip
 LOG_DIR=$KERNEL_PARENT_DIR/buildlog
@@ -18,7 +17,7 @@ CLANG_DIR=$KERNEL_PARENT_DIR/toolchain/clang
 GCC_DIR=$KERNEL_PARENT_DIR/toolchain/gcc
 
 # Default properties
-TEST_BUILD=y
+TEST_BUILD=n
 DEBUG=n
 
 LOG=/dev/null
@@ -35,7 +34,11 @@ SRCN="x-ft"
 #
 
 define_x-ft() {
-    DC="msm8998_oneplus_debug_android_defconfig"
+    if [[ $TEST_BUILD == "y" ]]; then
+        DC="msm8998_oneplus_debug_android_defconfig"
+    else
+        DC="msm8998_oneplus_android_defconfig"
+    fi
     AF="arch/arm64/configs"
     ARCH="arm64"
     SUBARCH=$ARCH
@@ -254,7 +257,7 @@ export_img() {
 
     cd $ZIP_DIR
 
-    create_dir $PUSH_DIR
+    create_dir $TARGET_DIR
 
     mv -f $BTI/$LWIMG $ZIP_DIR
     touch version
@@ -267,9 +270,9 @@ export_img() {
         echo "Hash: $KHASH"
     } >> version
 
-    zip_image $PUSH_DIR/$KNAME
+    zip_image $TARGET_DIR/$KNAME
     create_dir $SHARED_TEST_DIR/builds
-    cp $PUSH_DIR/$KNAME.zip $SHARED_TEST_DIR/builds/
+    cp $TARGET_DIR/$KNAME.zip $SHARED_TEST_DIR/builds/
 
     rm -f $LWIMG
     rm -f version
@@ -327,8 +330,8 @@ param_func() {
             -c|--configure)
                 CONFIGURE=y
             ;;
-            -r|--release)
-                TEST_BUILD=n
+            -t|--test)
+                TEST_BUILD=y
             ;;
             -d|--debug)
                 DEBUG=y
@@ -356,13 +359,6 @@ param_func "$@"
 
 if check_srcn; then
     SRC_DIR=$SRC_DIR/$SRCN
-
-    if [[ $TEST_BUILD == "y" ]]; then
-        PUSH_DIR=$TEST_DIR
-    else
-        PUSH_DIR=$REL_DIR
-    fi
-
     main_func
     exit_timestamp 0
 fi
