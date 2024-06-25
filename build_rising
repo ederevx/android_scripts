@@ -27,9 +27,9 @@ BUILD_CMD=b
 #
 
 rising_build() {
-    decho "Building RisingOS: $1 - $2 WITH_GMS=$WITH_GMS"
+    decho "Building RisingOS: $1 - $BUILD_TYPE WITH_GMS=$WITH_GMS"
     export WITH_GMS
-    riseup "$@"
+    riseup $1 $BUILD_TYPE
     rise $BUILD_CMD
     if [[ $1 == "dumpling" ]] && [[ $WITH_GMS == "true" ]]; then
         SHARED_CP_ROM=true
@@ -97,11 +97,11 @@ if [[ $BUILD_ALL == "y" ]]; then
         "cheeseburger"
     )
     for DEVICE in ${DEVICES_LIST[@]}; do
-        rising_build_both $DEVICE $BUILD_TYPE
+        rising_build_both $DEVICE
     done
     exit_timestamp 0
 fi
 
-rising_build $BUILD_DEVICE $BUILD_TYPE
+rising_build $BUILD_DEVICE
 
 exit_timestamp 0

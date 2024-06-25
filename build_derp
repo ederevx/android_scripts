@@ -25,8 +25,8 @@ BUILD_TYPE=userdebug
 #
 
 derp_build() {
-    decho "Building DerpFest: $1 - $2"
-    lunch derp_$1-$2
+    decho "Building DerpFest: $1 - $BUILD_TYPE"
+    lunch derp_$1-$BUILD_TYPE
     mka derp
     if [[ $1 == "dumpling" ]]; then
         SHARED_CP_ROM=true
@@ -73,11 +73,11 @@ if [[ $BUILD_ALL == "y" ]]; then
         "cheeseburger"
     )
     for DEVICE in ${DEVICES_LIST[@]}; do
-        derp_build $DEVICE $BUILD_TYPE
+        derp_build $DEVICE
     done
     exit_timestamp 0
 fi
 
-derp_build $BUILD_DEVICE $BUILD_TYPE
+derp_build $BUILD_DEVICE
 
 exit_timestamp 0

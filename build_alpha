@@ -27,9 +27,9 @@ RELEASE_VER=ap1a
 #
 
 alpha_build() {
-    decho "Building AlphaDroid: $1 - $2 TARGET_BUILD_PACKAGE=$TARGET_BUILD_PACKAGE"
+    decho "Building AlphaDroid: $1 - $BUILD_TYPE TARGET_BUILD_PACKAGE=$TARGET_BUILD_PACKAGE"
     export TARGET_BUILD_PACKAGE
-    lunch lineage_$1-$RELEASE_VER-$2
+    lunch lineage_$1-$RELEASE_VER-$BUILD_TYPE
     make bacon -j$(nproc)
     if [[ $1 == "dumpling" ]] && [[ $TARGET_BUILD_PACKAGE == "3" ]]; then
         SHARED_CP_ROM=true
@@ -97,11 +97,11 @@ if [[ $BUILD_ALL == "y" ]]; then
         "cheeseburger"
     )
     for DEVICE in ${DEVICES_LIST[@]}; do
-        alpha_build_both $DEVICE $BUILD_TYPE
+        alpha_build_both $DEVICE
     done
     exit_timestamp 0
 fi
 
-alpha_build $BUILD_DEVICE $BUILD_TYPE
+alpha_build $BUILD_DEVICE
 
 exit_timestamp 0
