@@ -155,13 +155,13 @@ zip_image() {
 
 rom_copy_target() {
     if check_file "$ROM_OUT"; then
-        ROM_COMMON_DIR="$ROM_COMMON_DIR/$2"
+        ROM_COMMON_DIR="$ROM_COMMON_DIR/$1"
         create_dir "$ROM_COMMON_DIR"
         decho "Copying $ROM_OUT to $ROM_COMMON_DIR"
         cp $ROM_OUT* $ROM_COMMON_DIR
         if [[ $SHARED_CP_ROM == "true" ]]; then
             SHARED_CP_ROM=false
-            SHARED_ROMS_DIR="$SHARED_ROMS_DIR/$2"
+            SHARED_ROMS_DIR="$SHARED_ROMS_DIR/$1"
             decho "Copying $ROM_OUT to $SHARED_ROMS_DIR"
             create_dir "$SHARED_ROMS_DIR"
             cp $ROM_OUT $SHARED_ROMS_DIR
