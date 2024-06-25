@@ -56,7 +56,7 @@ define_x-ft() {
     export PATH="/usr/local/bin:$CC_PATH:$PATH"
 }
 
-define_wsl2-kernel() {
+define_wsl2() {
     DCF="config-wsl-x86"
     AF="arch/x86/configs"
     DC="KCONFIG_CONFIG=$AF/$DCF"
@@ -78,7 +78,7 @@ check_srcn() {
     fi
 
     if [[ $SRCN == "wsl2-kernel" ]]; then
-        define_wsl2-kernel
+        define_wsl2
         return 0
     fi
 
@@ -135,10 +135,8 @@ define_env() {
         echo "Checking out to branch:"
         git checkout $SRC_BRNCH
     else
-        CURRBRNCH="$(git rev-parse --abbrev-ref HEAD)"
-        SRC_BRNCH=$CURRBRNCH
-
         echo "Using current branch:"
+        SRC_BRNCH="$(git rev-parse --abbrev-ref HEAD)"
     fi
     echo $SRC_BRNCH
     border
@@ -171,10 +169,10 @@ define_env() {
         define_debug
     fi
 
-    CF="$($CC --version | head -1)"
-    decho_log "Compiler being used: $CF"
+    local compiler="$($CC --version | head -1)"
+    decho_log "Compiler being used: $compiler"
 
-    BUILD_STR="$SRCN release: $SRC_BRNCH-$BRNCH_VER-$VER built using $CF | \
+    BUILD_STR="$SRCN release: $SRC_BRNCH-$BRNCH_VER-$VER built using $compiler | \
         Date: $DATE_FULL | Hash: $KHASH"
 
     MKP=" \
@@ -238,24 +236,21 @@ build_func() {
     time make_cmd
 }
 
-export_img() {
-    if [[ $SRCN == "wsl2-kernel" ]]; then
-        decho "Copying $BTI/$LWIMG to $C_USER_DIR/WSL"
-        cp $BTI/$LWIMG $WSLKDIRL/$KNAME_S 
+export_img_wsl2() {
+    decho "Copying $BTI/$LWIMG to $C_USER_DIR/WSL"
+    cp $BTI/$LWIMG $WSLKDIRL/$KNAME_S 
 
-        decho "Updating kernel in .wslconfig"
-        sed -i '/kernel=/d' $C_USER_DIR/.wslconfig
-        echo "kernel=$WSLKDIRW$KNAME_S" >> $C_USER_DIR/.wslconfig
-        cat $C_USER_DIR/.wslconfig
-        return
-    fi
+    decho "Updating kernel in .wslconfig"
+    sed -i '/kernel=/d' $C_USER_DIR/.wslconfig
+    echo "kernel=$WSLKDIRW$KNAME_S" >> $C_USER_DIR/.wslconfig
+    cat $C_USER_DIR/.wslconfig
+}
 
-    if ! check_dir $ZIP_DIR; then
+export_img_zip() {
+    if ! check_dir "$ZIP_DIR" || ! cd "$ZIP_DIR"; then
         decho_log "There's no zip directory, abort!"
         exit_timestamp 1
     fi
-
-    cd $ZIP_DIR
 
     create_dir $TARGET_DIR
 
@@ -278,6 +273,17 @@ export_img() {
     rm -f version
 }
 
+export_img() {
+    if [[ $SRCN == "wsl2-kernel" ]]; then
+        export_img_wsl2
+        return 0
+    fi
+
+    # Set kernel zipping as default
+    export_img_zip
+    return 0
+}
+
 main_func() {
     if ! check_dir $SRC_DIR; then
         decho_log "Abort, source directory must exist."
@@ -290,7 +296,6 @@ main_func() {
         export_img
     fi
 
-    decho_log "Build done: $DATE_FULL"
     decho "$BUILD_STR"
     create_dir $SHARED_TEST_DIR/logs
     cp $LOG $SHARED_TEST_DIR/logs/
