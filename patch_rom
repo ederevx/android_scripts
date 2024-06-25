@@ -12,55 +12,30 @@ fi
 
 ROM_ROOT="$(pwd)"
 
-DIR=$ROM_ROOT/build/soong
-decho "$DIR"
-if check_dir "$DIR" && cd "$DIR"; then
-    decho "Allow bison"
-    git fetch https://github.com/ederevx/android_build_soong
-    git cherry-pick 6a4996614768c719b9559956289a11c91369e958
+patch_single() {
+    decho "$DIR"
+    if check_dir "$DIR" && cd "$DIR"; then
+        git fetch $1 a14
+        decho "$(git log -1 --pretty=%B -n 1 $2)"
+        git cherry-pick $2
+        git cherry-pick --abort
+    fi
+}
 
-    git cherry-pick --abort
-fi
+DIR=$ROM_ROOT/build/soong
+patch_single https://github.com/ederevx/android_build_soong 6a4996614768c719b9559956289a11c91369e958
 
 DIR=$ROM_ROOT/frameworks/base
-decho "$DIR"
-if check_dir "$DIR" && cd "$DIR"; then
-    decho "Allow color balance transform for DeviceSettings"
-    git fetch https://github.com/ederevx/frameworks_base a14
-    git cherry-pick bb487d4599e1a103f1881fe25acf2b63c8105356
-
-    git cherry-pick --abort
-fi
+patch_single https://github.com/ederevx/frameworks_base bb487d4599e1a103f1881fe25acf2b63c8105356
 
 DIR=$ROM_ROOT/packages/apps/LineageParts
-decho "$DIR"
-if check_dir "$DIR" && cd "$DIR"; then
-    decho "Disable touchscreen gestures and livedisplay in settings"
-    git fetch https://github.com/ederevx/android_packages_apps_LineageParts a14
-    git cherry-pick 934c8366177f4c6dd779d4eac75684b1126923e5
-
-    git cherry-pick --abort
-fi
+patch_single https://github.com/ederevx/android_packages_apps_LineageParts 934c8366177f4c6dd779d4eac75684b1126923e5
 
 DIR=$ROM_ROOT/system/sepolicy
-decho "$DIR"
-if check_dir "$DIR" && cd "$DIR"; then
-    decho "Address settings binder denials"
-    git fetch https://github.com/ederevx/rising_android_system_sepolicy a14
-    git cherry-pick 99cb56c536b988430631bfcae3d877215e1416c8
-
-    git cherry-pick --abort
-fi
+patch_single https://github.com/ederevx/rising_android_system_sepolicy 99cb56c536b988430631bfcae3d877215e1416c8
 
 DIR=$ROM_ROOT/vendor/lineage
-decho "$DIR"
-if check_dir "$DIR" && cd "$DIR"; then
-    decho "Hookup TARGET_USES_GRALLOC1"
-    git fetch https://github.com/ederevx/android_vendor_lineage
-    git cherry-pick d60c33fa98caa875cd7ba95ffb6e65090ef922f9
-
-    git cherry-pick --abort
-fi
+patch_single https://github.com/ederevx/android_vendor_lineage d60c33fa98caa875cd7ba95ffb6e65090ef922f9
 
 decho "Please check if any cherry-picks failed!"
 
