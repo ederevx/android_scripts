@@ -19,7 +19,7 @@ source build/envsetup.sh
 # Default properties
 WITH_GMS=false
 BUILD_DEVICE=dumpling
-BUILD_TYPE=userdebug
+BUILD_TYPE=user
 BUILD_CMD=b
 
 #
@@ -34,7 +34,8 @@ rising_build() {
     if [[ $1 == "dumpling" ]] && [[ $WITH_GMS == "true" ]]; then
         SHARED_CP_ROM=true
     fi
-    ROM_OUT="$ROM_PRODUCT_DIR/$1/Rising*.zip"
+    # Target product filename; see rom_copy_target
+    ROM_TARGET="$ROM_PRODUCT_DIR/$1/Rising"
     rom_copy_target $BUILD_TYPE
 }
 
@@ -92,12 +93,8 @@ param_func() {
 param_func "$@"
 
 if [[ $BUILD_ALL == "y" ]]; then
-    DEVICES_LIST=(
-        "dumpling"
-        "cheeseburger"
-    )
-    for DEVICE in ${DEVICES_LIST[@]}; do
-        rising_build_both $DEVICE
+    for device in ${ROM_DEVICES_LIST[@]}; do
+        rising_build_both $device
     done
     exit_timestamp 0
 fi

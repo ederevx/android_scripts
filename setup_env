@@ -18,6 +18,12 @@ SHARED_TEST_DIR=$C_USER_DIR/WSL-Shared
 SHARED_ROMS_DIR="$SHARED_TEST_DIR/roms"
 SHARED_CP_ROM=false
 
+# Common variables
+ROM_DEVICES_LIST=(
+    "dumpling"
+    "cheeseburger"
+)
+
 # Git properties
 CURR_DATE=$(date +'%Y%m%d')
 DATE_FULL=$(date -R)
@@ -46,8 +52,8 @@ decho_log() {
 }
 
 check_dir() {
-    if [[ ! -d "$1" ]]; then 
-        decho "Can't find $1"
+    if [ ! -d "$@" ]; then 
+        decho "Can't find $@"
         return 1
     else
         return 0
@@ -55,8 +61,8 @@ check_dir() {
 }
 
 check_file() {
-    if [[ ! -f "$1" ]]; then 
-        decho "Can't find $1"
+    if [ ! -f "$@" ]; then 
+        decho "Can't find $@"
         return 1
     else
         return 0
@@ -154,18 +160,22 @@ zip_image() {
 }
 
 rom_copy_target() {
-    if check_file "$ROM_OUT"; then
-        ROM_COMMON_DIR="$ROM_COMMON_DIR/$1"
-        create_dir "$ROM_COMMON_DIR"
-        decho "Copying $ROM_OUT to $ROM_COMMON_DIR"
-        cp $ROM_OUT* $ROM_COMMON_DIR
+    local target_dir
+
+    if check_file $ROM_TARGET*.zip; then
+        target_dir="$ROM_COMMON_DIR/$1"
+        create_dir "$target_dir"
+        decho "Copying $ROM_TARGET*.zip to $target_dir"
+        cp $ROM_TARGET*.zip* $target_dir
         if [[ $SHARED_CP_ROM == "true" ]]; then
             SHARED_CP_ROM=false
-            SHARED_ROMS_DIR="$SHARED_ROMS_DIR/$1"
-            decho "Copying $ROM_OUT to $SHARED_ROMS_DIR"
-            create_dir "$SHARED_ROMS_DIR"
-            cp $ROM_OUT $SHARED_ROMS_DIR
+            target_dir="$SHARED_ROMS_DIR/$1"
+            decho "Copying $ROM_TARGET*.zip to $target_dir"
+            create_dir "$target_dir"
+            cp $ROM_TARGET*.zip $target_dir
         fi
+        # Cleanup afterwards to prevent overlapping builds
+        rm -f $ROM_TARGET*.zip*
     fi
 }
 

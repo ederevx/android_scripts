@@ -19,7 +19,7 @@ source build/envsetup.sh
 # Default properties
 TARGET_BUILD_PACKAGE=3
 BUILD_DEVICE=dumpling
-BUILD_TYPE=userdebug
+BUILD_TYPE=user
 RELEASE_VER=ap1a
 
 #
@@ -34,7 +34,8 @@ alpha_build() {
     if [[ $1 == "dumpling" ]] && [[ $TARGET_BUILD_PACKAGE == "3" ]]; then
         SHARED_CP_ROM=true
     fi
-    ROM_OUT="$ROM_PRODUCT_DIR/$1/Alpha*.zip"
+    # Target product filename; see rom_copy_target
+    ROM_TARGET="$ROM_PRODUCT_DIR/$1/Alpha"
     rom_copy_target $BUILD_TYPE
 }
 
@@ -92,12 +93,8 @@ param_func() {
 param_func "$@"
 
 if [[ $BUILD_ALL == "y" ]]; then
-    DEVICES_LIST=(
-        "dumpling"
-        "cheeseburger"
-    )
-    for DEVICE in ${DEVICES_LIST[@]}; do
-        alpha_build_both $DEVICE
+    for device in ${ROM_DEVICES_LIST[@]}; do
+        alpha_build_both $device
     done
     exit_timestamp 0
 fi

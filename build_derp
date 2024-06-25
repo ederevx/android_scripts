@@ -31,7 +31,8 @@ derp_build() {
     if [[ $1 == "dumpling" ]]; then
         SHARED_CP_ROM=true
     fi
-    ROM_OUT="$ROM_PRODUCT_DIR/$1/Derp*.zip"
+    # Target product filename; see rom_copy_target
+    ROM_TARGET="$ROM_PRODUCT_DIR/$1/Derp"
     rom_copy_target $BUILD_TYPE
 }
 
@@ -68,12 +69,8 @@ param_func() {
 param_func "$@"
 
 if [[ $BUILD_ALL == "y" ]]; then
-    DEVICES_LIST=(
-        "dumpling"
-        "cheeseburger"
-    )
-    for DEVICE in ${DEVICES_LIST[@]}; do
-        derp_build $DEVICE
+    for device in ${ROM_DEVICES_LIST[@]}; do
+        derp_build $device
     done
     exit_timestamp 0
 fi
