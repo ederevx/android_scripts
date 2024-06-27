@@ -54,6 +54,8 @@ env_init() {
     CURR_DATE=$(date +'%Y%m%d')
     DATE_FULL=$(date -R)
     AUTH_STR="$(git config --get user.name) <$(git config --get user.email)>"
+
+    decho "$(date -R)"
 }
 
 #
