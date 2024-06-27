@@ -5,10 +5,16 @@
 
 # Environment init function
 env_init() {
-    local script_path=~/scripts/setup_env
+    local script_dir=~/scripts
+    local script_path=$script_dir/setup_env
 
     # Clone the script repo to ~/scripts and repo to ~/repo/bin
-    export PATH=$PATH:~/scripts:~/repo/bin
+    if [[ -z $(echo $PATH | grep -i $script_dir) ]]; then
+        export PATH=$PATH:$script_dir:~/repo/bin
+    fi
+
+    # Identifier
+    USERHOST=$(whoami)
 
     decho "Current kernel: $(uname -r)"
 
@@ -22,8 +28,8 @@ env_init() {
     local setup_env_sudo=/etc/sudoers.d/setup_env
     if ! check_file $setup_env_sudo; then
         {
-            echo "ederevx ALL=(ALL:ALL) NOPASSWD: /usr/sbin/hwclock -s"
-            echo "ederevx ALL=(ALL:ALL) NOPASSWD: /usr/bin/apt-get"
+            echo "$USERHOST ALL=(ALL:ALL) NOPASSWD: /usr/sbin/hwclock -s"
+            echo "$USERHOST ALL=(ALL:ALL) NOPASSWD: /usr/bin/apt-get"
         } | sudo tee $setup_env_sudo
         decho $setup_env_sudo
         cat $setup_env_sudo
@@ -34,9 +40,6 @@ env_init() {
 
     # Update system at init
     update_linux
-
-    # Identifier
-    USERHOST=$(whoami)
 
     # Environment directories
     C_USER_DIR=/mnt/c/Users/evcsi
@@ -55,7 +58,7 @@ env_init() {
     DATE_FULL=$(date -R)
     AUTH_STR="$(git config --get user.name) <$(git config --get user.email)>"
 
-    decho "$(date -R)"
+    decho $DATE_FULL
 }
 
 #
@@ -68,13 +71,13 @@ border() {
 
 decho() {
     border
-    echo "$1"
+    echo "$@"
     border
 }
 
 decho_log() {
-    decho "$1"
-    decho "$1" >> $LOG
+    decho "$@"
+    decho "$@" >> $LOG
 }
 
 check_dir() {
@@ -96,8 +99,8 @@ check_file() {
 }
 
 create_dir() {
-    if ! check_dir "$1"; then
-        mkdir -p $1
+    if ! check_dir "$@"; then
+        mkdir -p $@
         return 1
     else
         return 0
@@ -105,11 +108,11 @@ create_dir() {
 }
 
 update_repo() {
-    if ! check_dir "$1/.git" || ! cd "$1"; then
+    if ! check_dir "$@/.git" || ! cd "$@"; then
         return 
     fi
 
-    decho "Updating $1 repository..."
+    decho "Updating $@ repository..."
 
     if [[ $1 == "$ZIP_DIR" ]]; then
         git pull --no-rebase upstream master
