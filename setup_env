@@ -3,31 +3,58 @@
 # SPDX-FileCopyrightText: 2024 Edrick Sinsuan
 # SPDX-License-Identifier: Apache-2.0
 
-# Clone the script repo to ~/scripts and repo to ~/repo/bin
-export PATH=$PATH:~/scripts:~/repo/bin
+# Environment init function
+env_init() {
+    local script_path=~/scripts/setup_env
 
-# Update hwclock prior to executing scripts
-sudo hwclock -s
+    # Clone the script repo to ~/scripts and repo to ~/repo/bin
+    export PATH=$PATH:~/scripts:~/repo/bin
 
-# Identifier
-USERHOST=$(whoami)
+    decho "Current kernel: $(uname -r)"
 
-# Environment directories
-C_USER_DIR=/mnt/c/Users/evcsi
-SHARED_TEST_DIR=$C_USER_DIR/WSL-Shared
-SHARED_ROMS_DIR="$SHARED_TEST_DIR/roms"
-SHARED_CP_ROM=false
+    # Execute this script at bash init
+    local bashrc=~/.bashrc
+    if [[ -z $(cat $bashrc | grep -i setup_env) ]]; then
+        echo "source $script_path" >> $bashrc
+    fi
 
-# Common variables
-ROM_DEVICES_LIST=(
-    "dumpling"
-    "cheeseburger"
-)
+    # Setup nopasswd rule for calling commonly used commands
+    local setup_env_sudo=/etc/sudoers.d/setup_env
+    if ! check_file $setup_env_sudo; then
+        {
+            echo "ederevx ALL=(ALL:ALL) NOPASSWD: /usr/sbin/hwclock -s"
+            echo "ederevx ALL=(ALL:ALL) NOPASSWD: /usr/bin/apt-get"
+        } | sudo tee $setup_env_sudo
+        decho $setup_env_sudo
+        cat $setup_env_sudo
+    fi
 
-# Git properties
-CURR_DATE=$(date +'%Y%m%d')
-DATE_FULL=$(date -R)
-AUTH_STR="$(git config --get user.name) <$(git config --get user.email)>"
+    # Update hwclock prior to executing scripts
+    sudo hwclock -s
+
+    # Update system at init
+    update_linux
+
+    # Identifier
+    USERHOST=$(whoami)
+
+    # Environment directories
+    C_USER_DIR=/mnt/c/Users/evcsi
+    SHARED_TEST_DIR=$C_USER_DIR/WSL-Shared
+    SHARED_ROMS_DIR="$SHARED_TEST_DIR/roms"
+    SHARED_CP_ROM=false
+
+    # Common variables
+    ROM_DEVICES_LIST=(
+        "dumpling"
+        "cheeseburger"
+    )
+
+    # Git properties
+    CURR_DATE=$(date +'%Y%m%d')
+    DATE_FULL=$(date -R)
+    AUTH_STR="$(git config --get user.name) <$(git config --get user.email)>"
+}
 
 #
 # Utility functions
@@ -183,3 +210,6 @@ exit_timestamp() {
     decho "$(date -R)"
     exit $1
 }
+
+# Initialize environment after functions init
+env_init
