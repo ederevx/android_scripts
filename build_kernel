@@ -258,8 +258,7 @@ export_img_zip() {
     touch version
 
     {
-        echo "$SRCN kernel by $USERHOST"
-        border
+        echo "Kernel: $SRCN by $USERHOST"
         echo "Build code: $SRC_BRNCH-$BRNCH_VER-$VER"
         echo "Date: $DATE_FULL"
         echo "Hash: $KHASH"
