@@ -17,67 +17,67 @@ CLANG_DIR=$KERNEL_PARENT_DIR/toolchain/clang
 GCC_DIR=$KERNEL_PARENT_DIR/toolchain/gcc
 
 # Default properties
-TEST_BUILD=n
-DEBUG=n
+test_build=n
+debug=n
 
-LOG=/dev/null
-BRNCH_VER=$CURR_DATE
-VER=1
+log=/dev/null
+brnch_ver=$curr_date
+ver=1
 
-JN=$(nproc)
+jn=$(nproc)
 
 # Build x-ft by default
-SRCN="x-ft"
+srcn="x-ft"
 
 #
-# Defined SRCN properties
+# Defined srcn properties
 #
 
 define_x-ft() {
-    if [[ $TEST_BUILD == "y" ]]; then
-        DC="msm8998_oneplus_debug_android_defconfig"
+    if [[ $test_build == "y" ]]; then
+        dc="msm8998_oneplus_debug_android_defconfig"
     else
-        DC="msm8998_oneplus_android_defconfig"
+        dc="msm8998_oneplus_android_defconfig"
     fi
-    AF="arch/arm64/configs"
-    ARCH="arm64"
-    SUBARCH=$ARCH
-    LWIMG="Image.gz-dtb"
+    af="arch/arm64/configs"
+    arch="arm64"
+    subarch=$arch
+    lwimg="Image.gz-dtb"
 
     CLANG_PATH="$CLANG_DIR/clang-r458507/bin"
     GCC_PATH="${GCC_DIR}64/bin:${GCC_DIR}32/bin"
     CC_PATH="$CLANG_PATH:$GCC_PATH"
 
-    C64="aarch64-linux-gnu-"
-    C32="arm-linux-gnueabi-"
-    CC="${C64}gcc"
+    c64="aarch64-linux-gnu-"
+    c64="arm-linux-gnueabi-"
+    cc="${c64}gcc"
 
-    USE_CLANG=y
+    use_clang=y
     export PATH="/usr/local/bin:$CC_PATH:$PATH"
 }
 
 define_wsl2() {
-    DCF="config-wsl-x86"
-    AF="arch/x86/configs"
-    DC="KCONFIG_CONFIG=$AF/$DCF"
-    ARCH="x86"
-    LWIMG="bzImage"
+    dcf="config-wsl-x86"
+    af="arch/x86/configs"
+    dc="KCONFIG_CONFIG=$af/$dcf"
+    arch="x86"
+    lwimg="bzImage"
 
     # WSL directory (windows and linux) for wsl2-kernel
     WSLKDIRW='C:\\Users\\evcsi\\WSL\\'
     WSLKDIRL=$C_USER_DIR/WSL
 
-    USE_CLANG=y
+    use_clang=y
     export PATH="/usr/lib/ccache:$PATH"
 }
 
 check_srcn() {
-    if [[ $SRCN == "x-ft" ]]; then
+    if [[ $srcn == "x-ft" ]]; then
         define_x-ft
         return 0
     fi
 
-    if [[ $SRCN == "wsl2-kernel" ]]; then
+    if [[ $srcn == "wsl2-kernel" ]]; then
         define_wsl2
         return 0
     fi
@@ -92,113 +92,113 @@ check_srcn() {
 define_log() {
     create_dir "$LOG_DIR"
 
-    if ! check_file "$LOG"; then
-        touch "$LOG_DIR/$KNAME.log"
+    if ! check_file "$log"; then
+        touch "$LOG_DIR/$kname.log"
     else
-        echo "" > $LOG
+        echo "" > $log
     fi
 
-    decho "Build start: $DATE_FULL" >> $LOG
-    LOG="$LOG_DIR/$KNAME.log"
+    decho "Build start: $date_full" >> $log
+    log="$LOG_DIR/$kname.log"
     {
         border
         echo "Last Commit:"
         echo $(git -C $SRC_DIR log -1 --pretty=%B)
         border
-    } >> $LOG
+    } >> $log
 }
 
 define_kname() {
-    KHASH=$(git rev-parse --short HEAD)
-    KNAME="$USERHOST-$SRCN-$SRC_BRNCH-$BRNCH_VER-$VER"
-    KNAME_S="$SRCN-$BRNCH_VER-$VER"
+    khash=$(git rev-parse --short HEAD)
+    kname="$userhost-$srcn-$src_brnch-$brnch_ver-$ver"
+    kname_s="$srcn-$brnch_ver-$ver"
 }
 
 define_clang() {
-    CC="clang"
+    cc="clang"
 
-    CLANGMKP=" \
+    clangmkp=" \
         LLVM=1 \
         LLVM_IAS=1 \
         "
 }
 
 define_debug() {
-    DEBUGMKP="    \
+    debugmkp="    \
         CONFIG_DEBUG_SECTION_MISMATCH=y \
         "
 }
 
 define_env() {
     border
-    if [[ $SRC_BRNCH != "" ]]; then
+    if [[ $src_brnch != "" ]]; then
         echo "Checking out to branch:"
-        git checkout $SRC_BRNCH
+        git checkout $src_brnch
     else
         echo "Using current branch:"
-        SRC_BRNCH="$(git rev-parse --abbrev-ref HEAD)"
+        src_brnch="$(git rev-parse --abbrev-ref HEAD)"
     fi
-    echo $SRC_BRNCH
+    echo $src_brnch
     border
 
-    OUT=$OUT_DIR/$SRCN/$SRC_BRNCH
-    BTI=$OUT/arch/$ARCH/boot
+    out=$OUT_DIR/$srcn/$src_brnch
+    bti=$out/arch/$arch/boot
 
     define_kname
 
-    if [[ $FORCE_VER != "y" ]]; then
-        while [[ -f $LOG_DIR/$KNAME.log ]]
+    if [[ $force_ver != "y" ]]; then
+        while [[ -f $LOG_DIR/$kname.log ]]
             do
-            VER="$(($VER + 1))"
+            ver="$(($ver + 1))"
             define_kname
         done
     fi
 
-    if [[ $CONFIGURE == "y" ]]; then
+    if [[ $configure == "y" ]]; then
         echo "Configure only, no builds will be made..."
     else
-        LOG=$LOG_DIR/$KNAME.log
+        log=$LOG_DIR/$kname.log
         define_log
     fi
 
-    if [[ $USE_CLANG == "y" ]]; then
+    if [[ $use_clang == "y" ]]; then
         define_clang
     fi
 
-    if [[ $DEBUG == "y" ]]; then
+    if [[ $debug == "y" ]]; then
         define_debug
     fi
 
-    local compiler="$($CC --version | head -1)"
+    local compiler="$($cc --version | head -1)"
     decho_log "Compiler being used: $compiler"
 
-    BUILD_STR="$SRCN release: $SRC_BRNCH-$BRNCH_VER-$VER built using $compiler | \
-        Date: $DATE_FULL | Hash: $KHASH"
+    build_str="$srcn release: $src_brnch-$brnch_ver-$ver built using $compiler | \
+        Date: $date_full | Hash: $khash"
 
-    MKP=" \
-        $CLANGMKP \
-        $DEBUGMKP \
+    mkp=" \
+        $clangmkp \
+        $debugmkp \
         CC_WRAPPER=ccache \
-        ARCH=$ARCH \
-        SUBARCH=$SUBARCH \
-        CROSS_COMPILE=$C64 \
-        CROSS_COMPILE_ARM32=$C32 \
-        LOCALVERSION=-$KNAME_S \
-        O=$OUT \
-        -j$JN \
+        ARCH=$arch \
+        SUBARCH=$subarch \
+        CROSS_COMPILE=$c64 \
+        CROSS_COMPILE_ARM32=$c64 \
+        LOCALVERSION=-$kname_s \
+        O=$out \
+        -j$jn \
         "
 
-    if [[ $SRCN == "wsl2-kernel" ]]; then
-        MKP=" \
-            $CLANGMKP \
-            $DEBUGMKP \
-            LOCALVERSION=-$KNAME_S \
-            O=$OUT \
-            -j$JN \
+    if [[ $srcn == "wsl2-kernel" ]]; then
+        mkp=" \
+            $clangmkp \
+            $debugmkp \
+            LOCALVERSION=-$kname_s \
+            O=$out \
+            -j$jn \
             "
     fi
 
-    decho "Make variables: $MKP" >> $LOG
+    decho "Make variables: $mkp" >> $log
 }
 
 build_func() {
@@ -206,30 +206,30 @@ build_func() {
 
     define_env
 
-    if create_dir "$OUT"; then
+    if create_dir "$out"; then
         time make_cmd clean
         time make_cmd mrproper 
     fi
 
-    if [[ $CONFIGURE == "y" ]]; then
-        time make_cmd $DC menuconfig
-        if [[ $SRCN == "wsl2-kernel" ]]; then
-            DC=$DCF
+    if [[ $configure == "y" ]]; then
+        time make_cmd $dc menuconfig
+        if [[ $srcn == "wsl2-kernel" ]]; then
+            dc=$dcf
         fi
-        cp -v $OUT/.config $SRC_DIR/$AF/$DC
-        decho "Copied .config to $DC"
+        cp -v $out/.config $SRC_DIR/$af/$dc
+        decho "Copied .config to $dc"
         exit_timestamp 0
     fi
 
-    time make_cmd $DC
+    time make_cmd $dc
 
-    if [[ $SRCN == "wsl2-kernel" ]]; then
+    if [[ $srcn == "wsl2-kernel" ]]; then
         return
     fi
 
-    if [[ $MAKE_ONLY == "y" ]]; then
-        decho_log "Done generating .config at $OUT"
-        code $OUT/.config
+    if [[ $make_only == "y" ]]; then
+        decho_log "Done generating .config at $out"
+        code $out/.config
         exit_timestamp 0
     fi
 
@@ -237,12 +237,12 @@ build_func() {
 }
 
 export_img_wsl2() {
-    decho "Copying $BTI/$LWIMG to $C_USER_DIR/WSL"
-    cp $BTI/$LWIMG $WSLKDIRL/$KNAME_S 
+    decho "Copying $bti/$lwimg to $C_USER_DIR/WSL"
+    cp $bti/$lwimg $WSLKDIRL/$kname_s 
 
     decho "Updating kernel in .wslconfig"
     sed -i '/kernel=/d' $C_USER_DIR/.wslconfig
-    echo "kernel=$WSLKDIRW$KNAME_S" >> $C_USER_DIR/.wslconfig
+    echo "kernel=$WSLKDIRW$kname_s" >> $C_USER_DIR/.wslconfig
     cat $C_USER_DIR/.wslconfig
 }
 
@@ -254,26 +254,26 @@ export_img_zip() {
 
     create_dir $TARGET_DIR
 
-    mv -f $BTI/$LWIMG $ZIP_DIR
+    mv -f $bti/$lwimg $ZIP_DIR
     touch version
 
     {
-        echo "Kernel: $SRCN by $USERHOST"
-        echo "Build code: $SRC_BRNCH-$BRNCH_VER-$VER"
-        echo "Date: $DATE_FULL"
-        echo "Hash: $KHASH"
+        echo "Kernel: $srcn by $userhost"
+        echo "Build code: $src_brnch-$brnch_ver-$ver"
+        echo "Date: $date_full"
+        echo "Hash: $khash"
     } >> version
 
-    zip_image $TARGET_DIR/$KNAME
+    zip_image $TARGET_DIR/$kname
     create_dir $SHARED_TEST_DIR/builds
-    cp $TARGET_DIR/$KNAME.zip $SHARED_TEST_DIR/builds/
+    cp $TARGET_DIR/$kname.zip $SHARED_TEST_DIR/builds/
 
-    rm -f $LWIMG
+    rm -f $lwimg
     rm -f version
 }
 
 export_img() {
-    if [[ $SRCN == "wsl2-kernel" ]]; then
+    if [[ $srcn == "wsl2-kernel" ]]; then
         export_img_wsl2
         return 0
     fi
@@ -291,13 +291,13 @@ main_func() {
 
     build_func
 
-    if check_file "$BTI/$LWIMG"; then
+    if check_file "$bti/$lwimg"; then
         export_img
     fi
 
-    decho "$BUILD_STR"
+    decho "$build_str"
     create_dir $SHARED_TEST_DIR/logs
-    cp $LOG $SHARED_TEST_DIR/logs/
+    cp $log $SHARED_TEST_DIR/logs/
 }
 
 param_func() {
@@ -308,40 +308,40 @@ param_func() {
         case $key in
             -s|--source)
                 if check_valid "$2"; then
-                    SRCN="$2"
+                    srcn="$2"
                     shift
                 fi
             ;;
             -b|--branch)
                 if check_valid "$2"; then
-                    SRC_BRNCH="$2"
+                    src_brnch="$2"
                     shift
                 fi
             ;;
             -v|--version)
                 if check_valid "$2"; then
-                    FORCE_VER=y
-                    VER="$2"
+                    force_ver=y
+                    ver="$2"
                     shift
                 fi
             ;;
             -cl|--clang)
-                USE_CLANG=y
+                use_clang=y
             ;;
             -a|--all)
-                BUILD_ALL=y
+                build_all=y
             ;;
             -c|--configure)
-                CONFIGURE=y
+                configure=y
             ;;
             -t|--test)
-                TEST_BUILD=y
+                test_build=y
             ;;
             -d|--debug)
-                DEBUG=y
+                debug=y
             ;;
             -mo|--make-only)
-                MAKE_ONLY=y
+                make_only=y
             ;;
         esac
         shift
@@ -362,11 +362,11 @@ decho "Executing build script..."
 param_func "$@"
 
 if check_srcn; then
-    SRC_DIR=$SRC_DIR/$SRCN
+    SRC_DIR=$SRC_DIR/$srcn
     main_func
     exit_timestamp 0
 fi
 
-decho "SRCN=$SRCN is unknown, please define in $0!"
+decho "srcn=$srcn is unknown, please define in $0!"
 
 exit_timestamp 1

@@ -14,7 +14,7 @@ env_init() {
     fi
 
     # Identifier
-    USERHOST=$(whoami)
+    userhost=$(whoami)
 
     decho "Current kernel: $(uname -r)"
 
@@ -28,8 +28,8 @@ env_init() {
     local setup_env_sudo=/etc/sudoers.d/setup_env
     if ! check_file $setup_env_sudo; then
         {
-            echo "$USERHOST ALL=(ALL:ALL) NOPASSWD: /usr/sbin/hwclock -s"
-            echo "$USERHOST ALL=(ALL:ALL) NOPASSWD: /usr/bin/apt-get"
+            echo "$userhost ALL=(ALL:ALL) NOPASSWD: /usr/sbin/hwclock -s"
+            echo "$userhost ALL=(ALL:ALL) NOPASSWD: /usr/bin/apt-get"
         } | sudo tee $setup_env_sudo
         decho $setup_env_sudo
         cat $setup_env_sudo
@@ -45,20 +45,20 @@ env_init() {
     C_USER_DIR=/mnt/c/Users/evcsi
     SHARED_TEST_DIR=$C_USER_DIR/WSL-Shared
     SHARED_ROMS_DIR="$SHARED_TEST_DIR/roms"
-    SHARED_CP_ROM=false
+    shared_cp_rom=false
 
     # Common variables
-    ROM_DEVICES_LIST=(
+    devices_list=(
         "dumpling"
         "cheeseburger"
     )
 
     # Git properties
-    CURR_DATE=$(date +'%Y%m%d')
-    DATE_FULL=$(date -R)
-    AUTH_STR="$(git config --get user.name) <$(git config --get user.email)>"
+    curr_date=$(date +'%Y%m%d')
+    date_full=$(date -R)
+    auth_str="$(git config --get user.name) <$(git config --get user.email)>"
 
-    decho $DATE_FULL
+    decho $date_full
 }
 
 #
@@ -77,7 +77,7 @@ decho() {
 
 decho_log() {
     decho "$@"
-    decho "$@" >> $LOG
+    decho "$@" >> $log
 }
 
 check_dir() {
@@ -146,8 +146,8 @@ commit_repo() {
 
     decho "Commiting in $1 repository..."
 
-    C_CMD=""
-    AUTH_STR_OVRID="$AUTH_STR"
+    c_cmd=""
+    auth_str_ovrid="$auth_str"
     while [[ $# -gt 0 ]]
         do
         key="$1"
@@ -158,53 +158,53 @@ commit_repo() {
             ;;
             --author)
                 if check_valid "$2"; then
-                    AUTH_STR_OVRID="$2"
+                    auth_str_ovrid="$2"
                     shift
                 fi
             ;;
             -m|--message)
                 if check_valid "$2"; then
-                    C_MSG="$2"
+                    c_msg="$2"
                     shift
                 fi
             ;;
             -e|--edit)
-                C_CMD="-e $C_CMD"
+                c_cmd="-e $c_cmd"
             ;;
         esac
         shift
     done
 
-    git commit $C_CMD -s -m "$C_MSG" --author="$AUTH_STR_OVRID" --date="$DATE_FULL"
+    git commit $c_cmd -s -m "$c_msg" --author="$auth_str_ovrid" --date="$date_full"
 }
 
 make_cmd() {
     decho_log "Executing make $1..."
-    make $MKP "$@" 2>> $LOG
+    make $mkp "$@" 2>> $log
 }
 
 zip_image() {
     decho_log "Zipping the image..."
-    zip -r9 $1.zip * -x .git README.md 2>> $LOG
+    zip -r9 $1.zip * -x .git README.md 2>> $log
 }
 
 rom_copy_target() {
     local target_dir
 
-    if check_file $ROM_TARGET*.zip; then
+    if check_file $rom_target*.zip; then
         target_dir="$ROM_COMMON_DIR/$1"
         create_dir "$target_dir"
-        decho "Copying $ROM_TARGET*.zip to $target_dir"
-        cp $ROM_TARGET*.zip* $target_dir
-        if [[ $SHARED_CP_ROM == "true" ]]; then
-            SHARED_CP_ROM=false
+        decho "Copying $rom_target*.zip to $target_dir"
+        cp $rom_target*.zip* $target_dir
+        if [[ $shared_cp_rom == "true" ]]; then
+            shared_cp_rom=false
             target_dir="$SHARED_ROMS_DIR/$1"
-            decho "Copying $ROM_TARGET*.zip to $target_dir"
+            decho "Copying $rom_target*.zip to $target_dir"
             create_dir "$target_dir"
-            cp $ROM_TARGET*.zip $target_dir
+            cp $rom_target*.zip $target_dir
         fi
         # Cleanup afterwards to prevent overlapping builds
-        rm -f $ROM_TARGET*.zip*
+        rm -f $rom_target*.zip*
     fi
 }
 

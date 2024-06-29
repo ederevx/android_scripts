@@ -18,25 +18,25 @@ source build/envsetup.sh
 
 # Default properties
 WITH_GMS=false
-BUILD_DEVICE=dumpling
-BUILD_TYPE=user
-BUILD_CMD=b
+build_device=dumpling
+build_type=user
+build_cmd=b
 
 #
 # Build functions
 #
 
 rising_build() {
-    decho "Building RisingOS: $1 - $BUILD_TYPE WITH_GMS=$WITH_GMS"
+    decho "Building RisingOS: $1 - $build_type WITH_GMS=$WITH_GMS"
     export WITH_GMS
-    riseup $1 $BUILD_TYPE
-    rise $BUILD_CMD
+    riseup $1 $build_type
+    rise $build_cmd
     if [[ $1 == "dumpling" ]] && [[ $WITH_GMS == "true" ]]; then
-        SHARED_CP_ROM=true
+        shared_cp_rom=true
     fi
     # Target product filename; see rom_copy_target
-    ROM_TARGET="$ROM_PRODUCT_DIR/$1/Rising"
-    rom_copy_target $BUILD_TYPE
+    rom_target="$ROM_PRODUCT_DIR/$1/Rising"
+    rom_copy_target $build_type
 }
 
 rising_build_gms() {
@@ -62,13 +62,13 @@ param_func() {
         case $key in
             -d|--device)
                 if check_valid "$2"; then
-                    BUILD_DEVICE="$2"
+                    build_device="$2"
                     shift
                 fi
             ;;            
             -t|--type)
                 if check_valid "$2"; then
-                    BUILD_TYPE="$2"
+                    build_type="$2"
                     shift
                 fi
             ;;
@@ -76,10 +76,10 @@ param_func() {
                 WITH_GMS=true
             ;;
             -a|--all)
-                BUILD_ALL=y
+                build_all=y
             ;;
             -s|--sign)
-                BUILD_CMD=sb
+                build_cmd=sb
             ;;
         esac
         shift
@@ -92,13 +92,13 @@ param_func() {
 
 param_func "$@"
 
-if [[ $BUILD_ALL == "y" ]]; then
-    for device in ${ROM_DEVICES_LIST[@]}; do
+if [[ $build_all == "y" ]]; then
+    for device in ${devices_list[@]}; do
         rising_build_both $device
     done
     exit_timestamp 0
 fi
 
-rising_build $BUILD_DEVICE
+rising_build $build_device
 
 exit_timestamp 0

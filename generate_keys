@@ -12,7 +12,7 @@ param_func() {
 
         case $key in
             -r|--replace)
-                REPLACE=y
+                replace=y
             ;;
         esac
         shift
@@ -20,7 +20,7 @@ param_func() {
 }
 
 backup_certs() {
-    if [[ $REPLACE != "y" ]]; then
+    if [[ $replace != "y" ]]; then
         return
     fi
 
@@ -61,7 +61,7 @@ mkdir ~/.android-certs
 subject='/C=US/ST=Florida/L=Tallahassee/O=Edrick Sinsuan/OU=Edrick Sinsuan/CN=Edrick Sinsuan/emailAddress=evcsinsuan@gmail.com'
 
 for x in bluetooth cts_uicc_2021 media networkstack platform sdk_sandbox shared testkey releasekey; do
-    if [[ $REPLACE != "y" ]]; then
+    if [[ $replace != "y" ]]; then
         if check_file "$VENDOR_PRIV_DIR/keys/$x.pk8"; then
             continue
         fi
@@ -75,7 +75,7 @@ cp $ROM_PATH/development/tools/make_key ~/.android-certs/
 sed -i 's|2048|4096|g' ~/.android-certs/make_key
 
 for apex in com.android.adbd com.android.adservices com.android.adservices.api com.android.appsearch com.android.art com.android.bluetooth com.android.btservices com.android.cellbroadcast com.android.compos com.android.configinfrastructure com.android.connectivity.resources com.android.conscrypt com.android.devicelock com.android.extservices com.android.graphics.pdf com.android.hardware.biometrics.face.virtual com.android.hardware.biometrics.fingerprint.virtual com.android.hardware.boot com.android.hardware.cas com.android.hardware.wifi com.android.healthfitness com.android.hotspot2.osulogin com.android.i18n com.android.ipsec com.android.media com.android.media.swcodec com.android.mediaprovider com.android.nearby.halfsheet com.android.networkstack.tethering com.android.neuralnetworks com.android.ondevicepersonalization com.android.os.statsd com.android.permission com.android.resolv com.android.rkpd com.android.runtime com.android.safetycenter.resources com.android.scheduling com.android.sdkext com.android.support.apexer com.android.telephony com.android.telephonymodules com.android.tethering com.android.tzdata com.android.uwb com.android.uwb.resources com.android.virt com.android.vndk.current com.android.vndk.current.on_vendor com.android.wifi com.android.wifi.dialog com.android.wifi.resources com.google.pixel.camera.hal com.google.pixel.vibrator.hal com.qorvo.uwb; do
-    if [[ $REPLACE != "y" ]]; then
+    if [[ $replace != "y" ]]; then
         if check_file "$VENDOR_PRIV_DIR/keys/$apex.pk8"; then
             continue
         fi
