@@ -3,8 +3,8 @@
 # SPDX-FileCopyrightText: 2024 Edrick Sinsuan
 # SPDX-License-Identifier: Apache-2.0
 
-# Environment init function
-env_init() {
+# Environment init functions
+ederevx_init() {
     local script_dir=~/scripts
     local script_path=$script_dir/setup_env
 
@@ -12,11 +12,6 @@ env_init() {
     if [[ -z $(echo $PATH | grep -i $script_dir) ]]; then
         export PATH=$PATH:$script_dir:~/repo/bin
     fi
-
-    # Identifier
-    userhost=$(whoami)
-
-    decho "Current kernel: $(uname -r)"
 
     # Execute this script at bash init
     local bashrc=~/.bashrc
@@ -35,11 +30,26 @@ env_init() {
         cat $setup_env_sudo
     fi
 
-    # Update hwclock prior to executing scripts
-    sudo hwclock -s
+    local kname=$(uname -r)
+    if [[ ! -z $(echo $kname | grep -i wsl) ]]; then
+        # Update hwclock prior to executing scripts
+        sudo hwclock -s
 
-    # Update system at init
-    update_linux
+        # Only execute the following at session init
+        if [[ ! -z $(echo $0 | grep -i bash) ]]; then
+            decho "Current kernel: $kname"
+            update_linux
+        fi
+    fi
+}
+
+env_init() {
+    # Identifier
+    userhost=$(whoami)
+
+    if [[ $userhost == "ederevx" ]]; then
+        ederevx_init
+    fi
 
     # Environment directories
     readonly C_USER_DIR=/mnt/c/Users/evcsi
