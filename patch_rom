@@ -13,26 +13,46 @@ fi
 readonly ROM_ROOT="$(pwd)"
 
 patch_single() {
+    local giturl=$1
+    local sha1=$2
+    local sha2=$3
+
+    local commit_sha
+    local commit_cnt
+
     decho "$dir"
     if check_dir "$dir" && cd "$dir"; then
-        git fetch $1
-        decho "$(git log -1 --pretty=%B -n 1 $2)"
-        git cherry-pick $2
-        border
-        read -p "Press enter to continue"
-        border
+        git fetch $giturl
+        if [[ -z $sha2 ]]; then
+            commit_sha="$sha1"
+            commit_cnt="-n 1"
+        else
+            local conn='^..'
+            commit_sha="$sha1$conn$sha2"
+        fi
+        decho "$(git log $commit_cnt --pretty=oneline $commit_sha)"
+        git cherry-pick $commit_sha
+        if [[ ! -z $sha2 ]]; then
+            for ((i=0 ; i < ($(git rev-list --count $commit_sha) - 1) ; i++));
+                do
+                pause_script
+                git cherry-pick --skip
+            done
+        else
+            pause_script
+        fi
         git cherry-pick --abort &> /dev/null
     fi
 }
 
 patch_single_curl() {
+    local patchurl=$1
+
     decho "$dir"
     if check_dir "$dir" && cd "$dir"; then
-        decho $1 # In case we want to do it ourselves
-        curl $1 | git am -3
-        border
-        read -p "Press enter to continue"
-        border
+        decho $patchurl
+        curl $patchurl | git am -3
+        pause_script
         git am --abort &> /dev/null
     fi
 }
@@ -56,12 +76,14 @@ patch_single "https://github.com/ederevx/android_vendor_lineage a14" \
 # Patch display-commonsys-intf for 4.14
 dir=$ROM_ROOT/vendor/qcom/opensource/commonsys-intf/display
 patch_single "https://github.com/ederevx/android_vendor_qcom_opensource_display-commonsys-intf a14" \
-    "98e043abd0c9790469ad587a4ee1511108465f72^..0858ef7d19da426164f5f31cd85778ce291fc771"
+    "98e043abd0c9790469ad587a4ee1511108465f72" \
+    "0858ef7d19da426164f5f31cd85778ce291fc771"
 
 # Patch sepolicy-legacy-um for 4.14
 dir=$ROM_ROOT/device/qcom/sepolicy-legacy-um
 patch_single "https://github.com/ederevx/android_device_qcom_sepolicy a14" \
-    "2049f8530b050b8d8e6bf81f30a9feb70d905961^..98aee53ce762fc5e93a86c17a6a984cd5ddb6370"
+    "2049f8530b050b8d8e6bf81f30a9feb70d905961" \
+    "98aee53ce762fc5e93a86c17a6a984cd5ddb6370"
 
 #
 # Various build fixes

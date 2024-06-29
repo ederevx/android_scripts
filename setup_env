@@ -120,6 +120,12 @@ create_dir() {
     fi
 }
 
+pause_script() {
+    border
+    read -p "Press enter to continue"
+    border
+}
+
 update_repo() {
     if ! check_dir "$@/.git" || ! cd "$@"; then
         return 
