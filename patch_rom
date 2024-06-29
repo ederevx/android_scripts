@@ -10,11 +10,11 @@ if ! check_file "build/envsetup.sh"; then
     exit_timestamp 1
 fi
 
-ROM_ROOT="$(pwd)"
+readonly ROM_ROOT="$(pwd)"
 
 patch_single() {
-    decho "$DIR"
-    if check_dir "$DIR" && cd "$DIR"; then
+    decho "$dir"
+    if check_dir "$dir" && cd "$dir"; then
         git fetch $1
         decho "$(git log -1 --pretty=%B -n 1 $2)"
         git cherry-pick $2
@@ -22,27 +22,27 @@ patch_single() {
     fi
 }
 
-DIR=$ROM_ROOT/build/soong
+dir=$ROM_ROOT/build/soong
 patch_single "https://github.com/ederevx/android_build_soong a14" \
     6a4996614768c719b9559956289a11c91369e958
 
-DIR=$ROM_ROOT/frameworks/base
+dir=$ROM_ROOT/frameworks/base
 patch_single "https://github.com/ederevx/frameworks_base a14" \
     bb487d4599e1a103f1881fe25acf2b63c8105356
 
-DIR=$ROM_ROOT/packages/apps/LineageParts
+dir=$ROM_ROOT/packages/apps/LineageParts
 patch_single "https://github.com/ederevx/android_packages_apps_LineageParts a14" \
     d0ccc35c0bd117e8841b0d414643c24ebc20a106
 
-DIR=$ROM_ROOT/packages/apps/Settings
+dir=$ROM_ROOT/packages/apps/Settings
 patch_single "https://github.com/ederevx/android_packages_apps_Settings a14" \
     31187a64c9a5c49495651d11926edc5424a9473f
 
-DIR=$ROM_ROOT/system/sepolicy
+dir=$ROM_ROOT/system/sepolicy
 patch_single "https://github.com/ederevx/rising_android_system_sepolicy a14" \
     99cb56c536b988430631bfcae3d877215e1416c8
 
-DIR=$ROM_ROOT/vendor/lineage
+dir=$ROM_ROOT/vendor/lineage
 patch_single "https://github.com/ederevx/android_vendor_lineage a14" \
     d60c33fa98caa875cd7ba95ffb6e65090ef922f9
 

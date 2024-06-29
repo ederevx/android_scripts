@@ -44,8 +44,8 @@ if ! check_dir "$1"; then
     exit_timestamp 1
 fi
 
-ROM_PATH=$1
-VENDOR_PRIV_DIR=$ROM_PATH/vendor/lineage-priv
+readonly ROM_PATH=$1
+readonly VENDOR_PRIV_DIR=$ROM_PATH/vendor/lineage-priv
 
 if ! check_dir "$VENDOR_PRIV_DIR"; then
     echo "The script assumes $VENDOR_PRIV_DIR has been setup, set it up first!"

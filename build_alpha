@@ -6,9 +6,9 @@
 source setup_env
 
 # Alpha directories
-ROM_DIR="$HOME/repo/alpha"
-ROM_PRODUCT_DIR="$ROM_DIR/out/target/product"
-ROM_COMMON_DIR="$ROM_PRODUCT_DIR/msm8998-common"
+readonly ROM_DIR="$HOME/repo/alpha"
+readonly ROM_PRODUCT_DIR="$ROM_DIR/out/target/product"
+readonly ROM_COMMON_DIR="$ROM_PRODUCT_DIR/msm8998-common"
 
 if ! check_dir "$ROM_DIR" || ! cd "$ROM_DIR"; then
     exit_timestamp 1

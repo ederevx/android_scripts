@@ -42,9 +42,9 @@ env_init() {
     update_linux
 
     # Environment directories
-    C_USER_DIR=/mnt/c/Users/evcsi
-    SHARED_TEST_DIR=$C_USER_DIR/WSL-Shared
-    SHARED_ROMS_DIR="$SHARED_TEST_DIR/roms"
+    readonly C_USER_DIR=/mnt/c/Users/evcsi
+    readonly SHARED_TEST_DIR=$C_USER_DIR/WSL-Shared
+    readonly SHARED_ROMS_DIR="$SHARED_TEST_DIR/roms"
     shared_cp_rom=false
 
     # Common variables

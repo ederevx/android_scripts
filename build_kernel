@@ -6,15 +6,15 @@
 source setup_env
 
 # Kernel directories
-KERNEL_PARENT_DIR=$HOME/kernel
-SRC_DIR=$KERNEL_PARENT_DIR
-OUT_DIR=$KERNEL_PARENT_DIR/output
-TARGET_DIR=$KERNEL_PARENT_DIR/test
-SRT_DIR=$KERNEL_PARENT_DIR/scripts
-ZIP_DIR=$KERNEL_PARENT_DIR/zip
-LOG_DIR=$KERNEL_PARENT_DIR/buildlog
-CLANG_DIR=$KERNEL_PARENT_DIR/toolchain/clang
-GCC_DIR=$KERNEL_PARENT_DIR/toolchain/gcc
+readonly KERNEL_PARENT_DIR=$HOME/kernel
+readonly SRC_DIR=$KERNEL_PARENT_DIR
+readonly OUT_DIR=$KERNEL_PARENT_DIR/output
+readonly TARGET_DIR=$KERNEL_PARENT_DIR/test
+readonly SRT_DIR=$KERNEL_PARENT_DIR/scripts
+readonly ZIP_DIR=$KERNEL_PARENT_DIR/zip
+readonly LOG_DIR=$KERNEL_PARENT_DIR/buildlog
+readonly CLANG_DIR=$KERNEL_PARENT_DIR/toolchain/clang
+readonly GCC_DIR=$KERNEL_PARENT_DIR/toolchain/gcc
 
 # Default properties
 test_build=n
@@ -44,16 +44,16 @@ define_x-ft() {
     subarch=$arch
     lwimg="Image.gz-dtb"
 
-    CLANG_PATH="$CLANG_DIR/clang-r458507/bin"
-    GCC_PATH="${GCC_DIR}64/bin:${GCC_DIR}32/bin"
-    CC_PATH="$CLANG_PATH:$GCC_PATH"
+    clang_path="$CLANG_DIR/clang-r458507/bin"
+    gcc_path="${GCC_DIR}64/bin:${GCC_DIR}32/bin"
+    cc_path="$clang_path:$cc_path"
 
     c64="aarch64-linux-gnu-"
     c64="arm-linux-gnueabi-"
     cc="${c64}gcc"
 
     use_clang=y
-    export PATH="/usr/local/bin:$CC_PATH:$PATH"
+    export PATH="/usr/local/bin:$cc_path:$PATH"
 }
 
 define_wsl2() {
@@ -64,8 +64,8 @@ define_wsl2() {
     lwimg="bzImage"
 
     # WSL directory (windows and linux) for wsl2-kernel
-    WSLKDIRW='C:\\Users\\evcsi\\WSL\\'
-    WSLKDIRL=$C_USER_DIR/WSL
+    readonly WSLKDIRW='C:\\Users\\evcsi\\WSL\\'
+    readonly WSLKDIRL=$C_USER_DIR/WSL
 
     use_clang=y
     export PATH="/usr/lib/ccache:$PATH"
@@ -103,7 +103,7 @@ define_log() {
     {
         border
         echo "Last Commit:"
-        echo $(git -C $SRC_DIR log -1 --pretty=%B)
+        echo $(git -C $srcn_dir log -1 --pretty=%B)
         border
     } >> $log
 }
@@ -202,7 +202,7 @@ define_env() {
 }
 
 build_func() {
-    cd $SRC_DIR
+    cd $srcn_dir
 
     define_env
 
@@ -284,7 +284,7 @@ export_img() {
 }
 
 main_func() {
-    if ! check_dir $SRC_DIR; then
+    if ! check_dir $srcn_dir; then
         decho_log "Abort, source directory must exist."
         exit_timestamp 1
     fi
@@ -362,7 +362,7 @@ decho "Executing build script..."
 param_func "$@"
 
 if check_srcn; then
-    SRC_DIR=$SRC_DIR/$srcn
+    srcn_dir=$SRC_DIR/$srcn
     main_func
     exit_timestamp 0
 fi
