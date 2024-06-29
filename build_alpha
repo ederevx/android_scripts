@@ -34,7 +34,7 @@ alpha_build() {
     if [[ $target_device == "dumpling" ]] && [[ $TARGET_BUILD_PACKAGE == "3" ]]; then
         shared_cp_rom=true
     fi
-    rom_copy_target "Alpha" $target_device
+    rom_copy_target "Alpha" $target_device $build_type
 }
 
 alpha_build_gms() {

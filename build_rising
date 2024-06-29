@@ -34,7 +34,7 @@ rising_build() {
     if [[ $target_device == "dumpling" ]] && [[ $WITH_GMS == "true" ]]; then
         shared_cp_rom=true
     fi
-    rom_copy_target "Rising" $target_device
+    rom_copy_target "Rising" $target_device $build_type
 }
 
 rising_build_gms() {
