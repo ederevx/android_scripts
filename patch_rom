@@ -18,34 +18,96 @@ patch_single() {
         git fetch $1
         decho "$(git log -1 --pretty=%B -n 1 $2)"
         git cherry-pick $2
-        git cherry-pick --abort
+        border
+        read -p "Press enter to continue"
+        border
+        git cherry-pick --abort &> /dev/null
     fi
 }
 
-dir=$ROM_ROOT/build/soong
-patch_single "https://github.com/ederevx/android_build_soong a14" \
-    6a4996614768c719b9559956289a11c91369e958
+patch_single_curl() {
+    decho "$dir"
+    if check_dir "$dir" && cd "$dir"; then
+        decho $1 # In case we want to do it ourselves
+        curl $1 | git am -3
+        border
+        read -p "Press enter to continue"
+        border
+        git am --abort &> /dev/null
+    fi
+}
 
-dir=$ROM_ROOT/frameworks/base
-patch_single "https://github.com/ederevx/frameworks_base a14" \
-    bb487d4599e1a103f1881fe25acf2b63c8105356
+decho "This only needs to be called once if done cleanly and after a repo start!"
 
-dir=$ROM_ROOT/packages/apps/LineageParts
-patch_single "https://github.com/ederevx/android_packages_apps_LineageParts a14" \
-    d0ccc35c0bd117e8841b0d414643c24ebc20a106
+#
+# 4.14 necessary patches
+#
 
-dir=$ROM_ROOT/packages/apps/Settings
-patch_single "https://github.com/ederevx/android_packages_apps_Settings a14" \
-    31187a64c9a5c49495651d11926edc5424a9473f
+# Patch qcom-caf for 4.14
+dir=$ROM_ROOT/hardware/qcom-caf/common
+patch_single "https://github.com/ederevx/android_hardware_qcom-caf_common a14" \
+    "f346bb0364ff478bcc90efe0db0a2ec83f048226"
 
-dir=$ROM_ROOT/system/sepolicy
-patch_single "https://github.com/ederevx/rising_android_system_sepolicy a14" \
-    99cb56c536b988430631bfcae3d877215e1416c8
-
+# Hookup TARGET_USES_GRALLOC1
 dir=$ROM_ROOT/vendor/lineage
 patch_single "https://github.com/ederevx/android_vendor_lineage a14" \
-    d60c33fa98caa875cd7ba95ffb6e65090ef922f9
+    "d60c33fa98caa875cd7ba95ffb6e65090ef922f9"
 
-decho "Please check if any cherry-picks failed!"
+# Patch display-commonsys-intf for 4.14
+dir=$ROM_ROOT/vendor/qcom/opensource/commonsys-intf/display
+patch_single "https://github.com/ederevx/android_vendor_qcom_opensource_display-commonsys-intf a14" \
+    "98e043abd0c9790469ad587a4ee1511108465f72^..0858ef7d19da426164f5f31cd85778ce291fc771"
+
+# Patch sepolicy-legacy-um for 4.14
+dir=$ROM_ROOT/device/qcom/sepolicy-legacy-um
+patch_single "https://github.com/ederevx/android_device_qcom_sepolicy a14" \
+    "2049f8530b050b8d8e6bf81f30a9feb70d905961^..98aee53ce762fc5e93a86c17a6a984cd5ddb6370"
+
+#
+# Various build fixes
+#
+
+# Allow bison
+dir=$ROM_ROOT/build/soong
+patch_single "https://github.com/ederevx/android_build_soong a14" \
+    "6a4996614768c719b9559956289a11c91369e958"
+
+# Add color channels for DeviceSettings
+dir=$ROM_ROOT/frameworks/base
+patch_single "https://github.com/ederevx/frameworks_base a14" \
+    "bb487d4599e1a103f1881fe25acf2b63c8105356"
+
+# Remove touchscreen gestures in Settings
+dir=$ROM_ROOT/packages/apps/LineageParts
+patch_single "https://github.com/ederevx/android_packages_apps_LineageParts a14" \
+    "d0ccc35c0bd117e8841b0d414643c24ebc20a106"
+dir=$ROM_ROOT/packages/apps/Settings
+patch_single "https://github.com/ederevx/android_packages_apps_Settings a14" \
+    "31187a64c9a5c49495651d11926edc5424a9473f"
+
+# Fix sepolicy binder denials
+dir=$ROM_ROOT/system/sepolicy
+patch_single "https://github.com/ederevx/rising_android_system_sepolicy a14" \
+    "99cb56c536b988430631bfcae3d877215e1416c8"
+
+#
+# Patches from https://github.com/OnePlus-5-T/local_manifests
+#
+
+# Fix USB DAC
+dir=$ROM_ROOT/system/core
+patch_single_curl "https://raw.githubusercontent.com/OnePlus-5-T/aosp_patches/a14/system/core/0001-libusbhost-improve-usb_device_open-handling.patch"
+# Fix DSU
+patch_single_curl "https://raw.githubusercontent.com/OnePlus-5-T/aosp_patches/a14/system/core/0002-first_stage_mount-Skip-dm-verity-setup-if-AVB-is-not.patch"
+patch_single_curl "https://raw.githubusercontent.com/OnePlus-5-T/aosp_patches/a14/system/core/0003-Revert-libfiemap-Disable-loop-mapping-code.patch"
+
+# Fix telephony
+dir=$ROM_ROOT/frameworks/opt/telephony
+patch_single_curl "https://raw.githubusercontent.com/OnePlus-5-T/aosp_patches/a14/frameworks/opt/telephony/0001-Restore-support-with-RadioConfig-1.0-dsds-clients.patch"
+patch_single_curl "https://raw.githubusercontent.com/OnePlus-5-T/aosp_patches/a14/frameworks/opt/telephony/0002-Fallback_to_HAL_COMMAND_ALLOW_DATA.patch"
+
+# Fix issues with GAPPS
+dir=$ROM_ROOT/external/setupcompat
+patch_single_curl "https://raw.githubusercontent.com/OnePlus-5-T/aosp_patches/a14/external/setupcompat/0001-Prevent-crash-with-improper-partner-config.patch"
 
 exit_timestamp 0
