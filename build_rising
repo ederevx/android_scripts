@@ -7,8 +7,6 @@ source setup_env
 
 # Rising directories
 readonly ROM_DIR="$HOME/repo/rising"
-readonly ROM_PRODUCT_DIR="$ROM_DIR/out/target/product"
-readonly ROM_COMMON_DIR="$ROM_PRODUCT_DIR/msm8998-common"
 
 if ! check_dir "$ROM_DIR" || ! cd "$ROM_DIR"; then
     exit_timestamp 1
@@ -27,16 +25,16 @@ build_cmd=b
 #
 
 rising_build() {
-    decho "Building RisingOS: $1 - $build_type WITH_GMS=$WITH_GMS"
+    local target_device=$1
+
+    decho "Building RisingOS: $target_device - $build_type WITH_GMS=$WITH_GMS"
     export WITH_GMS
-    riseup $1 $build_type
+    riseup $target_device $build_type
     rise $build_cmd
-    if [[ $1 == "dumpling" ]] && [[ $WITH_GMS == "true" ]]; then
+    if [[ $target_device == "dumpling" ]] && [[ $WITH_GMS == "true" ]]; then
         shared_cp_rom=true
     fi
-    # Target product filename; see rom_copy_target
-    rom_target="$ROM_PRODUCT_DIR/$1/Rising"
-    rom_copy_target $build_type
+    rom_copy_target "Rising" $build_type
 }
 
 rising_build_gms() {

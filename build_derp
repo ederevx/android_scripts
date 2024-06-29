@@ -7,8 +7,6 @@ source setup_env
 
 # Derp directories
 readonly ROM_DIR="$HOME/repo/derp"
-readonly ROM_PRODUCT_DIR="$ROM_DIR/out/target/product"
-readonly ROM_COMMON_DIR="$ROM_PRODUCT_DIR/msm8998-common"
 
 if ! check_dir "$ROM_DIR" || ! cd "$ROM_DIR"; then
     exit_timestamp 1
@@ -25,15 +23,15 @@ build_type=userdebug
 #
 
 derp_build() {
-    decho "Building DerpFest: $1 - $build_type"
-    lunch derp_$1-$build_type
+    local target_device=$1
+
+    decho "Building DerpFest: $target_device - $build_type"
+    lunch derp_$target_device-$build_type
     mka derp
-    if [[ $1 == "dumpling" ]]; then
+    if [[ $target_device == "dumpling" ]]; then
         shared_cp_rom=true
     fi
-    # Target product filename; see rom_copy_target
-    rom_target="$ROM_PRODUCT_DIR/$1/Derp"
-    rom_copy_target $build_type
+    rom_copy_target "Derp" $build_type
 }
 
 param_func() {

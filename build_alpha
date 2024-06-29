@@ -7,8 +7,6 @@ source setup_env
 
 # Alpha directories
 readonly ROM_DIR="$HOME/repo/alpha"
-readonly ROM_PRODUCT_DIR="$ROM_DIR/out/target/product"
-readonly ROM_COMMON_DIR="$ROM_PRODUCT_DIR/msm8998-common"
 
 if ! check_dir "$ROM_DIR" || ! cd "$ROM_DIR"; then
     exit_timestamp 1
@@ -27,16 +25,16 @@ release_ver=ap1a
 #
 
 alpha_build() {
-    decho "Building AlphaDroid: $1 - $build_type TARGET_BUILD_PACKAGE=$TARGET_BUILD_PACKAGE"
+    local target_device=$1
+
+    decho "Building AlphaDroid: $target_device - $build_type TARGET_BUILD_PACKAGE=$TARGET_BUILD_PACKAGE"
     export TARGET_BUILD_PACKAGE
-    lunch lineage_$1-$release_ver-$build_type
+    lunch lineage_$target_device-$release_ver-$build_type
     make bacon -j$(nproc)
-    if [[ $1 == "dumpling" ]] && [[ $TARGET_BUILD_PACKAGE == "3" ]]; then
+    if [[ $target_device == "dumpling" ]] && [[ $TARGET_BUILD_PACKAGE == "3" ]]; then
         shared_cp_rom=true
     fi
-    # Target product filename; see rom_copy_target
-    rom_target="$ROM_PRODUCT_DIR/$1/Alpha"
-    rom_copy_target $build_type
+    rom_copy_target "Alpha" $build_type
 }
 
 alpha_build_gms() {

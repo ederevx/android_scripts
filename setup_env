@@ -47,6 +47,9 @@ env_init() {
     readonly SHARED_ROMS_DIR="$SHARED_TEST_DIR/roms"
     shared_cp_rom=false
 
+    readonly ROM_PRODUCT_DIR="out/target/product"
+    readonly ROM_COMMON_DIR="$ROM_PRODUCT_DIR/msm8998-common"
+
     # Common variables
     devices_list=(
         "dumpling"
@@ -189,16 +192,21 @@ zip_image() {
 }
 
 rom_copy_target() {
+    local romname=$1
+    local type=$2
+    local rom_product="$ROM_DIR/$ROM_PRODUCT_DIR"
+    local rom_common="$ROM_DIR/$ROM_COMMON_DIR"
+    local rom_target="$rom_product/$type/$romname"
     local target_dir
 
     if check_file $rom_target*.zip; then
-        target_dir="$ROM_COMMON_DIR/$1"
+        target_dir="$rom_common/$type"
         create_dir "$target_dir"
         decho "Copying $rom_target*.zip to $target_dir"
         cp $rom_target*.zip* $target_dir
         if [[ $shared_cp_rom == "true" ]]; then
             shared_cp_rom=false
-            target_dir="$SHARED_ROMS_DIR/$1"
+            target_dir="$SHARED_ROMS_DIR/$type"
             decho "Copying $rom_target*.zip to $target_dir"
             create_dir "$target_dir"
             cp $rom_target*.zip $target_dir
