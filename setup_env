@@ -193,20 +193,20 @@ zip_image() {
 
 rom_copy_target() {
     local romname=$1
-    local type=$2
+    local device=$2
     local rom_product="$ROM_DIR/$ROM_PRODUCT_DIR"
     local rom_common="$ROM_DIR/$ROM_COMMON_DIR"
-    local rom_target="$rom_product/$type/$romname"
+    local rom_target="$rom_product/$device/$romname"
     local target_dir
 
     if check_file $rom_target*.zip; then
-        target_dir="$rom_common/$type"
+        target_dir="$rom_common/$device"
         create_dir "$target_dir"
         decho "Copying $rom_target*.zip to $target_dir"
         cp $rom_target*.zip* $target_dir
         if [[ $shared_cp_rom == "true" ]]; then
             shared_cp_rom=false
-            target_dir="$SHARED_ROMS_DIR/$type"
+            target_dir="$SHARED_ROMS_DIR/$device"
             decho "Copying $rom_target*.zip to $target_dir"
             create_dir "$target_dir"
             cp $rom_target*.zip $target_dir

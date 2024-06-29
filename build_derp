@@ -31,7 +31,7 @@ derp_build() {
     if [[ $target_device == "dumpling" ]]; then
         shared_cp_rom=true
     fi
-    rom_copy_target "Derp" $build_type
+    rom_copy_target "Derp" $target_device
 }
 
 param_func() {
