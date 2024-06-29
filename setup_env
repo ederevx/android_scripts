@@ -32,13 +32,13 @@ ederevx_init() {
 
     local kname=$(uname -r)
     if [[ ! -z $(echo $kname | grep -i wsl) ]]; then
-        # Update hwclock prior to executing scripts
-        sudo hwclock -s
-
-        # Only execute the following at session init
         if [[ ! -z $(echo $0 | grep -i bash) ]]; then
+            # Only execute the following at session init
             decho "Current kernel: $kname"
             update_linux
+        else
+            # Update hwclock prior to executing scripts
+            sudo hwclock -s
         fi
     fi
 }
