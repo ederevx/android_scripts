@@ -49,7 +49,7 @@ define_x-ft() {
     cc_path="$clang_path:$cc_path"
 
     c64="aarch64-linux-gnu-"
-    c64="arm-linux-gnueabi-"
+    c32="arm-linux-gnueabi-"
     cc="${c64}gcc"
 
     use_clang=y
@@ -182,7 +182,7 @@ define_env() {
         ARCH=$arch \
         SUBARCH=$subarch \
         CROSS_COMPILE=$c64 \
-        CROSS_COMPILE_ARM32=$c64 \
+        CROSS_COMPILE_ARM32=$c32 \
         LOCALVERSION=-$kname_s \
         O=$out \
         -j$jn \
