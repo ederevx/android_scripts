@@ -89,6 +89,11 @@ patch_git "https://github.com/ederevx/android_device_qcom_sepolicy a14" \
 # Various build fixes
 #
 
+# Define fake out directories
+dir=$ROM_ROOT/build/make
+patch_git "https://github.com/LineageOS/android_build lineage-21.0" \
+    "ea73f271e00847ea25b1dc232416685e1a21cb1e"
+
 # Allow bison
 dir=$ROM_ROOT/build/soong
 patch_git "https://github.com/ederevx/android_build_soong a14" \
