@@ -60,7 +60,7 @@ mkdir ~/.android-certs
 
 subject='/C=US/ST=Florida/L=Tallahassee/O=Edrick Sinsuan/OU=Edrick Sinsuan/CN=Edrick Sinsuan/emailAddress=evcsinsuan@gmail.com'
 
-for x in bluetooth cts_uicc_2021 media networkstack platform sdk_sandbox shared testkey releasekey; do
+for x in bluetooth cts_uicc_2021 media networkstack platform sdk_sandbox shared testkey releasekey nfc; do
     if [[ $replace != "y" ]]; then
         if check_file "$VENDOR_PRIV_DIR/keys/$x.pk8"; then
             continue
