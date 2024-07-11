@@ -121,6 +121,9 @@ create_dir() {
 }
 
 pause_script() {
+    if [[ $nopause == "y" ]]; then
+        return
+    fi
     border
     read -p "Press enter to continue"
     border
