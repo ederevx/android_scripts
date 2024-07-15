@@ -216,19 +216,4 @@ patch_single_curl "https://raw.githubusercontent.com/OnePlus-5-T/aosp_patches/a1
 dir=$ROM_ROOT/external/setupcompat
 patch_single_curl "https://raw.githubusercontent.com/OnePlus-5-T/aosp_patches/a14/external/setupcompat/0001-Prevent-crash-with-improper-partner-config.patch"
 
-#
-# Rising reverts
-#
-
-white_list=(
-    "rising"
-)
-
-# Do not build unsparse_super_empty, breaks retrofit
-dir=$ROM_ROOT/build/make/tools/releasetools
-unpatch_git "8124d9428ef269148f06c262f636d29e566d92d4"
-
-dir=$ROM_ROOT/bootable/recovery/updater
-unpatch_git "c90ea5964a9c8140e043981f5654511e7479df88"
-
 exit_timestamp 0
