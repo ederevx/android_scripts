@@ -77,7 +77,12 @@ param_func() {
                 build_all=y
             ;;
             -s|--sign)
-                build_cmd=sb
+                keysdir="$ROM_DIR/vendor/lineage-priv/keys/"
+                if [[ ! -z $(ls $keysdir | grep -i com.android) ]]; then
+                    build_cmd=sb
+                else
+                    decho "No apex keys found, will not sign apex."
+                fi
             ;;
         esac
         shift
