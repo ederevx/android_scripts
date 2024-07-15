@@ -18,7 +18,7 @@ source build/envsetup.sh
 WITH_GMS=false
 build_device=dumpling
 build_type=user
-build_cmd=sb
+build_cmd=b
 
 #
 # Build functions
@@ -76,8 +76,8 @@ param_func() {
             -a|--all)
                 build_all=y
             ;;
-            -b|--build-only)
-                build_cmd=b
+            -s|--sign)
+                build_cmd=sb
             ;;
         esac
         shift
