@@ -216,7 +216,7 @@ build_func() {
         if [[ $srcn == "wsl2-kernel" ]]; then
             dc=$dcf
         fi
-        cp -v $out/.config $SRC_DIR/$af/$dc
+        cp -v $out/.config $srcn_dir/$af/$dc
         decho "Copied .config to $dc"
         exit_timestamp 0
     fi
