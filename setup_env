@@ -210,7 +210,7 @@ zip_image() {
     zip -r9 $1.zip * -x .git README.md 2>> $log
 }
 
-rom_copy_target() {
+rom_copy_and_clean() {
     local romname=$1
     local device=$2
     local type=$3
@@ -233,9 +233,12 @@ rom_copy_target() {
             create_dir "$target_dir"
             cp $rom_target*.zip $target_dir
         fi
-        # Cleanup afterwards to prevent overlapping builds
-        rm -f $rom_target*.zip*
     fi
+
+    # Cleanup afterwards to prevent overlapping builds
+    rm -f $rom_target*.zip*
+    # Always rebuild kernel obj
+    rm -rf $rom_product/$device/obj/KERNEL_OBJ
 }
 
 exit_timestamp() {
