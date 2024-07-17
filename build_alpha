@@ -18,7 +18,7 @@ source build/envsetup.sh
 TARGET_BUILD_PACKAGE=3
 build_device=dumpling
 build_type=user
-release_ver=ap1a
+release_ver=ap2a
 
 #
 # Build functions
