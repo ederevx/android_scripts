@@ -21,6 +21,15 @@ is_whitelisted() {
     return 1
 }
 
+is_blacklisted() {
+    for rom in ${black_list[@]}; do
+        if [[ ! -z $(echo $ROM_ROOT | grep -i $rom) ]]; then
+            return 0
+        fi
+    done
+    return 1
+}
+
 patch_git() {
     local giturl=$1
     local sha1=$2
@@ -30,6 +39,10 @@ patch_git() {
     local commit_cnt
 
     if ! is_whitelisted; then
+        return
+    fi
+
+    if is_blacklisted; then
         return
     fi
 
@@ -66,6 +79,10 @@ unpatch_git() {
     local commit_cnt
 
     if ! is_whitelisted; then
+        return
+    fi
+
+    if is_blacklisted; then
         return
     fi
 
@@ -133,16 +150,36 @@ param_func "$@"
 white_list=(
     "$ROM_ROOT"
 )
+black_list=(
+)
 
 # Patch qcom-caf for 4.14
 dir=$ROM_ROOT/hardware/qcom-caf/common
 patch_git "https://github.com/ederevx/android_hardware_qcom-caf_common a14" \
     "f346bb0364ff478bcc90efe0db0a2ec83f048226"
 
-# Hookup TARGET_USES_GRALLOC1
+# Hookup TARGET_USES_GRALLOC1 - lineage
+black_list=(
+    "derp"
+)
 dir=$ROM_ROOT/vendor/lineage
 patch_git "https://github.com/ederevx/android_vendor_lineage a14" \
     "d60c33fa98caa875cd7ba95ffb6e65090ef922f9"
+
+# Hookup TARGET_USES_GRALLOC1 - derp
+white_list=(
+    "derp"
+)
+black_list=(
+)
+dir=$ROM_ROOT/vendor/derp
+patch_git "https://github.com/ederevx/vendor_derp a14-derp" \
+    "d9b9268e5beea02ddd15cc63635d2bce44d10f6c"
+
+# Reset white_list
+white_list=(
+    "$ROM_ROOT"
+)
 
 # Patch display-commonsys-intf for 4.14
 dir=$ROM_ROOT/vendor/qcom/opensource/commonsys-intf/display
@@ -162,6 +199,9 @@ patch_git "https://github.com/ederevx/android_device_qcom_sepolicy a14" \
 
 white_list=(
     "$ROM_ROOT"
+)
+
+black_list=(
 )
 
 # Define fake out directories
@@ -198,6 +238,9 @@ patch_git "https://github.com/ederevx/rising_android_system_sepolicy a14" \
 
 white_list=(
     "$ROM_ROOT"
+)
+
+black_list=(
 )
 
 # Fix USB DAC
