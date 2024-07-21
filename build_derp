@@ -27,7 +27,7 @@ derp_build() {
 
     decho "Building DerpFest: $target_device - $build_type"
     lunch derp_$target_device-$build_type
-    mka derp
+    mka derp -j$(nproc --all)
     if [[ $target_device == "dumpling" ]]; then
         shared_cp_rom=true
     fi
