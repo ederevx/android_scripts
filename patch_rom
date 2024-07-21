@@ -13,7 +13,9 @@ fi
 readonly ROM_ROOT="$(pwd)"
 
 is_whitelisted() {
-    for rom in ${white_list[@]}; do
+    local white_list_tmp=$white_list
+    white_list=$white_list_default # Reset the list after patch
+    for rom in ${white_list_tmp[@]}; do
         if [[ ! -z $(echo $ROM_ROOT | grep -i $rom) ]]; then
             return 0
         fi
@@ -22,7 +24,9 @@ is_whitelisted() {
 }
 
 is_blacklisted() {
-    for rom in ${black_list[@]}; do
+    local black_list_tmp=$black_list
+    black_list=$black_list_default # Reset the list after patch
+    for rom in ${black_list_tmp[@]}; do
         if [[ ! -z $(echo $ROM_ROOT | grep -i $rom) ]]; then
             return 0
         fi
@@ -147,11 +151,13 @@ param_func "$@"
 # 4.14 necessary patches
 #
 
-white_list=(
+white_list_default=(
     "$ROM_ROOT"
 )
-black_list=(
+black_list_default=(
 )
+white_list=$white_list_default
+black_list=$black_list_default
 
 # Patch qcom-caf for 4.14
 dir=$ROM_ROOT/hardware/qcom-caf/common
@@ -170,16 +176,9 @@ patch_git "https://github.com/ederevx/android_vendor_lineage a14" \
 white_list=(
     "derp"
 )
-black_list=(
-)
 dir=$ROM_ROOT/vendor/derp
 patch_git "https://github.com/ederevx/vendor_derp a14-derp" \
     "d9b9268e5beea02ddd15cc63635d2bce44d10f6c"
-
-# Reset white_list
-white_list=(
-    "$ROM_ROOT"
-)
 
 # Patch display-commonsys-intf for 4.14
 dir=$ROM_ROOT/vendor/qcom/opensource/commonsys-intf/display
@@ -196,13 +195,6 @@ patch_git "https://github.com/ederevx/android_device_qcom_sepolicy a14" \
 #
 # Various build fixes
 #
-
-white_list=(
-    "$ROM_ROOT"
-)
-
-black_list=(
-)
 
 # Define fake out directories
 dir=$ROM_ROOT/build/make
@@ -235,13 +227,6 @@ patch_git "https://github.com/ederevx/rising_android_system_sepolicy a14" \
 #
 # Patches from https://github.com/OnePlus-5-T/local_manifests
 #
-
-white_list=(
-    "$ROM_ROOT"
-)
-
-black_list=(
-)
 
 # Fix USB DAC
 dir=$ROM_ROOT/system/core
