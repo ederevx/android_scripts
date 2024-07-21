@@ -28,6 +28,7 @@ is_blacklisted() {
     black_list=$black_list_default # Reset the list after patch
     for rom in ${black_list_tmp[@]}; do
         if [[ ! -z $(echo $ROM_ROOT | grep -i $rom) ]]; then
+            decho "Skipped patch..."
             return 0
         fi
     done
@@ -120,6 +121,10 @@ patch_single_curl() {
         return
     fi
 
+    if is_blacklisted; then
+        return
+    fi
+
     decho "$dir"
     if check_dir "$dir" && cd "$dir"; then
         decho $patchurl
@@ -207,14 +212,23 @@ patch_git "https://github.com/ederevx/android_build_soong a14" \
     "6a4996614768c719b9559956289a11c91369e958"
 
 # Add color channels for DeviceSettings
+black_list=(
+    "derp"
+)
 dir=$ROM_ROOT/frameworks/base
 patch_git "https://github.com/ederevx/frameworks_base a14" \
     "bb487d4599e1a103f1881fe25acf2b63c8105356"
 
 # Remove touchscreen gestures in Settings
+black_list=(
+    "derp"
+)
 dir=$ROM_ROOT/packages/apps/LineageParts
 patch_git "https://github.com/ederevx/android_packages_apps_LineageParts a14" \
     "d0ccc35c0bd117e8841b0d414643c24ebc20a106"
+black_list=(
+    "derp"
+)
 dir=$ROM_ROOT/packages/apps/Settings
 patch_git "https://github.com/ederevx/android_packages_apps_Settings a14" \
     "31187a64c9a5c49495651d11926edc5424a9473f"
