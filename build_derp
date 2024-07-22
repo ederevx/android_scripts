@@ -16,7 +16,9 @@ source build/envsetup.sh
 
 # Default properties
 build_device=dumpling
-build_type=userdebug
+build_type=user
+support_nondyn_dyn=y
+dyn_branch=y
 
 #
 # Build functions
@@ -25,6 +27,7 @@ build_type=userdebug
 derp_build() {
     local target_device=$1
 
+    setup_dynamic "derp" $target_device
     decho "Building DerpFest: $target_device - $build_type"
     lunch derp_$target_device-$build_type
     mka derp -j$(nproc --all)
@@ -55,6 +58,12 @@ param_func() {
             -a|--all)
                 build_all=y
             ;;
+            --dyn)
+                dyn_branch=y
+            ;;
+            --no-dyn)
+                dyn_branch=n
+            ;;
         esac
         shift
     done
@@ -67,6 +76,11 @@ param_func() {
 param_func "$@"
 
 if [[ $build_all == "y" ]]; then
+    dyn_branch=y
+    for device in ${devices_list[@]}; do
+        derp_build $device
+    done
+    dyn_branch=n
     for device in ${devices_list[@]}; do
         derp_build $device
     done

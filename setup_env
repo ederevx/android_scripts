@@ -130,6 +130,8 @@ pause_script() {
 }
 
 update_repo() {
+    local curr_dir=$(pwd)
+
     if ! check_dir "$@/.git" || ! cd "$@"; then
         return 
     fi
@@ -142,6 +144,8 @@ update_repo() {
     fi
 
     git pull --ff-only
+
+    cd $curr_dir
 }
 
 update_linux() {
@@ -162,6 +166,8 @@ check_valid() {
 }
 
 commit_repo() {
+    local curr_dir=$(pwd)
+
     if ! check_dir "$1/.git" || ! cd "$1"; then
         return 
     fi
@@ -198,6 +204,8 @@ commit_repo() {
     done
 
     git commit $c_cmd -s -m "$c_msg" --author="$auth_str_ovrid" --date="$date_full"
+
+    cd $curr_dir
 }
 
 make_cmd() {
@@ -210,6 +218,41 @@ zip_image() {
     zip -r9 $1.zip * -x .git README.md 2>> $log
 }
 
+setup_dynamic() {
+    local romname=$1
+    local device=$2
+    local curr_dir=$(pwd)
+
+    local rom_product="$ROM_DIR/$ROM_PRODUCT_DIR"
+    local device_common="$ROM_DIR/device/oneplus/msm8998-common"
+    local rombranch=$romname
+
+    if [[ $support_nondyn_dyn != "y" ]]; then
+        return
+    fi
+
+    cd $device_common
+
+    decho "Setting up dyn_branch=$dyn_branch..."
+    if [[ $dyn_branch == "y" ]]; then
+        rombranch=$rombranch-dyn
+    fi
+    git fetch ed
+    git checkout a14-$rombranch
+
+    # Cleanup everytime when switching between 
+    # non-dynamic and dynamic without cleaning out completely
+    rm -rf $rom_product/$device/system
+    rm -rf $rom_product/$device/vendor
+    rm -rf $rom_product/$device/root
+    rm -rf $rom_product/$device/system_ext
+    rm -rf $rom_product/$device/symbols
+    rm -rf $rom_product/$device/recovery
+    rm -rf $rom_product/$device/super*
+
+    cd $curr_dir
+}
+
 rom_copy_and_clean() {
     local romname=$1
     local device=$2
@@ -220,6 +263,12 @@ rom_copy_and_clean() {
     local rom_target="$rom_product/$device/$romname"
 
     local target_dir
+
+    if [[ $support_nondyn_dyn == "y" ]]; then
+        if [[ $dyn_branch == "y" ]]; then
+            type=$type/dyn
+        fi
+    fi
 
     if check_file $rom_target*.zip; then
         target_dir="$rom_common/$type"
@@ -237,8 +286,6 @@ rom_copy_and_clean() {
 
     # Cleanup afterwards to prevent overlapping builds
     rm -f $rom_target*.zip*
-    # Always rebuild kernel obj
-    rm -rf $rom_product/$device/obj/KERNEL_OBJ
 }
 
 exit_timestamp() {
