@@ -219,13 +219,12 @@ zip_image() {
 }
 
 setup_dynamic() {
-    local romname=$1
+    local commonbranch=$1
     local device=$2
     local curr_dir=$(pwd)
 
     local rom_product="$ROM_DIR/$ROM_PRODUCT_DIR"
     local device_common="$ROM_DIR/device/oneplus/msm8998-common"
-    local rombranch=$romname
 
     if [[ $support_nondyn_dyn != "y" ]]; then
         return
@@ -235,10 +234,10 @@ setup_dynamic() {
 
     decho "Setting up dyn_branch=$dyn_branch..."
     if [[ $dyn_branch == "y" ]]; then
-        rombranch=$rombranch-dyn
+        commonbranch=$commonbranch-dyn
     fi
     git fetch ed
-    git checkout a14-$rombranch
+    git checkout $commonbranch
 
     # Cleanup everytime when switching between 
     # non-dynamic and dynamic without cleaning out completely
@@ -264,10 +263,9 @@ rom_copy_and_clean() {
 
     local target_dir
 
-    if [[ $support_nondyn_dyn == "y" ]]; then
-        if [[ $dyn_branch == "y" ]]; then
-            type=$type/dyn
-        fi
+    if [[ $support_nondyn_dyn == "y" ]] && 
+        [[ $dyn_branch == "y" ]]; then
+        type=$type/dyn
     fi
 
     if check_file $rom_target*.zip; then
