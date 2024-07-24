@@ -43,19 +43,11 @@ ederevx_init() {
     fi
 }
 
-env_init() {
-    # Identifier
-    userhost=$(whoami)
-
-    if [[ $userhost == "ederevx" ]]; then
-        ederevx_init
-    fi
-
+script_init() {
     # Environment directories
     readonly C_USER_DIR=/mnt/c/Users/evcsi
     readonly SHARED_TEST_DIR=$C_USER_DIR/WSL-Shared
     readonly SHARED_ROMS_DIR="$SHARED_TEST_DIR/roms"
-    shared_cp_rom=false
 
     readonly ROM_PRODUCT_DIR="out/target/product"
     readonly ROM_COMMON_DIR="$ROM_PRODUCT_DIR/msm8998-common"
@@ -65,12 +57,30 @@ env_init() {
         "dumpling"
         "cheeseburger"
     )
-
-    # Git properties
+    shared_cp_rom=false
     curr_date=$(date +'%Y%m%d')
-    date_full=$(date -R)
-    auth_str="$(git config --get user.name) <$(git config --get user.email)>"
+}
 
+git_init() {
+    # Git properties
+    auth_str="$(git config --get user.name) <$(git config --get user.email)>"
+}
+
+env_init() {
+    # Identifier
+    userhost=$(whoami)
+
+    if [[ $userhost == "ederevx" ]]; then
+        ederevx_init
+    fi
+
+    # Only execute the following if not session init
+    if [[ -z $(echo $0 | grep -i bash) ]]; then
+        script_init
+        git_init
+    fi
+
+    date_full=$(date -R)
     decho $date_full
 }
 
@@ -203,6 +213,7 @@ commit_repo() {
         shift
     done
 
+    git_init
     git commit $c_cmd -s -m "$c_msg" --author="$auth_str_ovrid" --date="$date_full"
 
     cd $curr_dir
