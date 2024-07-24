@@ -231,12 +231,12 @@ black_list=(
 )
 dir=$ROM_ROOT/packages/apps/LineageParts
 # 10: Remove touchscreen gestures in Settings
-patch_git "https://github.com/ederevx/android_packages_apps_LineageParts a14" \
-    "d0ccc35c0bd117e8841b0d414643c24ebc20a106"
+#patch_git "https://github.com/ederevx/android_packages_apps_LineageParts a14" \
+#    "d0ccc35c0bd117e8841b0d414643c24ebc20a106"
 dir=$ROM_ROOT/packages/apps/Settings
 # 11 ^
-patch_git "https://github.com/ederevx/android_packages_apps_Settings a14" \
-    "31187a64c9a5c49495651d11926edc5424a9473f"
+#patch_git "https://github.com/ederevx/android_packages_apps_Settings a14" \
+#    "31187a64c9a5c49495651d11926edc5424a9473f"
 
 dir=$ROM_ROOT/system/sepolicy
 # 12: Fix sepolicy binder denials
