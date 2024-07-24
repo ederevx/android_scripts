@@ -286,7 +286,7 @@ rom_copy_and_clean() {
     rm -f $rom_target*.zip*
 }
 
-rsync() {
+rosc() {
     repo sync -j$(nproc --all) $@
 }
 
