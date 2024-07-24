@@ -286,6 +286,10 @@ rom_copy_and_clean() {
     rm -f $rom_target*.zip*
 }
 
+rsync() {
+    repo sync -j$(nproc --all) $@
+}
+
 exit_timestamp() {
     decho "$(date -R)"
     exit $1
