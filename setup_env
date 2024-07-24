@@ -218,12 +218,25 @@ zip_image() {
     zip -r9 $1.zip * -x .git README.md 2>> $log
 }
 
+cleanup_out() {
+    local device=$1
+
+    local rom_product="$ROM_DIR/$ROM_PRODUCT_DIR"
+
+    rm -rf $rom_product/$device/system
+    rm -rf $rom_product/$device/vendor
+    rm -rf $rom_product/$device/root
+    rm -rf $rom_product/$device/system_ext
+    rm -rf $rom_product/$device/symbols
+    rm -rf $rom_product/$device/recovery
+    rm -rf $rom_product/$device/super*
+}
+
 setup_dynamic() {
     local commonbranch=$1
     local device=$2
     local curr_dir=$(pwd)
 
-    local rom_product="$ROM_DIR/$ROM_PRODUCT_DIR"
     local device_common="$ROM_DIR/device/oneplus/msm8998-common"
 
     if [[ $support_nondyn_dyn != "y" ]]; then
@@ -238,16 +251,6 @@ setup_dynamic() {
     fi
     git fetch ed
     git checkout $commonbranch
-
-    # Cleanup everytime when switching between 
-    # non-dynamic and dynamic without cleaning out completely
-    rm -rf $rom_product/$device/system
-    rm -rf $rom_product/$device/vendor
-    rm -rf $rom_product/$device/root
-    rm -rf $rom_product/$device/system_ext
-    rm -rf $rom_product/$device/symbols
-    rm -rf $rom_product/$device/recovery
-    rm -rf $rom_product/$device/super*
 
     cd $curr_dir
 }

@@ -27,6 +27,7 @@ release_ver=ap2a
 alpha_build() {
     local target_device=$1
 
+    cleanup_out $target_device
     decho "Building AlphaDroid: $target_device - $build_type TARGET_BUILD_PACKAGE=$TARGET_BUILD_PACKAGE"
     export TARGET_BUILD_PACKAGE
     lunch lineage_$target_device-$release_ver-$build_type

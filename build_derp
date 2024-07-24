@@ -25,6 +25,7 @@ build_type=user
 derp_build() {
     local target_device=$1
 
+    cleanup_out $target_device
     decho "Building DerpFest: $target_device - $build_type"
     lunch derp_$target_device-$build_type
     mka derp -j$(nproc --all)
