@@ -55,12 +55,6 @@ param_func() {
             -a|--all)
                 build_all=y
             ;;
-            --dyn)
-                dyn_branch=y
-            ;;
-            --no-dyn)
-                dyn_branch=n
-            ;;
         esac
         shift
     done
@@ -73,11 +67,6 @@ param_func() {
 param_func "$@"
 
 if [[ $build_all == "y" ]]; then
-    dyn_branch=y
-    for device in ${devices_list[@]}; do
-        derp_build $device
-    done
-    dyn_branch=n
     for device in ${devices_list[@]}; do
         derp_build $device
     done
