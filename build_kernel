@@ -71,7 +71,7 @@ define_wsl2() {
     export PATH="/usr/lib/ccache:$PATH"
 }
 
-check_srcn() {
+define_srcn() {
     if [[ $srcn == "x-ft" ]]; then
         define_x-ft
         return 0
@@ -147,6 +147,7 @@ define_env() {
 
     if [[ ! -z $(echo $src_brnch | grep -i testing) ]]; then
         test_build=y
+        define_srcn
     fi
 
     out=$OUT_DIR/$srcn/$src_brnch
@@ -369,7 +370,7 @@ decho "Executing build script..."
 
 param_func "$@"
 
-if check_srcn; then
+if define_srcn; then
     srcn_dir=$SRC_DIR/$srcn
     main_func
     exit_timestamp 0
