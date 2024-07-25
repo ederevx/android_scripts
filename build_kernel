@@ -112,6 +112,10 @@ define_kname() {
     khash=$(git rev-parse --short HEAD)
     kname="$userhost-$srcn-$src_brnch-$brnch_ver-$ver"
     kname_s="$srcn-$brnch_ver-$ver"
+    if [[ $test_build == "y" ]]; then
+        kname="d-$kname"
+        kname_s="d-$kname_s"
+   fi
 }
 
 define_clang() {
