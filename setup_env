@@ -72,12 +72,12 @@ env_init() {
 
     if [[ $userhost == "ederevx" ]]; then
         ederevx_init
+        git_init
     fi
 
     # Only execute the following if not session init
     if [[ -z $(echo $0 | grep -i bash) ]]; then
         script_init
-        git_init
     fi
 
     date_full=$(date -R)
