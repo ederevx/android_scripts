@@ -63,7 +63,7 @@ script_init() {
 
 git_init() {
     # Git properties
-    auth_str="$(git config --get user.name) <$(git config --get user.email)>"
+    git_auth="$(git config --get user.name) <$(git config --get user.email)>"
 }
 
 env_init() {
@@ -185,7 +185,7 @@ commit_repo() {
     decho "Commiting in $1 repository..."
 
     c_cmd=""
-    auth_str_ovrid="$auth_str"
+    git_auth_ovrid="$git_auth"
     while [[ $# -gt 0 ]]
         do
         key="$1"
@@ -196,7 +196,7 @@ commit_repo() {
             ;;
             --author)
                 if check_valid "$2"; then
-                    auth_str_ovrid="$2"
+                    git_auth_ovrid="$2"
                     shift
                 fi
             ;;
@@ -214,7 +214,7 @@ commit_repo() {
     done
 
     git_init
-    git commit $c_cmd -s -m "$c_msg" --author="$auth_str_ovrid" --date="$date_full"
+    git commit $c_cmd -s -m "$c_msg" --author="$git_auth_ovrid" --date="$date_full"
 
     cd $curr_dir
 }
