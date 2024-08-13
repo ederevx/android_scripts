@@ -244,8 +244,8 @@ patch_git "https://github.com/ederevx/android_packages_apps_Settings a14" \
 
 dir=$ROM_ROOT/system/sepolicy
 # 12: Fix sepolicy binder denials
-patch_git "https://github.com/ederevx/rising_android_system_sepolicy a14" \
-    "99cb56c536b988430631bfcae3d877215e1416c8"
+patch_git "https://github.com/ederevx/rising_android_system_sepolicy a14-alpha" \
+    "c9faf8f08ec6c6aab5ddd67d9108ff4473ee8881"
 
 #
 # Patches from https://github.com/OnePlus-5-T/local_manifests
