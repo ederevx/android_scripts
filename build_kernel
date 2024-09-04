@@ -145,11 +145,6 @@ define_env() {
     echo $src_brnch
     border
 
-    if [[ ! -z $(echo $src_brnch | grep -i testing) ]]; then
-        test_build=y
-        define_srcn
-    fi
-
     out=$OUT_DIR/$srcn/$src_brnch
     bti=$out/arch/$arch/boot
 
