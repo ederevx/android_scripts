@@ -300,6 +300,10 @@ rom_copy_and_clean() {
     rm -f $rom_target*.zip*
 }
 
+rosc_init() {
+    repo sync -c --no-clone-bundle --optimized-fetch --prune --force-sync -j$(nproc --all)
+}
+
 rosc() {
     repo sync -j$(nproc --all) $@
 }
