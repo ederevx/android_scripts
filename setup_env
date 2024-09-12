@@ -304,8 +304,8 @@ rosc_init() {
     repo sync -c --no-clone-bundle --optimized-fetch --prune --force-sync -j$(nproc --all)
     if [[ ! -z $(echo $1) ]]; then
         repo start $1 --all
+        patch_rom -s
     fi
-    patch_rom -s
 }
 
 rosc() {
