@@ -1,0 +1,98 @@
+#!/bin/bash
+
+# SPDX-FileCopyrightText: 2024 Edrick Sinsuan
+# SPDX-License-Identifier: Apache-2.0
+
+source setup_env
+
+# YAAP directories
+readonly ROM_DIR="$HOME/repo/yaap"
+
+if ! check_dir "$ROM_DIR" || ! cd "$ROM_DIR"; then
+    exit_timestamp 1
+fi
+
+source build/envsetup.sh
+
+# Default properties
+WITH_GMS=false
+build_device=dumpling
+build_type=user
+
+#
+# Build functions
+#
+
+yaap_build() {
+    local target_device=$1
+
+    cleanup_out $target_device
+    decho "Building YAAP: $target_device - $build_type"
+    lunch yaap_$target_device-$build_type
+    m yaap -j$(nproc --all)
+    if [[ $target_device == "dumpling" ]]; then
+        shared_cp_rom=true
+    fi
+    rom_copy_and_clean "YAAP" $target_device $build_type
+}
+
+yaap_build_gms() {
+    WITH_GMS=true
+    yaap_build "$@"
+}
+
+yaap_build_vanilla() {
+    WITH_GMS=true
+    yaap_build "$@"
+}
+
+yaap_build_both() {
+    yaap_build_gms "$@"
+    yaap_build_vanilla "$@"
+}
+
+param_func() {
+    while [[ $# -gt 0 ]]
+        do
+        key="$1"
+
+        case $key in
+            -d|--device)
+                if check_valid "$2"; then
+                    build_device="$2"
+                    shift
+                fi
+            ;;            
+            -g|--google)
+                WITH_GMS=true
+            ;;
+            -t|--type)
+                if check_valid "$2"; then
+                    build_type="$2"
+                    shift
+                fi
+            ;;
+            -a|--all)
+                build_all=y
+            ;;
+        esac
+        shift
+    done
+}
+
+#
+# Build start
+#
+
+param_func "$@"
+
+if [[ $build_all == "y" ]]; then
+    for device in ${devices_list[@]}; do
+        yaap_build_both $device
+    done
+    exit_timestamp 0
+fi
+
+yaap_build $build_device
+
+exit_timestamp 0
