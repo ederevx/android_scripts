@@ -211,9 +211,19 @@ patch_git "https://github.com/LineageOS/android_build lineage-21.0" \
     "ea73f271e00847ea25b1dc232416685e1a21cb1e"
 
 dir=$ROM_ROOT/build/soong
-# 7: Allow bison
+black_list=(
+    "yaap"
+)
+# 7: Allow bison - lineage
 patch_git "https://github.com/ederevx/android_build_soong a14" \
     "6a4996614768c719b9559956289a11c91369e958"
+
+white_list=(
+    "yaap"
+)
+# 8: Allow bison - yaap
+patch_git "https://github.com/ederevx/android_build_soong a15-yaap" \
+    "75cdf0768d969b63fa37dd03d36a76bc0632c191"
 
 dir=$ROM_ROOT/frameworks/base
 black_list=(
@@ -246,8 +256,18 @@ patch_git "https://github.com/ederevx/android_packages_apps_Settings a14" \
     "31187a64c9a5c49495651d11926edc5424a9473f"
 
 dir=$ROM_ROOT/system/sepolicy
-# 12: Fix sepolicy binder denials
+black_list=(
+    "yaap"
+)
+# 12: Fix sepolicy binder denials - lineage
 patch_git "https://github.com/ederevx/rising_android_system_sepolicy a14-alpha" \
+    "c9faf8f08ec6c6aab5ddd67d9108ff4473ee8881"
+
+white_list=(
+    "yaap"
+)
+# 12: Fix sepolicy binder denials - yaap
+patch_git "https://github.com/ederevx/rising_android_system_sepolicy a15-yaap" \
     "c9faf8f08ec6c6aab5ddd67d9108ff4473ee8881"
 
 #
