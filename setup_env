@@ -32,6 +32,17 @@ ederevx_init() {
 
     local kname=$(uname -r)
     if [[ ! -z $(echo $kname | grep -i wsl) ]]; then
+        # Setup no appending WSL windows path to not break ROM scripts
+        local setup_env_wsl=/etc/wsl.conf
+        if ! check_file $setup_env_wsl; then
+            {
+                echo "[interop]"
+                echo "appendWindowsPath = false"
+            } | sudo tee $setup_env_wsl
+            decho $setup_env_wsl
+            cat $setup_env_wsl
+        fi
+
         if [[ ! -z $(echo $0 | grep -i bash) ]]; then
             # Only execute the following at session init
             decho "Current kernel: $kname"
