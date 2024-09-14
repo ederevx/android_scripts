@@ -216,6 +216,9 @@ patch_git "https://github.com/ederevx/android_build_soong a14" \
     "6a4996614768c719b9559956289a11c91369e958"
 
 dir=$ROM_ROOT/frameworks/base
+black_list=(
+    "yaap"
+)
 # 8: Add color channels for DeviceSettings
 patch_git "https://github.com/ederevx/frameworks_base a14" \
     "bb487d4599e1a103f1881fe25acf2b63c8105356"
