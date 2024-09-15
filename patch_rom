@@ -346,18 +346,21 @@ patch_retrodyn() {
         "yaap"
     )
     # releasetools: Pass non-sparse super_empty.img to update_dynamic_partitions()
+    # https://github.com/LineageOS/android_build/commit/8124d9428ef269148f06c262f636d29e566d92d4
     patch_git "https://github.com/ederevx/android_build_tools a15-yaap" \
         "6b2f2725a0a6e00e4a8943488c16fe5b1cb5f8bf"
     white_list=(
         "yaap"
     )
-    # Allow override of device asserts, including multi-device support.
+    # Allow override of device asserts, including multi-device support
+    # https://github.com/LineageOS/android_build/commit/2f71c5fcdf3786692c6d2ec5433e1ccf51132047
     patch_git "https://github.com/ederevx/android_build_tools a15-yaap" \
         "5725f3d83f2e362c8e1d7c433c1cc0ca65829617"
     white_list=(
         "yaap"
     )
     # build: ota: Support for install tools in /tmp/install
+    # https://github.com/P-404/android_build/commit/deb9184d52445d1c390e89f3aaa6cbb0d83d1ed0
     patch_git "https://github.com/ederevx/android_build_tools a15-yaap" \
         "5e8f81226c5e74d9abcf9fc65258ebfe9dbe6c51"
 }
