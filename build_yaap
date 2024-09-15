@@ -16,11 +16,18 @@ fi
 TARGET_BUILD_GAPPS=false
 build_device=dumpling
 build_type=user
-gapps=n
 
 #
 # Build functions
 #
+
+define_gapps() {
+    if [[ $TARGET_BUILD_GAPPS == "true" ]]; then
+        gapps=y
+    else
+        gapps=n
+    fi
+}
 
 yaap_build() {
     local target_device=$1
@@ -38,18 +45,17 @@ yaap_build() {
     if [[ $target_device == "dumpling" ]]; then
         shared_cp_rom=true
     fi
+    define_gapps
     rom_copy_and_clean "YAAP" $target_device $build_type
 }
 
 yaap_build_gms() {
     TARGET_BUILD_GAPPS=true
-    gapps=y
     yaap_build "$@"
 }
 
 yaap_build_vanilla() {
     TARGET_BUILD_GAPPS=false
-    gapps=n
     yaap_build "$@"
 }
 
@@ -72,7 +78,6 @@ param_func() {
             ;;            
             -g|--google)
                 TARGET_BUILD_GAPPS=true
-                gapps=y
             ;;
             -t|--type)
                 if check_valid "$2"; then
