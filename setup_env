@@ -10,12 +10,11 @@ ederevx_init() {
 
     # Export global clean and backup PATH
     export PATH_CLEAN=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/ederevx/scripts:/home/ederevx/repo/bin
-    export PATH_BKP=$PATH
-
     # Clone the script repo to ~/scripts and repo to ~/repo/bin
     if [[ -z $(echo $PATH | grep -i $script_dir) ]]; then
         export PATH=$PATH:$script_dir:~/repo/bin
     fi
+    export PATH_BKP=$PATH
 
     # Execute this script at bash init
     local bashrc=~/.bashrc
