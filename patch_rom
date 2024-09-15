@@ -319,6 +319,11 @@ patch_sepolicy() {
 patch_retrodyn() {
     patch_id="retrodyn"
 
+    dir=$ROM_ROOT/system/sepolicy
+    # Resolve neverallow in retrofit devices
+    patch_git "https://github.com/ederevx/android_system_sepolicy a15-yaap" \
+        "a74949e75273cfe2d0b2a94eba51daa2cfb02c52"
+
     dir=$ROM_ROOT/system/core
     white_list=(
         "yaap"
