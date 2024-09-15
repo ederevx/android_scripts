@@ -348,6 +348,12 @@ patch_retrodyn() {
     # Allow override of device asserts, including multi-device support.
     patch_git "https://github.com/ederevx/android_build_tools a15-yaap" \
         "5725f3d83f2e362c8e1d7c433c1cc0ca65829617"
+    white_list=(
+        "yaap"
+    )
+    # build: ota: Support for install tools in /tmp/install
+    patch_git "https://github.com/ederevx/android_build_tools a15-yaap" \
+        "5e8f81226c5e74d9abcf9fc65258ebfe9dbe6c51"
 }
 
 #
