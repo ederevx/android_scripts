@@ -13,7 +13,7 @@ if ! check_dir "$ROM_DIR" || ! cd "$ROM_DIR"; then
 fi
 
 # Default properties
-WITH_GMS=false
+TARGET_BUILD_GAPPS=false
 build_device=dumpling
 build_type=user
 
@@ -29,6 +29,7 @@ yaap_build() {
 
     cleanup_path
     source build/envsetup.sh
+    export TARGET_BUILD_GAPPS
     lunch yaap_$target_device-$build_type
     m yaap -j$(nproc --all)
     restore_path
@@ -40,12 +41,12 @@ yaap_build() {
 }
 
 yaap_build_gms() {
-    WITH_GMS=true
+    TARGET_BUILD_GAPPS=true
     yaap_build "$@"
 }
 
 yaap_build_vanilla() {
-    WITH_GMS=true
+    TARGET_BUILD_GAPPS=false
     yaap_build "$@"
 }
 
@@ -67,7 +68,7 @@ param_func() {
                 fi
             ;;            
             -g|--google)
-                WITH_GMS=true
+                TARGET_BUILD_GAPPS=true
             ;;
             -t|--type)
                 if check_valid "$2"; then
