@@ -20,12 +20,11 @@ is_skipped() {
     white_list=$white_list_default 
     black_list=$black_list_default
 
-    patch_num=$(($patch_num + 1))
     border
-    echo "Patch number: $patch_num"
+    echo "Patch ID: $patch_id"
     echo "Dir: $dir"
     border
-    if [[ ! -z $target_patch ]] && [[ $target_patch != $patch_num ]]; then
+    if [[ ! -z $target_patch ]] && [[ $target_patch != $patch_id ]]; then
         decho "Skipped patch, not the target patch..."
         return 0
     fi
@@ -139,7 +138,7 @@ param_func() {
             -s|--skip-pause)
                 nopause=y
             ;;
-            -p|--patch-num)
+            -p|--patch-id)
                 if check_valid "$2"; then
                     target_patch="$2"
                     shift
@@ -148,6 +147,189 @@ param_func() {
         esac
         shift
     done
+}
+
+#
+# Patches
+#
+
+#
+# 4.14 necessary patches
+#
+
+patch_qcomcaf() {
+    patch_id="qcomcaf"
+    dir=$ROM_ROOT/hardware/qcom-caf/common
+    # Patch qcom-caf for 4.14
+    patch_git "https://github.com/ederevx/android_hardware_qcom-caf_common a14" \
+        "f346bb0364ff478bcc90efe0db0a2ec83f048226"
+}
+
+patch_gralloc() {
+    patch_id="gralloc"
+    black_list=(
+        "derp"
+    )
+    dir=$ROM_ROOT/vendor/lineage
+    # Hookup TARGET_USES_GRALLOC1 - lineage
+    patch_git "https://github.com/ederevx/android_vendor_lineage a14" \
+        "d60c33fa98caa875cd7ba95ffb6e65090ef922f9"
+    white_list=(
+        "derp"
+    )
+    dir=$ROM_ROOT/vendor/derp
+    # Hookup TARGET_USES_GRALLOC1 - derp
+    patch_git "https://github.com/ederevx/vendor_derp a14-derp" \
+        "d9b9268e5beea02ddd15cc63635d2bce44d10f6c"
+    white_list=(
+        "yaap"
+    )
+    dir=$ROM_ROOT/vendor/yaap
+    # Hookup TARGET_USES_GRALLOC1 - yaap
+    patch_git "https://github.com/ederevx/vendor_yaap a15-yaap" \
+        "d4f5a35547dccfaa96aeedaa226d76a252e4328c"
+}
+
+patch_displayintf() {
+    patch_id="displayintf"
+    dir=$ROM_ROOT/vendor/qcom/opensource/commonsys-intf/display
+    # Patch display-commonsys-intf for 4.14
+    patch_git "https://github.com/ederevx/android_vendor_qcom_opensource_display-commonsys-intf a14" \
+        "98e043abd0c9790469ad587a4ee1511108465f72" \
+        "0858ef7d19da426164f5f31cd85778ce291fc771"
+}
+
+patch_sepolicylegacy() {
+    patch_id="sepolicylegacy"
+    dir=$ROM_ROOT/device/qcom/sepolicy-legacy-um
+    # Patch sepolicy-legacy-um for 4.14
+    patch_git "https://github.com/ederevx/android_device_qcom_sepolicy a14" \
+        "2049f8530b050b8d8e6bf81f30a9feb70d905961" \
+        "98aee53ce762fc5e93a86c17a6a984cd5ddb6370"
+}
+
+#
+# Various build fixes
+#
+
+patch_buildmake() {
+    patch_id="buildmake"
+    dir=$ROM_ROOT/build/make
+    # Define fake out directories
+    patch_git "https://github.com/LineageOS/android_build lineage-21.0" \
+        "ea73f271e00847ea25b1dc232416685e1a21cb1e"
+}
+
+patch_bison() {
+    patch_id="bison"
+    dir=$ROM_ROOT/build/soong
+    black_list=(
+        "yaap"
+    )
+    # Allow bison - lineage
+    patch_git "https://github.com/ederevx/android_build_soong a14" \
+        "6a4996614768c719b9559956289a11c91369e958"
+    white_list=(
+        "yaap"
+    )
+    # Allow bison - yaap
+    patch_git "https://github.com/ederevx/android_build_soong a15-yaap" \
+        "75cdf0768d969b63fa37dd03d36a76bc0632c19"
+}
+
+patch_colorchannels() {
+    patch_id="colorchannels"
+    dir=$ROM_ROOT/frameworks/base
+    black_list=(
+        "yaap"
+    )
+    # Add color channels for DeviceSettings
+    patch_git "https://github.com/ederevx/frameworks_base a14" \
+        "bb487d4599e1a103f1881fe25acf2b63c8105356"
+}
+
+patch_volumepanel() {
+    patch_id="volumepanel"
+    white_list=(
+        "derp"
+    )
+    # Allow overriding volume panel is left
+    patch_git "https://github.com/ederevx/derp_frameworks_base a14-derp" \
+        "b09631bbaa88de1543056044e689d333dd2b2706"
+}
+
+patch_tsgestures() {
+    # Skipped
+    return;
+
+    patch_id="tsgestures"
+    black_list=(
+    #   "derp"
+        "$ROM_ROOT"
+    )
+    dir=$ROM_ROOT/packages/apps/LineageParts
+    # Remove touchscreen gestures in Settings
+    patch_git "https://github.com/ederevx/android_packages_apps_LineageParts a14" \
+        "d0ccc35c0bd117e8841b0d414643c24ebc20a106"
+    dir=$ROM_ROOT/packages/apps/Settings
+    black_list=(
+        "$ROM_ROOT"
+    )
+    patch_git "https://github.com/ederevx/android_packages_apps_Settings a14" \
+        "31187a64c9a5c49495651d11926edc5424a9473f"
+}
+
+patch_sepolicy() {
+    patch_id="sepolicy"
+    dir=$ROM_ROOT/system/sepolicy
+    black_list=(
+        "yaap"
+    )
+    # Fix sepolicy binder denials - lineage
+    patch_git "https://github.com/ederevx/rising_android_system_sepolicy a14-alpha" \
+        "c9faf8f08ec6c6aab5ddd67d9108ff4473ee8881"
+    white_list=(
+        "yaap"
+    )
+    # Fix sepolicy binder denials - yaap
+    patch_git "https://github.com/ederevx/rising_android_system_sepolicy a15-yaap" \
+        "e31d7c8e856c1ec009db3de418c695cbe8d7a8d1"
+    white_list=(
+        "yaap"
+    )
+    # Remove non-existent sepolicy - yaap
+    patch_git "https://github.com/ederevx/rising_android_system_sepolicy a15-yaap" \
+        "e31d7c8e856c1ec009db3de418c695cbe8d7a8d1"
+}
+
+#
+# Patches from https://github.com/OnePlus-5-T/local_manifests
+#
+
+patch_syscore() {
+    patch_id="syscore"
+    dir=$ROM_ROOT/system/core
+    # 16: Fix USB DAC
+    patch_single_curl "https://raw.githubusercontent.com/OnePlus-5-T/aosp_patches/a14/system/core/0001-libusbhost-improve-usb_device_open-handling.patch"
+    # 17: Fix DSU
+    patch_single_curl "https://raw.githubusercontent.com/OnePlus-5-T/aosp_patches/a14/system/core/0002-first_stage_mount-Skip-dm-verity-setup-if-AVB-is-not.patch"
+    # 18 ^
+    patch_single_curl "https://raw.githubusercontent.com/OnePlus-5-T/aosp_patches/a14/system/core/0003-Revert-libfiemap-Disable-loop-mapping-code.patch"
+}
+
+patch_telephony() {
+    patch_id="telephony"
+    dir=$ROM_ROOT/frameworks/opt/telephony
+    # 19: Fix telephony
+    patch_single_curl "https://raw.githubusercontent.com/OnePlus-5-T/aosp_patches/a14/frameworks/opt/telephony/0001-Restore-support-with-RadioConfig-1.0-dsds-clients.patch"
+    # 20 ^
+    patch_single_curl "https://raw.githubusercontent.com/OnePlus-5-T/aosp_patches/a14/frameworks/opt/telephony/0002-Fallback_to_HAL_COMMAND_ALLOW_DATA.patch"
+}
+
+patch_setupgapps() {
+    dir=$ROM_ROOT/external/setupcompat
+    # 21: Fix issues with GAPPS
+    patch_single_curl "https://raw.githubusercontent.com/OnePlus-5-T/aosp_patches/a14/external/setupcompat/0001-Prevent-crash-with-improper-partner-config.patch"
 }
 
 decho "This only needs to be called once if done cleanly and after a repo start!"
@@ -162,142 +344,18 @@ black_list_default=(
 white_list=$white_list_default
 black_list=$black_list_default
 
-patch_num=0
-
-#
-# 4.14 necessary patches
-#
-
-dir=$ROM_ROOT/hardware/qcom-caf/common
-# 1: Patch qcom-caf for 4.14
-patch_git "https://github.com/ederevx/android_hardware_qcom-caf_common a14" \
-    "f346bb0364ff478bcc90efe0db0a2ec83f048226"
-
-black_list=(
-    "derp"
-)
-dir=$ROM_ROOT/vendor/lineage
-# 2: Hookup TARGET_USES_GRALLOC1 - lineage
-patch_git "https://github.com/ederevx/android_vendor_lineage a14" \
-    "d60c33fa98caa875cd7ba95ffb6e65090ef922f9"
-
-white_list=(
-    "derp"
-)
-dir=$ROM_ROOT/vendor/derp
-# 3: Hookup TARGET_USES_GRALLOC1 - derp
-patch_git "https://github.com/ederevx/vendor_derp a14-derp" \
-    "d9b9268e5beea02ddd15cc63635d2bce44d10f6c"
-
-white_list=(
-    "yaap"
-)
-dir=$ROM_ROOT/vendor/yaap
-# 4: Hookup TARGET_USES_GRALLOC1 - yaap
-patch_git "https://github.com/ederevx/vendor_yaap a15-yaap" \
-    "d4f5a35547dccfaa96aeedaa226d76a252e4328c"
-
-dir=$ROM_ROOT/vendor/qcom/opensource/commonsys-intf/display
-# 5: Patch display-commonsys-intf for 4.14
-patch_git "https://github.com/ederevx/android_vendor_qcom_opensource_display-commonsys-intf a14" \
-    "98e043abd0c9790469ad587a4ee1511108465f72" \
-    "0858ef7d19da426164f5f31cd85778ce291fc771"
-
-dir=$ROM_ROOT/device/qcom/sepolicy-legacy-um
-# 6: Patch sepolicy-legacy-um for 4.14
-patch_git "https://github.com/ederevx/android_device_qcom_sepolicy a14" \
-    "2049f8530b050b8d8e6bf81f30a9feb70d905961" \
-    "98aee53ce762fc5e93a86c17a6a984cd5ddb6370"
-
-#
-# Various build fixes
-#
-
-dir=$ROM_ROOT/build/make
-# 7: Define fake out directories
-patch_git "https://github.com/LineageOS/android_build lineage-21.0" \
-    "ea73f271e00847ea25b1dc232416685e1a21cb1e"
-
-dir=$ROM_ROOT/build/soong
-black_list=(
-    "yaap"
-)
-# 8: Allow bison - lineage
-patch_git "https://github.com/ederevx/android_build_soong a14" \
-    "6a4996614768c719b9559956289a11c91369e958"
-
-white_list=(
-    "yaap"
-)
-# 9: Allow bison - yaap
-patch_git "https://github.com/ederevx/android_build_soong a15-yaap" \
-    "75cdf0768d969b63fa37dd03d36a76bc0632c191"
-
-dir=$ROM_ROOT/frameworks/base
-black_list=(
-    "yaap"
-)
-# 10: Add color channels for DeviceSettings
-patch_git "https://github.com/ederevx/frameworks_base a14" \
-    "bb487d4599e1a103f1881fe25acf2b63c8105356"
-white_list=(
-    "derp"
-)
-# 11: Allow overriding volume panel is left
-patch_git "https://github.com/ederevx/derp_frameworks_base a14-derp" \
-    "b09631bbaa88de1543056044e689d333dd2b2706"
-
-black_list=(
-#   "derp"
-    "$ROM_ROOT"
-)
-dir=$ROM_ROOT/packages/apps/LineageParts
-# 12: Remove touchscreen gestures in Settings - Skipped
-patch_git "https://github.com/ederevx/android_packages_apps_LineageParts a14" \
-    "d0ccc35c0bd117e8841b0d414643c24ebc20a106"
-dir=$ROM_ROOT/packages/apps/Settings
-# 13 ^
-black_list=(
-    "$ROM_ROOT"
-)
-patch_git "https://github.com/ederevx/android_packages_apps_Settings a14" \
-    "31187a64c9a5c49495651d11926edc5424a9473f"
-
-dir=$ROM_ROOT/system/sepolicy
-black_list=(
-    "yaap"
-)
-# 14: Fix sepolicy binder denials - lineage
-patch_git "https://github.com/ederevx/rising_android_system_sepolicy a14-alpha" \
-    "c9faf8f08ec6c6aab5ddd67d9108ff4473ee8881"
-
-white_list=(
-    "yaap"
-)
-# 15: Fix sepolicy binder denials - yaap
-patch_git "https://github.com/ederevx/rising_android_system_sepolicy a15-yaap" \
-    "e31d7c8e856c1ec009db3de418c695cbe8d7a8d1"
-
-#
-# Patches from https://github.com/OnePlus-5-T/local_manifests
-#
-
-dir=$ROM_ROOT/system/core
-# 16: Fix USB DAC
-patch_single_curl "https://raw.githubusercontent.com/OnePlus-5-T/aosp_patches/a14/system/core/0001-libusbhost-improve-usb_device_open-handling.patch"
-# 17: Fix DSU
-patch_single_curl "https://raw.githubusercontent.com/OnePlus-5-T/aosp_patches/a14/system/core/0002-first_stage_mount-Skip-dm-verity-setup-if-AVB-is-not.patch"
-# 18 ^
-patch_single_curl "https://raw.githubusercontent.com/OnePlus-5-T/aosp_patches/a14/system/core/0003-Revert-libfiemap-Disable-loop-mapping-code.patch"
-
-dir=$ROM_ROOT/frameworks/opt/telephony
-# 19: Fix telephony
-patch_single_curl "https://raw.githubusercontent.com/OnePlus-5-T/aosp_patches/a14/frameworks/opt/telephony/0001-Restore-support-with-RadioConfig-1.0-dsds-clients.patch"
-# 20 ^
-patch_single_curl "https://raw.githubusercontent.com/OnePlus-5-T/aosp_patches/a14/frameworks/opt/telephony/0002-Fallback_to_HAL_COMMAND_ALLOW_DATA.patch"
-
-dir=$ROM_ROOT/external/setupcompat
-# 21: Fix issues with GAPPS
-patch_single_curl "https://raw.githubusercontent.com/OnePlus-5-T/aosp_patches/a14/external/setupcompat/0001-Prevent-crash-with-improper-partner-config.patch"
+patch_qcomcaf
+patch_gralloc
+patch_displayintf
+patch_sepolicylegacy
+patch_buildmake
+patch_bison
+patch_colorchannels
+patch_volumepanel
+patch_tsgestures
+patch_sepolicy
+patch_syscore
+patch_telephony
+patch_setupgapps
 
 exit_timestamp 0
