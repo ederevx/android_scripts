@@ -12,8 +12,6 @@ if ! check_dir "$ROM_DIR" || ! cd "$ROM_DIR"; then
     exit_timestamp 1
 fi
 
-source build/envsetup.sh
-
 # Default properties
 TARGET_BUILD_PACKAGE=3
 build_device=dumpling
@@ -31,6 +29,7 @@ alpha_build() {
     decho "Building AlphaDroid: $target_device - $build_type TARGET_BUILD_PACKAGE=$TARGET_BUILD_PACKAGE"
 
     cleanup_path
+    source build/envsetup.sh
     export TARGET_BUILD_PACKAGE
     lunch lineage_$target_device-$release_ver-$build_type
     make bacon -j$(nproc --all)

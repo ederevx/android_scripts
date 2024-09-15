@@ -12,8 +12,6 @@ if ! check_dir "$ROM_DIR" || ! cd "$ROM_DIR"; then
     exit_timestamp 1
 fi
 
-source build/envsetup.sh
-
 # Default properties
 WITH_GMS=false
 build_device=dumpling
@@ -30,6 +28,7 @@ yaap_build() {
     decho "Building YAAP: $target_device - $build_type"
 
     cleanup_path
+    source build/envsetup.sh
     lunch yaap_$target_device-$build_type
     m yaap -j$(nproc --all)
     restore_path

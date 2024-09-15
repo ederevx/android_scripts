@@ -12,8 +12,6 @@ if ! check_dir "$ROM_DIR" || ! cd "$ROM_DIR"; then
     exit_timestamp 1
 fi
 
-source build/envsetup.sh
-
 # Default properties
 build_device=dumpling
 build_type=user
@@ -29,6 +27,7 @@ derp_build() {
     decho "Building DerpFest: $target_device - $build_type"
 
     cleanup_path
+    source build/envsetup.sh
     lunch derp_$target_device-$build_type
     mka derp -j$(nproc --all)
     restore_path

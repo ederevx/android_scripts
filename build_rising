@@ -12,8 +12,6 @@ if ! check_dir "$ROM_DIR" || ! cd "$ROM_DIR"; then
     exit_timestamp 1
 fi
 
-source build/envsetup.sh
-
 # Default properties
 WITH_GMS=false
 build_device=dumpling
@@ -31,6 +29,7 @@ rising_build() {
     decho "Building RisingOS: $target_device - $build_type WITH_GMS=$WITH_GMS"
 
     cleanup_path
+    source build/envsetup.sh
     export WITH_GMS
     riseup $target_device $build_type
     rise $build_cmd -j$(nproc --all)
