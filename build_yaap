@@ -28,8 +28,12 @@ yaap_build() {
 
     cleanup_out $target_device
     decho "Building YAAP: $target_device - $build_type"
+
+    cleanup_path
     lunch yaap_$target_device-$build_type
     m yaap -j$(nproc --all)
+    restore_path
+
     if [[ $target_device == "dumpling" ]]; then
         shared_cp_rom=true
     fi

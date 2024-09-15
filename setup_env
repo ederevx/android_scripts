@@ -8,6 +8,10 @@ ederevx_init() {
     local script_dir=~/scripts
     local script_path=$script_dir/setup_env
 
+    # Export global clean and backup PATH
+    export PATH_CLEAN=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/ederevx/scripts:/home/ederevx/repo/bin
+    export PATH_BKP=$PATH
+
     # Clone the script repo to ~/scripts and repo to ~/repo/bin
     if [[ -z $(echo $PATH | grep -i $script_dir) ]]; then
         export PATH=$PATH:$script_dir:~/repo/bin
@@ -32,17 +36,6 @@ ederevx_init() {
 
     local kname=$(uname -r)
     if [[ ! -z $(echo $kname | grep -i wsl) ]]; then
-        # Setup no appending WSL windows path to not break ROM scripts
-        local setup_env_wsl=/etc/wsl.conf
-        if ! check_file $setup_env_wsl; then
-            {
-                echo "[interop]"
-                echo "appendWindowsPath = false"
-            } | sudo tee $setup_env_wsl
-            decho $setup_env_wsl
-            cat $setup_env_wsl
-        fi
-
         if [[ ! -z $(echo $0 | grep -i bash) ]]; then
             # Only execute the following at session init
             decho "Current kernel: $kname"
@@ -252,6 +245,14 @@ cleanup_out() {
     rm -rf $rom_product/$device/symbols
     rm -rf $rom_product/$device/recovery
     rm -rf $rom_product/$device/super*
+}
+
+cleanup_path() {
+    export PATH=$PATH_CLEAN
+}
+
+restore_path() {
+    export PATH=$PATH_BKP
 }
 
 setup_dynamic() {

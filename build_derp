@@ -27,8 +27,12 @@ derp_build() {
 
     cleanup_out $target_device
     decho "Building DerpFest: $target_device - $build_type"
+
+    cleanup_path
     lunch derp_$target_device-$build_type
     mka derp -j$(nproc --all)
+    restore_path
+
     if [[ $target_device == "dumpling" ]]; then
         shared_cp_rom=true
     fi

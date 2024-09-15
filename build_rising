@@ -29,9 +29,13 @@ rising_build() {
 
     cleanup_out $target_device
     decho "Building RisingOS: $target_device - $build_type WITH_GMS=$WITH_GMS"
+
+    cleanup_path
     export WITH_GMS
     riseup $target_device $build_type
     rise $build_cmd -j$(nproc --all)
+    restore_path
+
     if [[ $target_device == "dumpling" ]] && [[ $WITH_GMS == "true" ]]; then
         shared_cp_rom=true
     fi

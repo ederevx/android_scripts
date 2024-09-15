@@ -29,9 +29,13 @@ alpha_build() {
 
     cleanup_out $target_device
     decho "Building AlphaDroid: $target_device - $build_type TARGET_BUILD_PACKAGE=$TARGET_BUILD_PACKAGE"
+
+    cleanup_path
     export TARGET_BUILD_PACKAGE
     lunch lineage_$target_device-$release_ver-$build_type
     make bacon -j$(nproc --all)
+    restore_path
+
     if [[ $target_device == "dumpling" ]] && [[ $TARGET_BUILD_PACKAGE == "3" ]]; then
         shared_cp_rom=true
     fi
