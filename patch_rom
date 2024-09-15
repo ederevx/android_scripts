@@ -270,9 +270,6 @@ patch_volumepanel() {
 }
 
 patch_tsgestures() {
-    # Skipped
-    return;
-
     patch_id="tsgestures"
 
     dir=$ROM_ROOT/packages/apps/LineageParts
@@ -280,7 +277,7 @@ patch_tsgestures() {
     #   "derp"
         "$ROM_ROOT"
     )
-    # Remove touchscreen gestures in Settings
+    # Remove touchscreen gestures in LineageParts
     patch_git "https://github.com/ederevx/android_packages_apps_LineageParts a14" \
         "d0ccc35c0bd117e8841b0d414643c24ebc20a106"
 
@@ -288,6 +285,7 @@ patch_tsgestures() {
     black_list=(
         "$ROM_ROOT"
     )
+    # Remove touchscreen gestures in Settings
     patch_git "https://github.com/ederevx/android_packages_apps_Settings a14" \
         "31187a64c9a5c49495651d11926edc5424a9473f"
 }
@@ -418,7 +416,7 @@ patch_buildmake
 patch_bison
 patch_colorchannels
 patch_volumepanel
-patch_tsgestures
+#patch_tsgestures
 patch_sepolicy
 patch_syscore
 patch_telephony
