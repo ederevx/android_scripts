@@ -302,6 +302,40 @@ patch_sepolicy() {
         "e31d7c8e856c1ec009db3de418c695cbe8d7a8d1"
 }
 
+patch_retrodyn() {
+    patch_id="retrodyn"
+
+    dir=$ROM_ROOT/system/core
+    white_list=(
+        "yaap"
+    )
+    # fixup! liblp: Allow to flash on bigger block device
+    patch_git "https://github.com/LineageOS/android_system_core lineage-21.0" \
+        "abe5928776475c98f57175492ccf80957602910c"
+
+    dir=$ROM_ROOT/bootable/deprecated-ota
+    white_list=(
+        "yaap"
+    )
+    # updater: Support loading dynamic partition metadata from OTA
+    patch_git "https://github.com/ederevx/android_bootable_deprecated-ota a15-yaap" \
+        "5b6df42ce25ada576606ea0e7a63f51c051851a0"
+
+    dir=$ROM_ROOT/build/tools
+    white_list=(
+        "yaap"
+    )
+    # releasetools: Pass non-sparse super_empty.img to update_dynamic_partitions()
+    patch_git "https://github.com/ederevx/android_build_tools a15-yaap" \
+        "6b2f2725a0a6e00e4a8943488c16fe5b1cb5f8bf"
+    white_list=(
+        "yaap"
+    )
+    # Allow override of device asserts, including multi-device support.
+    patch_git "https://github.com/ederevx/android_build_tools a15-yaap" \
+        "5725f3d83f2e362c8e1d7c433c1cc0ca65829617"
+}
+
 #
 # Patches from https://github.com/OnePlus-5-T/local_manifests
 #
@@ -357,5 +391,6 @@ patch_sepolicy
 patch_syscore
 patch_telephony
 patch_setupgapps
+patch_retrodyn
 
 exit_timestamp 0
