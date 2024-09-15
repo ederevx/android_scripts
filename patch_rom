@@ -276,7 +276,7 @@ white_list=(
 )
 # 15: Fix sepolicy binder denials - yaap
 patch_git "https://github.com/ederevx/rising_android_system_sepolicy a15-yaap" \
-    "c9faf8f08ec6c6aab5ddd67d9108ff4473ee8881"
+    "e31d7c8e856c1ec009db3de418c695cbe8d7a8d1"
 
 #
 # Patches from https://github.com/OnePlus-5-T/local_manifests
