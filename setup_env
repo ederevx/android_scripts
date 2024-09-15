@@ -293,6 +293,10 @@ rom_copy_and_clean() {
         type=$type/dyn
     fi
 
+    if [[ $gapps == "y" ]]; then
+        type=$type/gapps
+    fi
+
     if check_file $rom_target*.zip; then
         target_dir="$rom_common/$type"
         create_dir "$target_dir"

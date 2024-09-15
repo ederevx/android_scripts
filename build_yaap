@@ -16,6 +16,7 @@ fi
 TARGET_BUILD_GAPPS=false
 build_device=dumpling
 build_type=user
+gapps=n
 
 #
 # Build functions
@@ -42,11 +43,13 @@ yaap_build() {
 
 yaap_build_gms() {
     TARGET_BUILD_GAPPS=true
+    gapps=y
     yaap_build "$@"
 }
 
 yaap_build_vanilla() {
     TARGET_BUILD_GAPPS=false
+    gapps=n
     yaap_build "$@"
 }
 
@@ -69,6 +72,7 @@ param_func() {
             ;;            
             -g|--google)
                 TARGET_BUILD_GAPPS=true
+                gapps=y
             ;;
             -t|--type)
                 if check_valid "$2"; then
