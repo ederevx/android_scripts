@@ -61,7 +61,7 @@ yaap_build_vanilla() {
 
 yaap_build_both() {
     yaap_build_gms "$@"
-    yaap_build_vanilla "$@"
+#   yaap_build_vanilla "$@"
 }
 
 param_func() {
