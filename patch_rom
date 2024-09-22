@@ -251,6 +251,7 @@ patch_colorchannels() {
     dir=$ROM_ROOT/frameworks/base
     black_list=(
         "yaap"
+        "rising"
     )
     # Add color channels for DeviceSettings
     patch_git "https://github.com/ederevx/frameworks_base a14" \
