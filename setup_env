@@ -39,6 +39,10 @@ ederevx_init() {
             # Only execute the following at session init
             decho "Current kernel: $kname"
             update_linux
+
+            # Update repo at init always
+            curl https://storage.googleapis.com/git-repo-downloads/repo > ~/repo/bin/repo
+            chmod a+x ~/repo/bin/repo
         else
             # Update hwclock prior to executing scripts
             sudo hwclock -s
