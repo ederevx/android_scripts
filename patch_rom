@@ -253,8 +253,14 @@ patch_colorchannels() {
         "yaap"
         "rising"
     )
-    # Add color channels for DeviceSettings
+    # Add color channels for DeviceSettings - lineage
     patch_git "https://github.com/ederevx/frameworks_base a14" \
+        "bb487d4599e1a103f1881fe25acf2b63c8105356"
+    white_list=(
+        "rising"
+    )
+    # Add color channels for DeviceSettings - rising
+    patch_git "https://github.com/ederevx/frameworks_base a14-rising" \
         "bb487d4599e1a103f1881fe25acf2b63c8105356"
 }
 
