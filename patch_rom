@@ -393,6 +393,18 @@ patch_hardwarepixel() {
         "5723b06faf36c6a2c7c27a35ac43e30e51d8eb23"
 }
 
+patch_sepolicylegacy2() {
+    patch_id="sepolicylegacy2"
+
+    dir=$ROM_ROOT/device/qcom/sepolicy-legacy-um
+    white_list=(
+        "yaap"
+    )
+    # Patch sepolicy-legacy-um for YAAP
+    patch_git "https://github.com/ederevx/android_device_qcom_sepolicy a15-yaap" \
+        "50b4265bb4472f360730b32c09598ef96ad79240"
+}
+
 #
 # Patches from https://github.com/OnePlus-5-T/local_manifests
 #
@@ -446,5 +458,6 @@ patch_telephony
 patch_setupgapps
 patch_retrodyn
 patch_hardwarepixel
+patch_sepolicylegacy2
 
 exit_timestamp 0
