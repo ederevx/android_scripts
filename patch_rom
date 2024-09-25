@@ -18,7 +18,7 @@ is_skipped() {
 
     # Reset the lists after patch
     white_list="${white_list_default[@]}"
-    black_list="${white_list_default[@]}"
+    black_list="${black_list_default[@]}"
 
     border
     echo "Patch ID: $patch_id"
@@ -261,7 +261,7 @@ patch_colorchannels() {
     )
     # Add color channels for DeviceSettings - rising
     patch_git "https://github.com/ederevx/frameworks_base a14-rising" \
-        "bb487d4599e1a103f1881fe25acf2b63c8105356"
+        "ce702e4fc73f53074ca9e912b3a6baa70b98da36"
 }
 
 patch_volumepanel() {
