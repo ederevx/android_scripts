@@ -381,6 +381,18 @@ patch_retrodyn() {
         "5e8f81226c5e74d9abcf9fc65258ebfe9dbe6c51"
 }
 
+patch_hardwarepixel() {
+    patch_id="hardwarepixel"
+
+    dir=$ROM_ROOT/hardware/google/pixel
+    white_list=(
+        "yaap"
+    )
+    # Prevent build error with YAAP vendor
+    patch_git "https://github.com/LineageOS/android_hardware_google_pixel lineage-21.0" \
+        "5723b06faf36c6a2c7c27a35ac43e30e51d8eb23"
+}
+
 #
 # Patches from https://github.com/OnePlus-5-T/local_manifests
 #
@@ -433,5 +445,6 @@ patch_syscore
 patch_telephony
 patch_setupgapps
 patch_retrodyn
+patch_hardwarepixel
 
 exit_timestamp 0
