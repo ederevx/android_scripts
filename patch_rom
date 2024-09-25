@@ -12,13 +12,22 @@ fi
 
 readonly ROM_ROOT="$(pwd)"
 
+readonly white_list_default=(
+    "$ROM_ROOT"
+)
+readonly black_list_default=(
+)
+
+white_list=(${white_list_default[@]})
+black_list=(${black_list_default[@]})
+
 is_skipped() {
-    local white_list_tmp="${white_list[@]}"
-    local black_list_tmp="${black_list[@]}"
+    local white_list_tmp=(${white_list[@]})
+    local black_list_tmp=(${black_list[@]})
 
     # Reset the lists after patch
-    white_list="${white_list_default[@]}"
-    black_list="${black_list_default[@]}"
+    white_list=(${white_list_default[@]})
+    black_list=(${black_list_default[@]})
 
     border
     echo "Patch ID: $patch_id"
@@ -409,14 +418,6 @@ patch_setupgapps() {
 decho "This only needs to be called once if done cleanly and after a repo start!"
 
 param_func "$@"
-
-white_list_default=(
-    "$ROM_ROOT"
-)
-black_list_default=(
-)
-white_list="${white_list_default[@]}"
-black_list="${black_list_default[@]}"
 
 patch_qcomcaf
 patch_gralloc
