@@ -423,6 +423,15 @@ patch_lineagesepolicy() {
         "4779acca48776a62a9ec708ba63ec6482b30c0bb"
 }
 
+patch_notifled() {
+    patch_id="notifled"
+    
+    dir=framework/base
+    # Patch framework/base for notification LED fix
+    patch_git "https://github.com/LineageOS/android_frameworks_base lineage-21.0" \
+        "f9c33143b3906d07aebb782f214775a623ead94a"
+}
+
 #
 # Patches from https://github.com/OnePlus-5-T/local_manifests
 #
@@ -478,6 +487,7 @@ patch_retrodyn
 patch_hardwarepixel
 patch_sepolicylegacy2
 patch_lineagesepolicy
+patch_notifled
 
 # Patches from https://github.com/OnePlus-5-T/local_manifests
 patch_syscore
