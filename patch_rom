@@ -359,9 +359,9 @@ patch_retrodyn() {
     white_list=(
         "yaap"
     )
-    # updater: Support loading dynamic partition metadata from OTA
-    patch_git "https://github.com/ederevx/android_bootable_deprecated-ota a15-yaap" \
-        "5b6df42ce25ada576606ea0e7a63f51c051851a0"
+    # updater: Support loading dynamic partition metadata from OTA - added in source
+    #patch_git "https://github.com/ederevx/android_bootable_deprecated-ota a15-yaap" \
+    #    "86938568e3917a084c03d916771c9e7cbe735793"
 
     dir=build/tools
     white_list=(
@@ -432,6 +432,18 @@ patch_notifled() {
         "f9c33143b3906d07aebb782f214775a623ead94a"
 }
 
+patch_norecoveryover() {
+    patch_id="norecoveryover"
+
+    dir=bootable/deprecated-ota
+    white_list=(
+        "yaap"
+    )
+    # Allow us to not override the recovery
+    patch_git "https://github.com/ederevx/android_bootable_deprecated-ota a15-yaap" \
+        "51e04a5394e7ce383e2703a51e73ad39e97e84c1"
+}
+
 #
 # Patches from https://github.com/OnePlus-5-T/local_manifests
 #
@@ -488,6 +500,7 @@ patch_hardwarepixel
 patch_sepolicylegacy2
 patch_lineagesepolicy
 patch_notifled
+patch_norecoveryover
 
 # Patches from https://github.com/OnePlus-5-T/local_manifests
 patch_syscore
