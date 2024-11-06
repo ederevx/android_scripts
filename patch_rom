@@ -29,18 +29,12 @@ is_skipped() {
     white_list=(${white_list_default[@]})
     black_list=(${black_list_default[@]})
 
-    border
-    echo "Patch ID: $patch_id"
-    echo "Dir: $dir"
-    border
     if [[ ! -z $target_patch ]] && [[ $target_patch != $patch_id ]]; then
-        decho "Skipped patch, not the target patch..."
         return 0
     fi
 
     for rom in ${black_list_tmp[@]}; do
         if [[ ! -z $(echo $ROM_ROOT | grep -i $rom) ]]; then
-            decho "Skipped patch, blacklisted..."
             return 0
         fi
     done
@@ -50,7 +44,6 @@ is_skipped() {
             return 1
         fi
     done
-    decho "Skipped patch, not whitelisted..."
     return 0
 }
 
@@ -67,6 +60,11 @@ patch_git() {
     if is_skipped; then
         return
     fi
+
+    border
+    echo "Patch ID: $patch_id"
+    echo "Dir: $dir"
+    border
 
     if check_dir "$dir" && cd "$dir"; then
         git fetch $giturl
@@ -105,6 +103,11 @@ unpatch_git() {
         return
     fi
 
+    border
+    echo "Patch ID: $patch_id"
+    echo "Dir: $dir"
+    border
+
     if check_dir "$dir" && cd "$dir"; then
         if [[ -z $sha2 ]]; then
             commit_sha="$sha1"
@@ -135,6 +138,11 @@ patch_single_curl() {
     if is_skipped; then
         return
     fi
+
+    border
+    echo "Patch ID: $patch_id"
+    echo "Dir: $dir"
+    border
 
     if check_dir "$dir" && cd "$dir"; then
         decho $patchurl
