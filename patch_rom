@@ -468,8 +468,10 @@ patch_syscore() {
     dir=system/core
     # 16: Fix USB DAC
     patch_single_curl "https://raw.githubusercontent.com/OnePlus-5-T/aosp_patches/a14/system/core/0001-libusbhost-improve-usb_device_open-handling.patch"
+    dir=system/core
     # 17: Fix DSU
     patch_single_curl "https://raw.githubusercontent.com/OnePlus-5-T/aosp_patches/a14/system/core/0002-first_stage_mount-Skip-dm-verity-setup-if-AVB-is-not.patch"
+    dir=system/core
     # 18 ^
     patch_single_curl "https://raw.githubusercontent.com/OnePlus-5-T/aosp_patches/a14/system/core/0003-Revert-libfiemap-Disable-loop-mapping-code.patch"
 }
@@ -480,6 +482,7 @@ patch_telephony() {
     dir=frameworks/opt/telephony
     # 19: Fix telephony
     patch_single_curl "https://raw.githubusercontent.com/OnePlus-5-T/aosp_patches/a14/frameworks/opt/telephony/0001-Restore-support-with-RadioConfig-1.0-dsds-clients.patch"
+    dir=frameworks/opt/telephony
     # 20 ^
     patch_single_curl "https://raw.githubusercontent.com/OnePlus-5-T/aosp_patches/a14/frameworks/opt/telephony/0002-Fallback_to_HAL_COMMAND_ALLOW_DATA.patch"
 }
