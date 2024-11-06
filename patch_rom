@@ -252,6 +252,8 @@ patch_bison() {
     # Allow bison - lineage
     patch_git "https://github.com/ederevx/android_build_soong a14" \
         "6a4996614768c719b9559956289a11c91369e958"
+
+    dir=build/soong
     white_list=(
         "yaap"
     )
@@ -271,6 +273,8 @@ patch_colorchannels() {
     # Add color channels for DeviceSettings - lineage
     patch_git "https://github.com/ederevx/frameworks_base a14" \
         "bb487d4599e1a103f1881fe25acf2b63c8105356"
+
+    dir=frameworks/base
     white_list=(
         "rising"
     )
@@ -318,16 +322,22 @@ patch_sepolicy() {
     dir=system/sepolicy
     black_list=(
         "yaap"
+        "derp"
     )
     # Fix sepolicy binder denials - lineage
     patch_git "https://github.com/ederevx/rising_android_system_sepolicy a14-alpha" \
         "c9faf8f08ec6c6aab5ddd67d9108ff4473ee8881"
+
+    dir=system/sepolicy
     white_list=(
         "yaap"
+        "derp"
     )
     # Fix sepolicy binder denials - yaap
     patch_git "https://github.com/ederevx/rising_android_system_sepolicy a15-yaap" \
         "e31d7c8e856c1ec009db3de418c695cbe8d7a8d1"
+
+    dir=system/sepolicy
     white_list=(
         "yaap"
     )
@@ -371,6 +381,8 @@ patch_retrodyn() {
     # https://github.com/LineageOS/android_build/commit/8124d9428ef269148f06c262f636d29e566d92d4
     patch_git "git@github.com:ederevx/android_build_tools.git a15-yaap" \
         "6b2f2725a0a6e00e4a8943488c16fe5b1cb5f8bf"
+
+    dir=build/tools
     white_list=(
         "yaap"
     )
@@ -378,6 +390,8 @@ patch_retrodyn() {
     # https://github.com/LineageOS/android_build/commit/2f71c5fcdf3786692c6d2ec5433e1ccf51132047
     patch_git "git@github.com:ederevx/android_build_tools.git a15-yaap" \
         "5725f3d83f2e362c8e1d7c433c1cc0ca65829617"
+
+    dir=build/tools
     white_list=(
         "yaap"
     )
