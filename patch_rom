@@ -331,8 +331,9 @@ patch_sepolicy() {
     black_list=(
         "yaap"
         "derp"
+        "rising"
     )
-    # Fix sepolicy binder denials - lineage
+    # Fix sepolicy binder denials - lineage/a14
     patch_git "https://github.com/ederevx/rising_android_system_sepolicy a14-alpha" \
         "c9faf8f08ec6c6aab5ddd67d9108ff4473ee8881"
 
@@ -340,8 +341,9 @@ patch_sepolicy() {
     white_list=(
         "yaap"
         "derp"
+        "rising"
     )
-    # Fix sepolicy binder denials - yaap
+    # Fix sepolicy binder denials - yaap/a15
     patch_git "https://github.com/ederevx/rising_android_system_sepolicy a15-yaap" \
         "e31d7c8e856c1ec009db3de418c695cbe8d7a8d1"
 
