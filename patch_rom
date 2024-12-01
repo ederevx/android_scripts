@@ -277,6 +277,7 @@ patch_colorchannels() {
     black_list=(
         "yaap"
         "rising"
+        "derp"
     )
     # Add color channels for DeviceSettings - lineage
     patch_git "https://github.com/ederevx/frameworks_base a14" \
