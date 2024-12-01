@@ -205,8 +205,10 @@ patch_gralloc() {
         "derp"
     )
     # Hookup TARGET_USES_GRALLOC1 - derp
-    patch_git "https://github.com/ederevx/vendor_derp a14-derp" \
-        "d9b9268e5beea02ddd15cc63635d2bce44d10f6c"
+    #patch_git "https://github.com/ederevx/vendor_derp a14-derp" \
+    #    "d9b9268e5beea02ddd15cc63635d2bce44d10f6c"
+    patch_git "https://github.com/ederevx/vendor_derp a15-derp" \
+        "f4cfa79682f5e600da493a5eff4c4ce2484a979b"
 
     dir=vendor/yaap
     white_list=(
