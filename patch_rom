@@ -522,7 +522,7 @@ patch_sepolicylegacy
 patch_buildmake
 patch_bison
 patch_colorchannels
-patch_volumepanel
+#patch_volumepanel
 #patch_tsgestures
 patch_sepolicy
 patch_retrodyn
