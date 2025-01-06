@@ -280,6 +280,7 @@ patch_colorchannels() {
         "yaap"
         "rising"
         "derp"
+        "pixelage"
     )
     # Add color channels for DeviceSettings - lineage
     patch_git "https://github.com/ederevx/frameworks_base a14" \
@@ -335,6 +336,7 @@ patch_sepolicy() {
         "yaap"
         "derp"
         "rising"
+        "pixelage"
     )
     # Fix sepolicy binder denials - lineage/a14
     patch_git "https://github.com/ederevx/rising_android_system_sepolicy a14-alpha" \
@@ -345,6 +347,7 @@ patch_sepolicy() {
         "yaap"
         "derp"
         "rising"
+        "pixelage"
     )
     # Fix sepolicy binder denials - yaap/a15
     patch_git "https://github.com/ederevx/rising_android_system_sepolicy a15-yaap" \
@@ -469,6 +472,15 @@ patch_norecoveryover() {
     # Allow us to not override the recovery
     patch_git "https://github.com/ederevx/android_bootable_deprecated-ota a15-yaap" \
         "51e04a5394e7ce383e2703a51e73ad39e97e84c1"
+}
+
+patch_settings() {
+    patch_id="settings"
+
+    dir=packages/apps/Settings
+    # Patch settings app for theming a15
+    patch_git "https://github.com/ederevx/packages_apps_Settings a15-pixelage" \
+        "c0f973969d28a0b36e6d7c1c4db705f5e632c934"
 }
 
 #
