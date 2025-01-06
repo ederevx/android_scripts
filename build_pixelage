@@ -1,0 +1,83 @@
+#!/bin/bash
+
+# SPDX-FileCopyrightText: 2024 Edrick Sinsuan
+# SPDX-License-Identifier: Apache-2.0
+
+source setup_env
+
+# Pixelage directories
+readonly ROM_DIR="$HOME/repo/pixelage"
+
+if ! check_dir "$ROM_DIR" || ! cd "$ROM_DIR"; then
+    exit_timestamp 1
+fi
+
+# Default properties
+build_device=dumpling
+build_type=user
+
+#
+# Build functions
+#
+
+pixelage_build() {
+    local target_device=$1
+
+    cleanup_out $target_device
+    decho "Building Pixelage: $target_device - $build_type"
+
+    cleanup_path
+    export PIXELAGE_BUILD="$target_device"
+    source build/envsetup.sh
+    lunch pixelage_$target_device-ap4a-$build_type
+    mka bacon -j$(nproc --all)
+    restore_path
+
+    if [[ $target_device == "dumpling" ]]; then
+        shared_cp_rom=true
+    fi
+    rom_copy_and_clean "Pixelage" $target_device $build_type
+}
+
+param_func() {
+    while [[ $# -gt 0 ]]
+        do
+        key="$1"
+
+        case $key in
+            -d|--device)
+                if check_valid "$2"; then
+                    build_device="$2"
+                    shift
+                fi
+            ;;            
+            -t|--type)
+                if check_valid "$2"; then
+                    build_type="$2"
+                    shift
+                fi
+            ;;
+            -a|--all)
+                build_all=y
+            ;;
+        esac
+        shift
+    done
+}
+
+#
+# Build start
+#
+
+param_func "$@"
+
+if [[ $build_all == "y" ]]; then
+    for device in ${devices_list[@]}; do
+        pixelage_build $device
+    done
+    exit_timestamp 0
+fi
+
+pixelage_build $build_device
+
+exit_timestamp 0
