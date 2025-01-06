@@ -195,6 +195,8 @@ patch_gralloc() {
     dir=vendor/lineage
     black_list=(
         "derp"
+        "yaap"
+        "pixelage"
     )
     # Hookup TARGET_USES_GRALLOC1 - lineage
     patch_git "https://github.com/ederevx/android_vendor_lineage a14" \
@@ -217,6 +219,14 @@ patch_gralloc() {
     # Hookup TARGET_USES_GRALLOC1 - yaap
     patch_git "https://github.com/ederevx/vendor_yaap a15-yaap" \
         "d4f5a35547dccfaa96aeedaa226d76a252e4328c"
+
+    dir=vendor/pixelage
+    white_list=(
+        "pixelage"
+    )
+    # Hookup TARGET_USES_GRALLOC1 - pixelage
+    patch_git "https://github.com/ederevx/android_vendor_derp a15-pixelage" \
+        "86e7d087b195da31f4b677b0616740ac37ea9bbb"
 }
 
 patch_displayintf() {
