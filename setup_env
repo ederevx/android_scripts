@@ -38,7 +38,6 @@ ederevx_init() {
         if [[ ! -z $(echo $0 | grep -i bash) ]]; then
             # Only execute the following at session init
             decho "Current kernel: $kname"
-            update_linux
 
             # Update repo at init always
             curl https://storage.googleapis.com/git-repo-downloads/repo > ~/repo/bin/repo
@@ -48,12 +47,22 @@ ederevx_init() {
             sudo hwclock -s
         fi
     fi
+
+    if [[ ! -z $(echo $0 | grep -i bash) ]]; then
+        update_linux
+    fi
 }
 
 script_init() {
     # Environment directories
-    readonly C_USER_DIR=/mnt/c/Users/evcsi
-    readonly SHARED_TEST_DIR=$C_USER_DIR/WSL-Shared
+    local kname=$(uname -r)
+    if [[ ! -z $(echo $kname | grep -i wsl) ]]; then
+        readonly C_USER_DIR=/mnt/c/Users/evcsi
+        readonly SHARED_TEST_DIR=$C_USER_DIR/WSL-Shared
+    else
+        readonly EXT_DIR=/mnt/ext
+        readonly SHARED_TEST_DIR=$EXT_DIR/shared
+    fi
     readonly SHARED_ROMS_DIR="$SHARED_TEST_DIR/roms"
 
     readonly ROM_PRODUCT_DIR="out/target/product"
