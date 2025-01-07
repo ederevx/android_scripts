@@ -344,5 +344,9 @@ exit_timestamp() {
     exit $1
 }
 
+detach_exec() {
+    nohup "$@" > ~/cmd.log & disown
+}
+
 # Initialize environment after functions init
 env_init
