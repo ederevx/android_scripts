@@ -6,9 +6,9 @@
 source setup_env
 
 # Rising directories
-readonly ROM_DIR="$HOME/repo/rising"
+readonly ROM_DIR="$(pwd)"
 
-if ! check_dir "$ROM_DIR" || ! cd "$ROM_DIR"; then
+if [[ -z $(echo $ROM_DIR | grep -i rising) ]]; then
     exit_timestamp 1
 fi
 

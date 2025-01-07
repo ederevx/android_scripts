@@ -6,9 +6,9 @@
 source setup_env
 
 # Derp directories
-readonly ROM_DIR="$HOME/repo/derp"
+readonly ROM_DIR="$(pwd)"
 
-if ! check_dir "$ROM_DIR" || ! cd "$ROM_DIR"; then
+if [[ -z $(echo $ROM_DIR | grep -i derp) ]]; then
     exit_timestamp 1
 fi
 

@@ -6,9 +6,9 @@
 source setup_env
 
 # Alpha directories
-readonly ROM_DIR="$HOME/repo/alpha"
+readonly ROM_DIR="$(pwd)"
 
-if ! check_dir "$ROM_DIR" || ! cd "$ROM_DIR"; then
+if [[ -z $(echo $ROM_DIR | grep -i alpha) ]]; then
     exit_timestamp 1
 fi
 
