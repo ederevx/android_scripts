@@ -9,7 +9,7 @@ source setup_env
 readonly ROM_NAME="derp"
 readonly ROM_DIR="$(pwd)"
 
-if [[ -z $(echo $ROM_DIR | grep -i $ROM_NAME | grep -vi "$(ROM_NAME)/") ]]; then
+if [[ -z $(echo $ROM_DIR | grep -i $ROM_NAME | grep -vi "${ROM_NAME}/") ]]; then
     decho "You are not in the right directory."
     exit_timestamp 1
 fi
