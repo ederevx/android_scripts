@@ -9,7 +9,7 @@ ederevx_init() {
     local script_path=$script_dir/setup_env
 
     # Export global clean and backup PATH
-    export PATH_CLEAN=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/ederevx/scripts:/home/ederevx/repo/bin
+    export PATH_CLEAN=/usr/lib/ccache:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/ederevx/scripts:/home/ederevx/repo/bin
     # Clone the script repo to ~/scripts and repo to ~/repo/bin
     if [[ -z $(echo $PATH | grep -i $script_dir) ]]; then
         export PATH=$PATH:$script_dir:~/repo/bin
@@ -38,10 +38,6 @@ ederevx_init() {
         if [[ ! -z $(echo $0 | grep -i bash) ]]; then
             # Only execute the following at session init
             decho "Current kernel: $kname"
-
-            # Update repo at init always
-            curl https://storage.googleapis.com/git-repo-downloads/repo > ~/repo/bin/repo
-            chmod a+x ~/repo/bin/repo
         else
             # Update hwclock prior to executing scripts
             sudo hwclock -s
@@ -50,6 +46,9 @@ ederevx_init() {
 
     if [[ ! -z $(echo $0 | grep -i bash) ]]; then
         update_linux
+        # Update repo at init always
+        curl https://storage.googleapis.com/git-repo-downloads/repo > ~/repo/bin/repo
+        chmod a+x ~/repo/bin/repo
     fi
 }
 
