@@ -6,9 +6,11 @@
 source setup_env
 
 # Rising directories
+readonly ROM_NAME="rising"
 readonly ROM_DIR="$(pwd)"
 
-if [[ -z $(echo $ROM_DIR | grep -i rising) ]]; then
+if [[ -z $(echo $ROM_DIR | grep -i $ROM_NAME | grep -vi "$(ROM_NAME)/") ]]; then
+    decho "You are not in the right directory."
     exit_timestamp 1
 fi
 
