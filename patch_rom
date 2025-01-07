@@ -225,7 +225,7 @@ patch_gralloc() {
         "pixelage"
     )
     # Hookup TARGET_USES_GRALLOC1 - pixelage
-    patch_git "https://github.com/ederevx/android_vendor_derp a15-pixelage" \
+    patch_git "https://github.com/ederevx/android_vendor_pixelage a15-pixelage" \
         "86e7d087b195da31f4b677b0616740ac37ea9bbb"
 }
 
