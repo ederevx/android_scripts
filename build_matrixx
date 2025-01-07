@@ -32,6 +32,8 @@ matrixx_build() {
     cleanup_path
     source build/envsetup.sh
     export WITH_GMS
+    lunch lineage_$target_device-ap2a-$build_type
+    m installclean
     brunch lineage_$target_device-ap2a-$build_type -j$(nproc --all)
     restore_path
 

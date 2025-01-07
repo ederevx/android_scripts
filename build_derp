@@ -31,6 +31,7 @@ derp_build() {
     cleanup_path
     source build/envsetup.sh
     lunch derp_$target_device-$build_type
+    m installclean
     mka derp -j$(nproc --all)
     restore_path
 

@@ -33,6 +33,7 @@ pixelage_build() {
     export PIXELAGE_BUILD="$target_device"
     source build/envsetup.sh
     lunch pixelage_$target_device-ap4a-$build_type
+    m installclean
     mka bacon -j$(nproc --all)
     restore_path
 

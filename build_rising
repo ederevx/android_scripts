@@ -34,6 +34,7 @@ rising_build() {
     source build/envsetup.sh
     export WITH_GMS
     riseup $target_device $build_type
+    m installclean
     rise $build_cmd -j$(nproc --all)
     restore_path
 

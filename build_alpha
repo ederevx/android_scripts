@@ -34,6 +34,7 @@ alpha_build() {
     source build/envsetup.sh
     export TARGET_BUILD_PACKAGE
     lunch lineage_$target_device-$release_ver-$build_type
+    m installclean
     make bacon -j$(nproc --all)
     restore_path
 
