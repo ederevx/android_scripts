@@ -18,10 +18,12 @@ ederevx_init() {
 
     # Execute this script at bash init
     local bashrc=~/.bashrc
-    if [[ -z $(cat $bashrc | grep -i setup_env) ]] ||
-        [[ -z $(cat $bashrc | grep -i /usr/lib/ccache) ]]; then
-        echo "export PATH=/usr/lib/ccache:$PATH" >> $bashrc
+    if [[ -z $(cat $bashrc | grep -i setup_env) ]]; then
         echo "source $script_path" >> $bashrc
+    fi
+
+    if [[ -z $(cat $bashrc | grep -i /usr/lib/ccache) ]]; then
+        echo "export PATH=/usr/lib/ccache:$PATH" >> $bashrc
     fi
 
     # Setup nopasswd rule for calling commonly used commands
