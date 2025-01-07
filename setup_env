@@ -357,9 +357,13 @@ exit_timestamp() {
     exit $1
 }
 
+check_exec() {
+    tail -f ~/cmd.log
+}
+
 detach_exec() {
     nohup "$@" > ~/cmd.log & disown
-    tail -f ~/cmd.log
+    check_exec
 }
 
 # Initialize environment after functions init
