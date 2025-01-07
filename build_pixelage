@@ -15,6 +15,7 @@ fi
 # Default properties
 build_device=dumpling
 build_type=user
+export WITH_GMS=true
 
 #
 # Build functions
