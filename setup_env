@@ -32,6 +32,7 @@ ederevx_init() {
         {
             echo "$userhost ALL=(ALL:ALL) NOPASSWD: /usr/sbin/hwclock -s"
             echo "$userhost ALL=(ALL:ALL) NOPASSWD: /usr/bin/apt-get"
+            echo "$userhost ALL=(ALL:ALL) NOPASSWD: /usr/bin/cpupower frequency-set -g performance"
         } | sudo tee $setup_env_sudo
         decho $setup_env_sudo
         cat $setup_env_sudo
@@ -50,6 +51,8 @@ ederevx_init() {
 
     if [[ ! -z $(echo $0 | grep -i bash) ]]; then
         update_linux
+	# Make sure we're set to performance
+	sudo cpupower frequency-set -g powersave
         # Update repo at init always
         curl https://storage.googleapis.com/git-repo-downloads/repo > ~/repo/bin/repo
         chmod a+x ~/repo/bin/repo
