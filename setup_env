@@ -10,20 +10,23 @@ ederevx_init() {
 
     # Export global clean and backup PATH
     export PATH_CLEAN=/usr/lib/ccache:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/ederevx/scripts:/home/ederevx/repo/bin
+
     # Clone the script repo to ~/scripts and repo to ~/repo/bin
     if [[ -z $(echo $PATH | grep -i $script_dir) ]]; then
         export PATH=$PATH:$script_dir:~/repo/bin
     fi
+
+    # Make sure ccache is in $PATH
+    if [[ -z $(cat $PATH | grep -i /usr/lib/ccache) ]]; then
+        export PATH=/usr/lib/ccache:$PATH
+    fi
+
     export PATH_BKP=$PATH
 
     # Execute this script at bash init
     local bashrc=~/.bashrc
     if [[ -z $(cat $bashrc | grep -i setup_env) ]]; then
         echo "source $script_path" >> $bashrc
-    fi
-
-    if [[ -z $(cat $bashrc | grep -i /usr/lib/ccache) ]]; then
-        echo "export PATH=/usr/lib/ccache:$PATH" >> $bashrc
     fi
 
     # Setup nopasswd rule for calling commonly used commands
@@ -51,10 +54,10 @@ ederevx_init() {
 
     if [[ ! -z $(echo $0 | grep -i bash) ]]; then
         update_linux
-	# Make sure we're set to performance
-	sudo cpupower frequency-set -g performance
+        # Make sure we're set to performance
+        sudo cpupower frequency-set -g performance > /dev/null
         # Update repo at init always
-        curl https://storage.googleapis.com/git-repo-downloads/repo > ~/repo/bin/repo
+        curl -s https://storage.googleapis.com/git-repo-downloads/repo > ~/repo/bin/repo
         chmod a+x ~/repo/bin/repo
     fi
 }
