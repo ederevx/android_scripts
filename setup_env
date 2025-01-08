@@ -32,7 +32,7 @@ ederevx_init() {
         {
             echo "$userhost ALL=(ALL:ALL) NOPASSWD: /usr/sbin/hwclock -s"
             echo "$userhost ALL=(ALL:ALL) NOPASSWD: /usr/bin/apt-get"
-            echo "$userhost ALL=(ALL:ALL) NOPASSWD: /usr/bin/cpupower frequency-set -g performance"
+            echo "$userhost ALL=(ALL:ALL) NOPASSWD: /usr/bin/cpupower"
         } | sudo tee $setup_env_sudo
         decho $setup_env_sudo
         cat $setup_env_sudo
