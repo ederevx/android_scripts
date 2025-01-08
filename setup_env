@@ -17,7 +17,7 @@ ederevx_init() {
     fi
 
     # Make sure ccache is in $PATH
-    if [[ -z $(cat $PATH | grep -i /usr/lib/ccache) ]]; then
+    if [[ -z $(echo $PATH | grep -i /usr/lib/ccache) ]]; then
         export PATH=/usr/lib/ccache:$PATH
     fi
 
