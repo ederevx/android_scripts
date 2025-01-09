@@ -55,7 +55,9 @@ ederevx_init() {
     if [[ ! -z $(echo $0 | grep -i bash) ]]; then
         update_linux
         # Make sure we're set to performance
-        sudo cpupower frequency-set -g performance > /dev/null
+        if [[ ! -z $(cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor | grep -iv performance) ]]; then
+            sudo cpupower frequency-set -g performance > /dev/null
+        fi
         # Update repo at init always
         curl -s https://storage.googleapis.com/git-repo-downloads/repo > ~/repo/bin/repo
         chmod a+x ~/repo/bin/repo
