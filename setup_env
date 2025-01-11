@@ -23,6 +23,15 @@ ederevx_init() {
 
     export PATH_BKP=$PATH
 
+    # Export shared directories
+    if [[ ! -z $(echo $kname | grep -i wsl) ]]; then
+        readonly C_USER_DIR=/mnt/c/Users/evcsi
+        export SHARED_ROOT_DIR=$C_USER_DIR/WSL-Shared
+    else
+        readonly EXT_DIR=$HOME
+        export SHARED_ROOT_DIR=$EXT_DIR/shared
+    fi
+
     # Execute this script at bash init
     local bashrc=~/.bashrc
     if [[ -z $(cat $bashrc | grep -i setup_env) ]]; then
@@ -33,12 +42,11 @@ ederevx_init() {
     local setup_env_sudo=/etc/sudoers.d/setup_env
     if ! check_file $setup_env_sudo; then
         {
-            echo "$userhost ALL=(ALL:ALL) NOPASSWD: /usr/sbin/hwclock -s"
+            echo "$userhost ALL=(ALL:ALL) NOPASSWD: /usr/sbin/hwclock"
             echo "$userhost ALL=(ALL:ALL) NOPASSWD: /usr/bin/apt-get"
             echo "$userhost ALL=(ALL:ALL) NOPASSWD: /usr/bin/cpupower"
         } | sudo tee $setup_env_sudo
         decho $setup_env_sudo
-        cat $setup_env_sudo
     fi
 
     local kname=$(uname -r)
@@ -56,7 +64,7 @@ ederevx_init() {
         update_linux
         # Make sure we're set to performance
         if [[ ! -z $(cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor | grep -iv performance) ]]; then
-            sudo cpupower frequency-set -g performance > /dev/null
+            sudo cpupower frequency-set -g performance
         fi
         # Update repo at init always
         curl -s https://storage.googleapis.com/git-repo-downloads/repo > ~/repo/bin/repo
@@ -68,14 +76,7 @@ export -f ederevx_init
 script_init() {
     # Environment directories
     local kname=$(uname -r)
-    if [[ ! -z $(echo $kname | grep -i wsl) ]]; then
-        readonly C_USER_DIR=/mnt/c/Users/evcsi
-        readonly SHARED_TEST_DIR=$C_USER_DIR/WSL-Shared
-    else
-        readonly EXT_DIR=/mnt/ext
-        readonly SHARED_TEST_DIR=$EXT_DIR/shared
-    fi
-    readonly SHARED_ROMS_DIR="$SHARED_TEST_DIR/roms"
+    readonly SHARED_ROMS_DIR="$SHARED_ROOT_DIR/roms"
 
     readonly ROM_PRODUCT_DIR="out/target/product"
     readonly ROM_COMMON_DIR="$ROM_PRODUCT_DIR/msm8998-common"
@@ -155,6 +156,31 @@ repo_init() {
         ~/ederevx-website
 }
 export -f repo_init
+
+vsftpd_init() {
+    local vsftpd_conf=/etc/vsftpd.conf
+
+    sudo apt-get update
+    sudo apt-get install -y vsftpd
+    sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/vsftpd.pem -out /etc/ssl/private/vsftpd.pem
+
+    {
+        # SSL setup
+        echo "ssl_enable=YES"
+        echo "rsa_cert_file=/etc/ssl/private/vsftpd.pem"
+        echo "rsa_private_key_file=/etc/ssl/private/vsftpd.pem"
+        echo "force_local_logins_ssl=YES"
+        echo "force_local_data_ssl=YES"
+
+        # Local dir setup
+        echo "local_dir=$SHARED_ROOT_DIR"
+    } | sudo tee -a $vsftpd_conf
+
+    # Double check if the conf is good
+    sudo nano $vsftpd_conf
+    sudo systemctl restart vsftpd
+}
+export -f vsftpd_init
 
 #
 # Utility functions

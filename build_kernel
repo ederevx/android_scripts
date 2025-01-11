@@ -270,8 +270,8 @@ export_img_zip() {
     } >> version
 
     zip_image $TARGET_DIR/$kname
-    create_dir $SHARED_TEST_DIR/builds
-    cp $TARGET_DIR/$kname.zip $SHARED_TEST_DIR/builds/
+    create_dir $SHARED_ROOT_DIR/builds
+    cp $TARGET_DIR/$kname.zip $SHARED_ROOT_DIR/builds/
 
     rm -f $lwimg
     rm -f version
@@ -301,8 +301,8 @@ main_func() {
     fi
 
     decho "$build_str"
-    create_dir $SHARED_TEST_DIR/logs
-    cp $log $SHARED_TEST_DIR/logs/
+    create_dir $SHARED_ROOT_DIR/logs
+    cp $log $SHARED_ROOT_DIR/logs/
 }
 
 param_func() {
