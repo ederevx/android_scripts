@@ -120,6 +120,36 @@ dependencies_init() {
     sudo apt-get install fakeroot ncurses-dev xz-utils libssl-dev bc libelf-dev
 }
 
+repo_init() {
+    create_dir ~/repo
+    create_dir ~/repo/bin
+    create_dir ~/kernel
+    create_dir ~/kernel/toolchain
+
+    git config --global user.name "Edrick Sinsuan"
+    git config --global user.email "evcsinsuan@gmail.com"
+    
+    # Get repo bin from google
+    curl -s https://storage.googleapis.com/git-repo-downloads/repo > ~/repo/bin/repo
+    chmod a+x ~/repo/bin/repo
+
+    # Clone kernel repositories
+    git clone git@github.com:ederevx/x-ft_kernel_oneplus_msm8998.git \
+        ~/kernel/x-ft
+    git clone git@github.com:ederevx/x_kernel_oneplus_msm8998.git \
+        ~/kernel/x
+
+    # Clone kernel dependencies
+    git clone git@github.com:ederevx/kernel_zip.git \
+        ~/kernel/zip
+    git clone --depth 1 -b android-15.0.0_r6 --single-branch https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86 \
+        ~/kernel/toolchain/clang
+
+    # Clone website
+    git clone git@github.com:ederevx/ederevx-website.git \
+        ~/ederevx-website
+}
+
 #
 # Utility functions
 #
