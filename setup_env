@@ -63,6 +63,7 @@ ederevx_init() {
         chmod a+x ~/repo/bin/repo
     fi
 }
+export -f ederevx_init
 
 script_init() {
     # Environment directories
@@ -87,11 +88,13 @@ script_init() {
     shared_cp_rom=false
     curr_date=$(date +'%Y%m%d')
 }
+export -f script_init
 
 git_init() {
     # Git properties
     git_auth="$(git config --get user.name) <$(git config --get user.email)>"
 }
+export -f git_init
 
 env_init() {
     # Identifier
@@ -110,6 +113,7 @@ env_init() {
     date_full=$(date -R)
     decho $date_full
 }
+export -f env_init
 
 dependencies_init() {
     # Install all needed packages
@@ -119,6 +123,7 @@ dependencies_init() {
     sudo apt-get install gcc-aarch64-linux-gnu gcc-arm-linux-gnueabi
     sudo apt-get install fakeroot ncurses-dev xz-utils libssl-dev bc libelf-dev
 }
+export -f dependencies_init
 
 repo_init() {
     create_dir ~/repo
@@ -149,6 +154,7 @@ repo_init() {
     git clone git@github.com:ederevx/ederevx-website.git \
         ~/ederevx-website
 }
+export -f repo_init
 
 #
 # Utility functions
@@ -157,17 +163,20 @@ repo_init() {
 border() {
     printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
 }
+export -f border
 
 decho() {
     border
     echo "$@"
     border
 }
+export -f decho
 
 decho_log() {
     decho "$@"
     decho "$@" >> $log
 }
+export -f decho_log
 
 check_dir() {
     if [ ! -d "$@" ]; then 
@@ -177,6 +186,7 @@ check_dir() {
         return 0
     fi
 }
+export -f check_dir
 
 check_file() {
     if [ ! -f "$@" ]; then 
@@ -186,6 +196,7 @@ check_file() {
         return 0
     fi
 }
+export -f check_file
 
 create_dir() {
     if ! check_dir "$@"; then
@@ -195,6 +206,7 @@ create_dir() {
         return 0
     fi
 }
+export -f create_dir
 
 pause_script() {
     if [[ $nopause == "y" ]]; then
@@ -204,6 +216,7 @@ pause_script() {
     read -p "Press enter to continue"
     border
 }
+export -f pause_script
 
 update_repo() {
     local curr_dir=$(pwd)
@@ -223,6 +236,7 @@ update_repo() {
 
     cd $curr_dir
 }
+export -f update_repo
 
 update_linux() {
     decho "Updating applications and binaries..."
@@ -232,6 +246,7 @@ update_linux() {
     sudo apt-get autoremove
     sudo apt-get clean
 }
+export -f update_linux
 
 check_valid() {
     if [[ ${1:0:1} != "-" ]] && [[ $1 != "" ]]; then
@@ -240,6 +255,7 @@ check_valid() {
         return 1
     fi
 }
+export -f check_valid
 
 commit_repo() {
     local curr_dir=$(pwd)
@@ -284,16 +300,19 @@ commit_repo() {
 
     cd $curr_dir
 }
+export -f commit_repo
 
 make_cmd() {
     decho_log "Executing make $1..."
     make $mkp "$@" 2>> $log
 }
+export -f make_cmd
 
 zip_image() {
     decho_log "Zipping the image..."
     zip -r9 $1.zip * -x .git README.md 2>> $log
 }
+export -f zip_image
 
 cleanup_out() {
     local device=$1
@@ -308,14 +327,17 @@ cleanup_out() {
     rm -rf $rom_product/$device/recovery
     rm -rf $rom_product/$device/super*
 }
+export -f cleanup_out
 
 cleanup_path() {
     export PATH=$PATH_CLEAN
 }
+export -f cleanup_path
 
 restore_path() {
     export PATH=$PATH_BKP
 }
+export -f restore_path
 
 setup_dynamic() {
     local commonbranch=$1
@@ -339,6 +361,7 @@ setup_dynamic() {
 
     cd $curr_dir
 }
+export -f setup_dynamic
 
 rom_copy_and_clean() {
     local romname=$1
@@ -377,6 +400,7 @@ rom_copy_and_clean() {
     # Cleanup afterwards to prevent overlapping builds
     rm -f $rom_target*.zip*
 }
+export -f rom_copy_and_clean
 
 rosc_init() {
     repo sync -c --no-clone-bundle --optimized-fetch --prune --force-sync -j$(nproc --all)
@@ -385,24 +409,64 @@ rosc_init() {
         patch_rom -s
     fi
 }
+export -f rosc_init
 
 rosc() {
     repo sync -j$(nproc --all) $@
 }
+export -f rosc
 
 exit_timestamp() {
     decho "$(date -R)"
     exit $1
 }
+export -f exit_timestamp
+
+lock_exec() {
+    if check_file $LOCK_FILE; then
+        decho "There is something building! Wait for it to complete!"
+        return 1
+    fi
+    touch $LOCK_FILE
+    decho "Locked cmd!"
+    return 0
+}
+export -f lock_exec
+
+unlock_exec() {
+    if ! check_file $LOCK_FILE; then
+        decho "There is no lock to remove!"
+        return 1
+    fi
+    rm $LOCK_FILE
+    decho "Unlocked cmd!"
+    return 0
+}
+export -f unlock_exec
+
+cmd_exec() {
+    decho "$CMD_TO_BE_EXEC"
+    if lock_exec; then
+        bash -c "$CMD_TO_BE_EXEC"
+        unlock_exec
+    else
+        decho "Did not execute cmd!"
+    fi
+}
+export -f cmd_exec
 
 monitor_exec() {
     tail -f ~/cmd.log
 }
+export -f monitor_exec
 
 detach_exec() {
-    nohup "$@" > ~/cmd.log & disown
+    export LOCK_FILE="$HOME/exec.lck"
+    export CMD_TO_BE_EXEC="$@"
+    nohup bash -c cmd_exec > ~/cmd.log & disown
     monitor_exec
 }
+export -f detach_exec
 
 # Initialize environment after functions init
 env_init
