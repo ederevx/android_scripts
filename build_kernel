@@ -44,7 +44,7 @@ define_x-ft() {
     subarch=$arch
     lwimg="Image.gz-dtb"
 
-    clang_path="$CLANG_DIR/clang-r522817/bin"
+    clang_path="$CLANG_DIR/clang-r530567/bin"
     gcc_path="${GCC_DIR}64/bin:${GCC_DIR}32/bin"
     cc_path="$clang_path:$cc_path"
 
