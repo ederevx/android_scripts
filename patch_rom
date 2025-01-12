@@ -47,6 +47,13 @@ is_skipped() {
     return 0
 }
 
+patch_banner() {
+    border
+    echo "Patch ID: $patch_id"
+    echo "Dir: $dir"
+    border
+}
+
 patch_git() {
     local giturl=$1
     local sha1=$2
@@ -61,10 +68,7 @@ patch_git() {
         return
     fi
 
-    border
-    echo "Patch ID: $patch_id"
-    echo "Dir: $dir"
-    border
+    patch_banner
 
     if check_dir "$dir" && cd "$dir"; then
         git fetch $giturl
@@ -103,10 +107,7 @@ unpatch_git() {
         return
     fi
 
-    border
-    echo "Patch ID: $patch_id"
-    echo "Dir: $dir"
-    border
+    patch_banner
 
     if check_dir "$dir" && cd "$dir"; then
         if [[ -z $sha2 ]]; then
@@ -139,14 +140,30 @@ patch_single_curl() {
         return
     fi
 
-    border
-    echo "Patch ID: $patch_id"
-    echo "Dir: $dir"
-    border
+    patch_banner
 
     if check_dir "$dir" && cd "$dir"; then
         decho $patchurl
         curl $patchurl | git am -3
+        pause_script
+        git am --abort &> /dev/null
+    fi
+}
+
+patch_single_local() {
+    local patchfile=$1
+
+    dir="$ROM_ROOT/$dir"
+
+    if is_skipped; then
+        return
+    fi
+
+    patch_banner
+
+    if check_dir "$dir" && cd "$dir"; then
+        decho $patchfile
+        git am -3 $patchfile
         pause_script
         git am --abort &> /dev/null
     fi
@@ -210,7 +227,7 @@ patch_gralloc() {
     #patch_git "https://github.com/ederevx/vendor_derp a14-derp" \
     #    "d9b9268e5beea02ddd15cc63635d2bce44d10f6c"
     patch_git "https://github.com/ederevx/vendor_derp a15-derp" \
-        "f4cfa79682f5e600da493a5eff4c4ce2484a979b"
+        "4b0870dd73c6877c08dbb21e73369debb74235e4"
 
     dir=vendor/yaap
     white_list=(
@@ -502,13 +519,13 @@ patch_syscore() {
 
     dir=system/core
     # 16: Fix USB DAC
-    patch_single_curl "https://raw.githubusercontent.com/OnePlus-5-T/aosp_patches/a14/system/core/0001-libusbhost-improve-usb_device_open-handling.patch"
+    patch_single_local "$SCRIPTS_DIR/aosp_patches/$dir/0001-libusbhost-improve-usb_device_open-handling.patch "
     dir=system/core
     # 17: Fix DSU
-    patch_single_curl "https://raw.githubusercontent.com/OnePlus-5-T/aosp_patches/a14/system/core/0002-first_stage_mount-Skip-dm-verity-setup-if-AVB-is-not.patch"
+    patch_single_local "$SCRIPTS_DIR/aosp_patches/$dir/0002-first_stage_mount-Skip-dm-verity-setup-if-AVB-is-not.patch"
     dir=system/core
     # 18 ^
-    patch_single_curl "https://raw.githubusercontent.com/OnePlus-5-T/aosp_patches/a14/system/core/0003-Revert-libfiemap-Disable-loop-mapping-code.patch"
+    patch_single_local "$SCRIPTS_DIR/aosp_patches/$dir/0003-Revert-libfiemap-Disable-loop-mapping-code.patch"
 }
 
 patch_telephony() {
@@ -516,10 +533,10 @@ patch_telephony() {
 
     dir=frameworks/opt/telephony
     # 19: Fix telephony
-    patch_single_curl "https://raw.githubusercontent.com/OnePlus-5-T/aosp_patches/a14/frameworks/opt/telephony/0001-Restore-support-with-RadioConfig-1.0-dsds-clients.patch"
+    patch_single_local "$SCRIPTS_DIR/aosp_patches/$dir/0001-Restore-support-with-RadioConfig-1.0-dsds-clients.patch"
     dir=frameworks/opt/telephony
     # 20 ^
-    patch_single_curl "https://raw.githubusercontent.com/OnePlus-5-T/aosp_patches/a14/frameworks/opt/telephony/0002-Fallback_to_HAL_COMMAND_ALLOW_DATA.patch"
+    patch_single_local "$SCRIPTS_DIR/aosp_patches/$dir/0002-Fallback_to_HAL_COMMAND_ALLOW_DATA.patch"
 }
 
 patch_setupgapps() {
@@ -527,7 +544,7 @@ patch_setupgapps() {
 
     dir=external/setupcompat
     # 21: Fix issues with GAPPS
-    patch_single_curl "https://raw.githubusercontent.com/OnePlus-5-T/aosp_patches/a14/external/setupcompat/0001-Prevent-crash-with-improper-partner-config.patch"
+    patch_single_local "$SCRIPTS_DIR/aosp_patches/$dir/0001-Prevent-crash-with-improper-partner-config.patch"
 }
 
 decho "This only needs to be called once if done cleanly and after a repo start!"

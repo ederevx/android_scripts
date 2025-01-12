@@ -8,6 +8,9 @@ ederevx_init() {
     local script_dir=~/scripts
     local script_path=$script_dir/setup_env
 
+    # Allow other scripts to get script_dir
+    export SCRIPTS_DIR=$script_dir
+
     # Export global clean and backup PATH
     export PATH_CLEAN=/usr/lib/ccache:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/ederevx/scripts:/home/ederevx/repo/bin
 
