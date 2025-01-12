@@ -287,8 +287,10 @@ patch_bison() {
         "yaap"
     )
     # Allow bison - lineage
-    patch_git "https://github.com/ederevx/android_build_soong a14" \
-        "6a4996614768c719b9559956289a11c91369e958"
+    #patch_git "https://github.com/ederevx/android_build_soong a14" \
+    #    "6a4996614768c719b9559956289a11c91369e958"
+    patch_git "https://github.com/ederevx/android_build_soong a15-derp" \
+        "7f817717bffec902a4397a3fee79005bcf536015"
 
     dir=build/soong
     white_list=(
