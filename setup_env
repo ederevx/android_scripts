@@ -25,11 +25,10 @@ ederevx_init() {
 
     # Export shared directories
     if [[ ! -z $(echo $kname | grep -i wsl) ]]; then
-        readonly C_USER_DIR=/mnt/c/Users/evcsi
+        export C_USER_DIR=/mnt/c/Users/evcsi
         export SHARED_ROOT_DIR=$C_USER_DIR/WSL-Shared
     else
-        readonly EXT_DIR=$HOME
-        export SHARED_ROOT_DIR=$EXT_DIR/shared
+        export SHARED_ROOT_DIR=/home/shared
     fi
 
     # Execute this script at bash init
@@ -159,26 +158,59 @@ export -f repo_init
 
 vsftpd_init() {
     local vsftpd_conf=/etc/vsftpd.conf
+    local vsftpd_ssl=/etc/ssl/private/vsftpd.pem
 
     sudo apt-get update
     sudo apt-get install -y vsftpd
-    sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/vsftpd.pem -out /etc/ssl/private/vsftpd.pem
 
-    {
-        # SSL setup
-        echo "ssl_enable=YES"
-        echo "rsa_cert_file=/etc/ssl/private/vsftpd.pem"
-        echo "rsa_private_key_file=/etc/ssl/private/vsftpd.pem"
-        echo "force_local_logins_ssl=YES"
-        echo "force_local_data_ssl=YES"
+    while [[ $# -gt 0 ]]
+        do
+        key="$1"
 
-        # Local dir setup
-        echo "local_dir=$SHARED_ROOT_DIR"
-    } | sudo tee -a $vsftpd_conf
+        case $key in
+            -s|--ssl)
+                sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout $vsftpd_ssl -out $vsftpd_ssl
+            ;;
+        esac
+        shift
+    done
+
+    if [[ -z $(cat $vsftpd_conf | grep -i "custom config") ]]; then
+        {
+            # SSL setup
+            echo "# Start custom config"
+            echo "ssl_enable=YES"
+            echo "ssl_tlsv1=YES"
+            echo "ssl_sslv2=NO"
+            echo "ssl_sslv3=NO"
+            echo "require_ssl_reuse=NO"
+            echo "allow_anon_ssl=NO"
+            echo "rsa_cert_file=$vsftpd_ssl"
+            echo "rsa_private_key_file=$vsftpd_ssl"
+            echo "force_local_logins_ssl=YES"
+            echo "force_local_data_ssl=YES"
+
+            # Users setup
+            echo "anonymous_enable=NO"
+            echo "local_enable=YES"
+            echo "write_enable=YES"
+            echo "chroot_local_user=YES"
+            echo "user_sub_token=shared"
+
+            # Local root setup
+            echo "local_root=$SHARED_ROOT_DIR"
+
+            # Port setup
+            echo "pasv_min_port=32768"
+            echo "pasv_max_port=65535"
+            echo "# End custom config"
+        } | sudo tee -a $vsftpd_conf
+    fi
 
     # Double check if the conf is good
     sudo nano $vsftpd_conf
     sudo systemctl restart vsftpd
+    sudo systemctl status vsftpd
 }
 export -f vsftpd_init
 
