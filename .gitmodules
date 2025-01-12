@@ -1,0 +1,3 @@
+[submodule "aosp_patches"]
+	path = aosp_patches
+	url = git@github.com:OnePlus-5-T/aosp_patches.git
