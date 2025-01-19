@@ -29,8 +29,12 @@ is_skipped() {
     white_list=(${white_list_default[@]})
     black_list=(${black_list_default[@]})
 
-    if [[ ! -z $target_patch ]] && [[ $target_patch != $patch_id ]]; then
-        return 0
+    if [[ ! -z $target_patch ]]; then
+        if [[ $target_patch != $patch_id ]]; then
+            return 0
+        else
+            return 1
+        fi
     fi
 
     for rom in ${black_list_tmp[@]}; do
