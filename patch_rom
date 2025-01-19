@@ -206,54 +206,13 @@ patch_qcomcaf() {
         "f346bb0364ff478bcc90efe0db0a2ec83f048226"
 }
 
-patch_gralloc() {
-    patch_id="gralloc"
-
-    dir=vendor/lineage
-    black_list=(
-        "derp"
-        "yaap"
-        "pixelage"
-    )
-    # Hookup TARGET_USES_GRALLOC1 - lineage
-    patch_git "https://github.com/ederevx/android_vendor_lineage a14" \
-        "d60c33fa98caa875cd7ba95ffb6e65090ef922f9"
-
-    dir=vendor/derp
-    white_list=(
-        "derp"
-    )
-    # Hookup TARGET_USES_GRALLOC1 - derp
-    #patch_git "https://github.com/ederevx/vendor_derp a14-derp" \
-    #    "d9b9268e5beea02ddd15cc63635d2bce44d10f6c"
-    patch_git "https://github.com/ederevx/vendor_derp a15-derp" \
-        "4b0870dd73c6877c08dbb21e73369debb74235e4"
-
-    dir=vendor/yaap
-    white_list=(
-        "yaap"
-    )
-    # Hookup TARGET_USES_GRALLOC1 - yaap
-    patch_git "https://github.com/ederevx/vendor_yaap a15-yaap" \
-        "d4f5a35547dccfaa96aeedaa226d76a252e4328c"
-
-    dir=vendor/pixelage
-    white_list=(
-        "pixelage"
-    )
-    # Hookup TARGET_USES_GRALLOC1 - pixelage
-    patch_git "https://github.com/ederevx/android_vendor_pixelage a15-pixelage" \
-        "86e7d087b195da31f4b677b0616740ac37ea9bbb"
-}
-
 patch_displayintf() {
     patch_id="displayintf"
 
     dir=vendor/qcom/opensource/commonsys-intf/display
     # Patch display-commonsys-intf for 4.14
-    patch_git "https://github.com/ederevx/android_vendor_qcom_opensource_display-commonsys-intf a14" \
-        "98e043abd0c9790469ad587a4ee1511108465f72" \
-        "0858ef7d19da426164f5f31cd85778ce291fc771"
+    patch_git "https://github.com/ederevx/android_vendor_qcom_opensource_display-commonsys-intf a15" \
+        "30736f982350c10efbb033bf7954c65fbcd06fe9"
 }
 
 patch_sepolicylegacy() {
@@ -555,7 +514,6 @@ param_func "$@"
 
 # 4.14 necessary patches
 patch_qcomcaf
-patch_gralloc
 patch_displayintf
 patch_sepolicylegacy
 
