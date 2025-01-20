@@ -372,6 +372,24 @@ commit_repo() {
 }
 export -f commit_repo
 
+push_repo() {
+    local curr_dir=$(pwd)
+
+    if ! check_dir "$1/.git" || ! cd "$1"; then
+        return 
+    fi
+
+    decho "Pushing $1 repository..."
+
+    git_init
+
+    shift # Skip first variable used to define the directory
+    git push "$@"
+
+    cd $curr_dir
+}
+export -f push_repo
+
 make_cmd() {
     decho_log "Executing make $1..."
     make $mkp "$@" 2>> $log
