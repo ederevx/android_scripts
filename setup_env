@@ -84,7 +84,6 @@ script_init() {
     readonly SHARED_ROMS_DIR="$SHARED_ROOT_DIR/roms/project"
 
     readonly ROM_PRODUCT_DIR="out/target/product"
-    readonly ROM_COMMON_DIR="$ROM_PRODUCT_DIR/msm8998-common"
 
     # Common variables
     devices_list=(
@@ -441,7 +440,6 @@ rom_copy_and_clean() {
     local type=$3
 
     local rom_product="$ROM_DIR/$ROM_PRODUCT_DIR"
-    local rom_common="$ROM_DIR/$ROM_COMMON_DIR"
     local rom_target="$rom_product/$device/$romname"
 
     local target_dir
@@ -461,9 +459,6 @@ rom_copy_and_clean() {
             decho "Copying $rom_target*.zip to $target_dir"
             cp $rom_target*.zip* $target_dir
         }
-
-        target_dir="$rom_common/$type"
-        rom_copy
 
         target_dir="$SHARED_ROMS_DIR"
         rom_copy
