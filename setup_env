@@ -11,6 +11,9 @@ ederevx_init() {
     # Allow other scripts to get script_dir
     export SCRIPTS_DIR=$script_dir
 
+    # Used for exec functions
+    export LOCK_FILE="$HOME/exec.lck"
+
     # Export global clean and backup PATH
     export PATH_CLEAN=/usr/lib/ccache:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/ederevx/scripts:/home/ederevx/repo/bin
 
@@ -522,12 +525,23 @@ monitor_exec() {
 export -f monitor_exec
 
 detach_exec() {
-    export LOCK_FILE="$HOME/exec.lck"
     export CMD_TO_BE_EXEC="$@"
     nohup bash -c cmd_exec > ~/cmd.log & disown
     monitor_exec
 }
 export -f detach_exec
+
+queue_exec() {
+    decho "Waiting for exec to be unlocked..."
+    while [ -f "$LOCK_FILE" ]
+        do
+        sleep 5
+    done
+    decho "exec has been unlocked!"
+
+    detach_exec "$@"
+}
+export -f queue_exec
 
 # Initialize environment after functions init
 env_init
