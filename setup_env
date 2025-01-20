@@ -81,7 +81,7 @@ export -f ederevx_init
 script_init() {
     # Environment directories
     local kname=$(uname -r)
-    readonly SHARED_ROMS_DIR="$SHARED_ROOT_DIR/roms"
+    readonly SHARED_ROMS_DIR="$SHARED_ROOT_DIR/roms/project"
 
     readonly ROM_PRODUCT_DIR="out/target/product"
     readonly ROM_COMMON_DIR="$ROM_PRODUCT_DIR/msm8998-common"
@@ -456,17 +456,17 @@ rom_copy_and_clean() {
     fi
 
     if check_file $rom_target*.zip; then
-        target_dir="$rom_common/$type"
-        create_dir "$target_dir"
-        decho "Copying $rom_target*.zip to $target_dir"
-        cp $rom_target*.zip* $target_dir
-        if [[ $shared_cp_rom == "true" ]]; then
-            shared_cp_rom=false
-            target_dir="$SHARED_ROMS_DIR/$type"
-            decho "Copying $rom_target*.zip to $target_dir"
+        rom_copy() {
             create_dir "$target_dir"
-            cp $rom_target*.zip $target_dir
-        fi
+            decho "Copying $rom_target*.zip to $target_dir"
+            cp $rom_target*.zip* $target_dir
+        }
+
+        target_dir="$rom_common/$type"
+        rom_copy
+
+        target_dir="$SHARED_ROMS_DIR"
+        rom_copy
     fi
 
     # Cleanup afterwards to prevent overlapping builds
