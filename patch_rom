@@ -225,8 +225,8 @@ patch_sepolicylegacy() {
     dir=device/qcom/sepolicy-legacy-um
     # Patch sepolicy-legacy-um for 4.14
     patch_git "https://github.com/ederevx/android_device_qcom_sepolicy a15" \
-        "fbd14bea6973371a4e533d78cad57604c13b8fb4" \
-        "182011bbaadc2587c858ed8196f70548fc96fbea"
+        "bd3086d857f6c9f9f2c3461f6bead0e75f119886" \
+        "492418bf7ac1336d3c42db326ffa40c8d3ecc20d"
 }
 
 #
