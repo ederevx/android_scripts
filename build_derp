@@ -5,6 +5,8 @@
 
 source setup_env
 
+build_init
+
 # Derp directories
 readonly ROM_NAME="derp"
 readonly ROM_DIR="$(pwd)"

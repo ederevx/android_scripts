@@ -5,6 +5,8 @@
 
 source setup_env
 
+build_init
+
 # Pixelage directories
 readonly ROM_NAME="pixelage"
 readonly ROM_DIR="$(pwd)"

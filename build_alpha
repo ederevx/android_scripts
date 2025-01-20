@@ -5,6 +5,8 @@
 
 source setup_env
 
+build_init
+
 # Alpha directories
 readonly ROM_NAME="alpha"
 readonly ROM_DIR="$(pwd)"

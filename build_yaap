@@ -5,6 +5,8 @@
 
 source setup_env
 
+build_init
+
 # YAAP directories
 readonly ROM_NAME="yaap"
 readonly ROM_DIR="$(pwd)"

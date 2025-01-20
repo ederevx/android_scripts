@@ -5,6 +5,8 @@
 
 source setup_env
 
+build_init
+
 # Matrixx directories
 readonly ROM_NAME="matrixx"
 readonly ROM_DIR="$(pwd)"

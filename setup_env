@@ -162,6 +162,14 @@ repo_init() {
 }
 export -f repo_init
 
+build_init() {
+    export USE_CCACHE=1
+    export CCACHE_EXEC=/usr/bin/ccache
+    ccache -M 50G
+    ccache -o compression=true
+}
+export -f build_init
+
 vsftpd_init() {
     local vsftpd_conf=/etc/vsftpd.conf
     local vsftpd_ssl=/etc/ssl/private/vsftpd.pem

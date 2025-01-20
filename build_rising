@@ -5,6 +5,8 @@
 
 source setup_env
 
+build_init
+
 # Rising directories
 readonly ROM_NAME="rising"
 readonly ROM_DIR="$(pwd)"
