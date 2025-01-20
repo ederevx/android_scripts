@@ -489,29 +489,27 @@ exit_timestamp() {
 }
 export -f exit_timestamp
 
-lock_exec() {
-    if check_file $LOCK_FILE; then
-        decho "There is something building! Wait for it to complete!"
-        return 1
-    fi
-    touch $LOCK_FILE
-    decho "Locked cmd!"
-    return 0
-}
-export -f lock_exec
-
-unlock_exec() {
-    if ! check_file $LOCK_FILE; then
-        decho "There is no lock to remove!"
-        return 1
-    fi
-    rm $LOCK_FILE
-    decho "Unlocked cmd!"
-    return 0
-}
-export -f unlock_exec
-
 cmd_exec() {
+    lock_exec() {
+        if check_file $LOCK_FILE; then
+            decho "There is something building! Wait for it to complete!"
+            return 1
+        fi
+        touch $LOCK_FILE
+        decho "Locked cmd!"
+        return 0
+    }
+
+    unlock_exec() {
+        if ! check_file $LOCK_FILE; then
+            decho "There is no lock to remove!"
+            return 1
+        fi
+        rm $LOCK_FILE
+        decho "Unlocked cmd!"
+        return 0
+    }
+
     decho "$CMD_TO_BE_EXEC"
     if lock_exec; then
         bash -c "$CMD_TO_BE_EXEC"
@@ -523,7 +521,7 @@ cmd_exec() {
 export -f cmd_exec
 
 monitor_exec() {
-    tail -f ~/cmd.log
+    tail -f20 ~/cmd.log
 }
 export -f monitor_exec
 
