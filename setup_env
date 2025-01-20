@@ -520,7 +520,7 @@ cmd_exec() {
 export -f cmd_exec
 
 monitor_exec() {
-    tail -f20 ~/cmd.log
+    tail -f ~/cmd.log
 }
 export -f monitor_exec
 
