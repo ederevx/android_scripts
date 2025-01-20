@@ -40,9 +40,6 @@ rising_build() {
     rise $build_cmd -j$(nproc --all)
     restore_path
 
-    if [[ $target_device == "dumpling" ]] && [[ $WITH_GMS == "true" ]]; then
-        shared_cp_rom=true
-    fi
     rom_copy_and_clean "Rising" $target_device $build_type
 }
 

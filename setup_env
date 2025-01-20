@@ -90,7 +90,6 @@ script_init() {
         "dumpling"
         "cheeseburger"
     )
-    shared_cp_rom=false
     curr_date=$(date +'%Y%m%d')
 }
 export -f script_init

@@ -40,9 +40,6 @@ alpha_build() {
     make bacon -j$(nproc --all)
     restore_path
 
-    if [[ $target_device == "dumpling" ]] && [[ $TARGET_BUILD_PACKAGE == "3" ]]; then
-        shared_cp_rom=true
-    fi
     rom_copy_and_clean "Alpha" $target_device $build_type
 }
 
