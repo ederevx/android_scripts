@@ -211,7 +211,7 @@ patch_qcomcaf() {
     # Patch qcom-caf for 4.14
     patch_git "https://github.com/ederevx/android_hardware_qcom-caf_common a15" \
         "468cd2bae94cdf01a826ea78c53469beb2427046" \
-        "bff6dc042213483e487072967d0f66587b5485c2"
+        "93fdd0f838d01fae9fb7efa34f54b02d2c412e87"
 }
 
 patch_displayintf() {
@@ -221,7 +221,7 @@ patch_displayintf() {
     # Patch display-commonsys-intf for 4.14
     patch_git "https://github.com/ederevx/android_vendor_qcom_opensource_display-commonsys-intf lineage-22.1-msm8998-4.14" \
         "f3190f830618422d63935af59ad90b992d5ee43a" \
-        "c82565bbac361b8854d0a8b656625355231ec96a"
+        "f0c61d17ac0f7aab52a4ce8575a967e9f0794e7f"
 }
 
 patch_sepolicylegacy() {
