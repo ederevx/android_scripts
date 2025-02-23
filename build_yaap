@@ -44,6 +44,7 @@ yaap_build() {
     export TARGET_BUILD_GAPPS
     lunch yaap_$target_device-$build_type
     m installclean
+    lunch yaap_$target_device-$build_type
     m yaap -j$(nproc --all)
     restore_path
 

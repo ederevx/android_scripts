@@ -20,7 +20,6 @@ fi
 TARGET_BUILD_PACKAGE=3
 build_device=dumpling
 build_type=user
-release_ver=ap2a
 
 #
 # Build functions
@@ -35,8 +34,9 @@ alpha_build() {
     cleanup_path
     source build/envsetup.sh
     export TARGET_BUILD_PACKAGE
-    lunch alpha_$target_device-$release_ver-$build_type
+    lunch alpha_$target_device-$build_type
     m installclean
+    lunch alpha_$target_device-$build_type
     make bacon -j$(nproc --all)
     restore_path
 
