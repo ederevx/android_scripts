@@ -221,7 +221,7 @@ patch_displayintf() {
     # Patch display-commonsys-intf for 4.14
     patch_git "https://github.com/ederevx/android_vendor_qcom_opensource_display-commonsys-intf lineage-22.1-msm8998-4.14" \
         "f3190f830618422d63935af59ad90b992d5ee43a" \
-        "2fc9e409265a56d162b8029723325b23ed30749b"
+        "c82565bbac361b8854d0a8b656625355231ec96a"
 }
 
 patch_sepolicylegacy() {
