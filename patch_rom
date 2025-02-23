@@ -188,6 +188,9 @@ param_func() {
                     shift
                 fi
             ;;
+            -a|--all)
+                all_patches=y
+            ;;
         esac
         shift
     done
@@ -477,22 +480,24 @@ patch_qcomcaf
 patch_displayintf
 patch_sepolicylegacy
 
-# Various build fixes
-patch_buildmake
-patch_bison
-#patch_volumepanel
-#patch_tsgestures
-patch_sepolicy
-patch_retrodyn
-patch_hardwarepixel
-patch_sepolicylegacy2
-patch_lineagesepolicy
-patch_notifled
-patch_norecoveryover
+if [[ $all_patches == "y" ]]; then
+    # Various build fixes
+    patch_buildmake
+    patch_bison
+    #patch_volumepanel
+    #patch_tsgestures
+    patch_sepolicy
+    patch_retrodyn
+    patch_hardwarepixel
+    patch_sepolicylegacy2
+    patch_lineagesepolicy
+    patch_notifled
+    patch_norecoveryover
 
-# Patches from https://github.com/OnePlus-5-T/local_manifests
-patch_syscore
-patch_telephony
-patch_setupgapps
+    # Patches from https://github.com/OnePlus-5-T/local_manifests
+    patch_syscore
+    patch_telephony
+    patch_setupgapps
+fi
 
 exit_timestamp 0
