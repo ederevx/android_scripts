@@ -209,8 +209,9 @@ patch_qcomcaf() {
 
     dir=hardware/qcom-caf/common
     # Patch qcom-caf for 4.14
-    patch_git "https://github.com/ederevx/android_hardware_qcom-caf_common a14" \
-        "f346bb0364ff478bcc90efe0db0a2ec83f048226"
+    patch_git "https://github.com/ederevx/android_hardware_qcom-caf_common a15" \
+        "468cd2bae94cdf01a826ea78c53469beb2427046" \
+        "bff6dc042213483e487072967d0f66587b5485c2"
 }
 
 patch_displayintf() {
