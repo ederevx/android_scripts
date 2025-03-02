@@ -29,6 +29,12 @@ is_skipped() {
     white_list=(${white_list_default[@]})
     black_list=(${black_list_default[@]})
 
+    for rom in ${black_list_tmp[@]}; do
+        if [[ ! -z $(echo $ROM_ROOT | grep -i $rom) ]]; then
+            return 0
+        fi
+    done
+
     if [[ ! -z $target_patch ]]; then
         if [[ $target_patch != $patch_id ]]; then
             return 0
@@ -37,17 +43,12 @@ is_skipped() {
         fi
     fi
 
-    for rom in ${black_list_tmp[@]}; do
-        if [[ ! -z $(echo $ROM_ROOT | grep -i $rom) ]]; then
-            return 0
-        fi
-    done
-
     for rom in ${white_list_tmp[@]}; do
         if [[ ! -z $(echo $ROM_ROOT | grep -i $rom) ]]; then
             return 1
         fi
     done
+
     return 0
 }
 
