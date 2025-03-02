@@ -298,6 +298,7 @@ main_func() {
 
     if check_file "$bti/$lwimg"; then
         export_img
+        decho "Log file: $log"
     elif [[ $log != "/dev/null" ]]; then
         decho "$log"
         cat $log
