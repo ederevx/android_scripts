@@ -485,7 +485,7 @@ patch_sepolicylegacy
 # Necessary patches for inline kernel build
 patch_bison
 
-if [[ $all_patches == "y" ]]; then
+if [[ $all_patches == "y" ]] || [[ ! -z $target_patch ]]; then
     # Various build fixes
     patch_buildmake
     #patch_volumepanel
