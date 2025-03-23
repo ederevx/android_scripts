@@ -19,6 +19,7 @@ fi
 # Default properties
 build_device=dumpling
 build_type=user
+build_number=bp1a
 export WITH_GMS=true
 
 #
@@ -34,9 +35,9 @@ pixelage_build() {
     cleanup_path
     export PIXELAGE_BUILD="$target_device"
     source build/envsetup.sh
-    lunch pixelage_$target_device-ap4a-$build_type
+    lunch pixelage_$target_device-$build_number-$build_type
     m installclean
-    lunch pixelage_$target_device-ap4a-$build_type
+    lunch pixelage_$target_device-$build_number-$build_type
     mka bacon -j$(nproc --all)
     restore_path
 
