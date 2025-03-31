@@ -34,7 +34,7 @@ srcn="x-ft"
 #
 
 define_x-ft() {
-    if [[ $test_build == "y" ]]; then
+    if [[ $debug == "y" ]]; then
         dc="msm8998_oneplus_debug_android_defconfig"
     else
         dc="msm8998_oneplus_android_defconfig"
