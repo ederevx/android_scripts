@@ -25,6 +25,7 @@ fi
 WITH_GMS=false
 build_device=dumpling
 build_type=user
+build_number=bp1a
 
 #
 # Build functions
@@ -39,9 +40,9 @@ matrixx_build() {
     cleanup_path
     source build/envsetup.sh
     export WITH_GMS
-    lunch lineage_$target_device-ap2a-$build_type
+    lunch lineage_$target_device-$build_number-$build_type
     m installclean
-    brunch lineage_$target_device-ap2a-$build_type -j$(nproc --all)
+    brunch lineage_$target_device-$build_number-$build_type -j$(nproc --all)
     restore_path
 
     rom_copy_and_clean "Matrixx" $target_device $build_type
