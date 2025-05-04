@@ -1,0 +1,107 @@
+#!/bin/bash
+
+# SPDX-FileCopyrightText: 2024 Edrick Sinsuan
+# SPDX-License-Identifier: Apache-2.0
+
+script_dir=$(dirname $0)
+if ! check_file "$script_dir/setup_env"; then
+    decho "setup_env must be present in $script_dir!"
+    exit_timestamp 1
+fi
+source $script_dir/setup_env
+
+build_init
+
+# Infinity directories
+readonly ROM_NAME="infinity"
+readonly ROM_DIR="$(pwd)"
+
+if [[ -z $(echo $ROM_DIR | grep -i $ROM_NAME | grep -vi "${ROM_NAME}/") ]]; then
+    decho "You are not in the right directory."
+    exit_timestamp 1
+fi
+
+# Default properties
+build_device=dumpling
+build_type=user
+WITH_GAPPS=true
+
+#
+# Build functions
+#
+
+infinity_build() {
+    local target_device=$1
+
+    cleanup_out $target_device
+    decho "Building Infinity: $target_device - $build_type"
+
+    cleanup_path
+    export WITH_GAPPS
+    source build/envsetup.sh
+    lunch infinity_$target_device-$build_type
+    m installclean
+    lunch infinity_$target_device-$build_type
+    mka bacon -j$(nproc --all)
+    restore_path
+
+    rom_copy_and_clean "Infinity" $target_device $build_type
+}
+
+infinity_build_gms() {
+    WITH_GAPPS=true
+    infinity_build "$@"
+}
+
+infinity_build_vanilla() {
+    WITH_GAPPS=false
+    infinity_build "$@"
+}
+
+infinity_build_both() {
+    infinity_build_gms "$@"
+    infinity_build_vanilla "$@"
+}
+
+param_func() {
+    while [[ $# -gt 0 ]]
+        do
+        key="$1"
+
+        case $key in
+            -d|--device)
+                if check_valid "$2"; then
+                    build_device="$2"
+                    shift
+                fi
+            ;;            
+            -t|--type)
+                if check_valid "$2"; then
+                    build_type="$2"
+                    shift
+                fi
+            ;;
+            -a|--all)
+                build_all=y
+            ;;
+        esac
+        shift
+    done
+}
+
+#
+# Build start
+#
+
+param_func "$@"
+
+if [[ $build_all == "y" ]]; then
+    for device in ${devices_list[@]}; do
+        infinity_build_both $device
+    done
+    exit_timestamp 0
+fi
+
+infinity_build $build_device
+
+exit_timestamp 0
