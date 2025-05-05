@@ -45,7 +45,7 @@ infinity_build() {
     mka bacon -j$(nproc --all)
     restore_path
 
-    rom_copy_and_clean "Infinity" $target_device $build_type
+    rom_copy_and_clean "Project_Infinity" $target_device $build_type
 }
 
 infinity_build_gms() {
