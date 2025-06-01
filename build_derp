@@ -24,6 +24,7 @@ fi
 # Default properties
 build_device=dumpling
 build_type=user
+build_number=bp1a
 
 #
 # Build functions
@@ -37,9 +38,9 @@ derp_build() {
 
     cleanup_path
     source build/envsetup.sh
-    lunch derp_$target_device-$build_type
+    lunch lineage_$target_device-$build_number-$build_type
     m installclean
-    lunch derp_$target_device-$build_type
+    lunch lineage_$target_device-$build_number-$build_type
     mka derp -j$(nproc --all)
     restore_path
 
