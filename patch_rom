@@ -487,7 +487,7 @@ if [[ $all_patches == "y" ]] || [[ ! -z $target_patch ]]; then
     #patch_tsgestures
     #patch_sepolicybinder
     patch_sepolicydrm
-    #patch_retrodyn
+    patch_retrodyn
     patch_hardwarepixel
     patch_sepolicylegacyxtra
     patch_lineagesepolicyfsck
