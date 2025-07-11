@@ -458,7 +458,7 @@ patch_norecoveryover() {
     )
     # Allow us to not override the recovery
     patch_git "https://github.com/ederevx/android_bootable_deprecated-ota a15-yaap" \
-        "51e04a5394e7ce383e2703a51e73ad39e97e84c1"
+        "93059ed1aca99828deeeda911351ec2bb90579d6"
 }
 
 patch_settings() {
