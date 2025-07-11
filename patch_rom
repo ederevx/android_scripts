@@ -90,6 +90,11 @@ patch_git() {
             commit_sha="$sha1$conn$sha2"
         fi
         decho "$(git log $commit_cnt --pretty=oneline $commit_sha)"
+
+        if [[ $list_patches == "y" ]]; then
+            return
+        fi
+
         git cherry-pick $commit_sha
         if [[ ! -z $sha2 ]]; then
             for ((i=0 ; i < ($(git rev-list --count $commit_sha) - 1) ; i++));
@@ -154,6 +159,11 @@ patch_single_curl() {
 
     if check_dir "$dir" && cd "$dir"; then
         decho $patchurl
+
+        if [[ $list_patches == "y" ]]; then
+            return
+        fi
+
         curl $patchurl | git am -3
         pause_script
         git am --abort &> /dev/null
@@ -173,6 +183,11 @@ patch_single_local() {
 
     if check_dir "$dir" && cd "$dir"; then
         decho $patchfile
+
+        if [[ $list_patches == "y" ]]; then
+            return
+        fi
+
         git am -3 $patchfile
         pause_script
         git am --abort &> /dev/null
@@ -196,6 +211,9 @@ param_func() {
             ;;
             -a|--all)
                 all_patches=y
+            ;;
+            -l|--list)
+                list_patches=y
             ;;
         esac
         shift
@@ -307,16 +325,28 @@ patch_tsgestures() {
         "31187a64c9a5c49495651d11926edc5424a9473f"
 }
 
-patch_sepolicy() {
-    patch_id="sepolicy"
+patch_sepolicybinder() {
+    patch_id="sepolicybinder"
 
     dir=system/sepolicy
     white_list=(
         "yaap"
     )
-    # Remove non-existent sepolicy - yaap
+    # Fix binder denials
     patch_git "https://github.com/ederevx/rising_android_system_sepolicy a15-yaap" \
         "e31d7c8e856c1ec009db3de418c695cbe8d7a8d1"
+}
+
+patch_sepolicydrm() {
+    patch_id="sepolicydrm"
+
+    dir=system/sepolicy
+    white_list=(
+        "yaap"
+    )
+    # Allow hal_drm and hal_widevine for vendor access
+    patch_git "https://github.com/ederevx/android_system_sepolicy a16-yaap" \
+        "8235f2a15dd68d7c3ec5f7dd651caac83a1a173a"
 }
 
 patch_retrodyn() {
@@ -386,26 +416,26 @@ patch_hardwarepixel() {
         "5723b06faf36c6a2c7c27a35ac43e30e51d8eb23"
 }
 
-patch_sepolicylegacy2() {
-    patch_id="sepolicylegacy2"
+patch_sepolicylegacyxtra() {
+    patch_id="sepolicylegacyxtra"
 
     dir=device/qcom/sepolicy-legacy-um
     white_list=(
         "yaap"
     )
-    # Patch sepolicy-legacy-um for YAAP
+    # Remove xtra_control_prop
     patch_git "https://github.com/ederevx/android_device_qcom_sepolicy a15-yaap" \
         "50b4265bb4472f360730b32c09598ef96ad79240"
 }
 
-patch_lineagesepolicy() {
-    patch_id="lineagesepolicy"
+patch_lineagesepolicyfsck() {
+    patch_id="lineagesepolicyfsck"
     
     dir=device/lineage/sepolicy
     white_list=(
         "yaap"
     )
-    # Patch sepolicy-legacy-um for YAAP
+    # Remove fsck prop
     patch_git "https://github.com/ederevx/android_device_lineage_sepolicy a15-yaap" \
         "4779acca48776a62a9ec708ba63ec6482b30c0bb"
 }
@@ -455,11 +485,12 @@ if [[ $all_patches == "y" ]] || [[ ! -z $target_patch ]]; then
     patch_bison
     #patch_volumepanel
     #patch_tsgestures
-    patch_sepolicy
-    patch_retrodyn
+    #patch_sepolicybinder
+    patch_sepolicydrm
+    #patch_retrodyn
     patch_hardwarepixel
-    patch_sepolicylegacy2
-    patch_lineagesepolicy
+    patch_sepolicylegacyxtra
+    patch_lineagesepolicyfsck
     patch_notifled
     patch_norecoveryover
 fi

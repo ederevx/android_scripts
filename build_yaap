@@ -22,7 +22,7 @@ if [[ -z $(echo $ROM_DIR | grep -i $ROM_NAME | grep -vi "${ROM_NAME}/") ]]; then
 fi
 
 # Default properties
-TARGET_BUILD_GAPPS=false
+TARGET_BUILD_GAPPS=true
 build_device=dumpling
 build_type=user
 
