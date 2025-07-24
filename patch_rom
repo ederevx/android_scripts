@@ -95,54 +95,32 @@ patch_git() {
             return
         fi
 
-        git cherry-pick $commit_sha
+        if [[ $revert == "y" ]]; then
+            decho "Reverting patches $commit_sha"
+            git revert $commit_sha
+        else
+            git cherry-pick $commit_sha
+        fi
+
         if [[ ! -z $sha2 ]]; then
             for ((i=0 ; i < ($(git rev-list --count $commit_sha) - 1) ; i++));
                 do
                 pause_script
-                git cherry-pick --skip
+                if [[ $revert == "y" ]]; then
+                    git revert --skip
+                else
+                    git cherry-pick --skip
+                fi
             done
         else
             pause_script
         fi
-        git cherry-pick --abort &> /dev/null
-    fi
-}
 
-unpatch_git() {
-    local sha1=$1
-    local sha2=$2
-
-    local commit_sha
-    local commit_cnt
-
-    dir="$ROM_ROOT/$dir"
-
-    if is_skipped; then
-        return
-    fi
-
-    patch_banner
-
-    if check_dir "$dir" && cd "$dir"; then
-        if [[ -z $sha2 ]]; then
-            commit_sha="$sha1"
+        if [[ $revert == "y" ]]; then
+            git revert --abort &> /dev/null
         else
-            local conn='^..'
-            commit_sha="$sha1$conn$sha2"
+            git cherry-pick --abort &> /dev/null
         fi
-        decho "Reverting patches $commit_sha"
-        git revert $commit_sha
-        if [[ ! -z $sha2 ]]; then
-            for ((i=0 ; i < ($(git rev-list --count $commit_sha) - 1) ; i++));
-                do
-                pause_script
-                git revert --skip
-            done
-        else
-            pause_script
-        fi
-        git revert --abort &> /dev/null
     fi
 }
 
@@ -214,6 +192,9 @@ param_func() {
             ;;
             -l|--list)
                 list_patches=y
+            ;;
+            -r|--revert)
+                revert=y
             ;;
         esac
         shift
