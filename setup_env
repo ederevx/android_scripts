@@ -3,7 +3,53 @@
 # SPDX-FileCopyrightText: 2024 Edrick Sinsuan
 # SPDX-License-Identifier: Apache-2.0
 
-# Environment init functions
+# List of functions
+env_functions=(
+    # Environment init functions
+    "ederevx_init"
+    "script_init"
+    "git_init"
+    "env_init"
+    "dependencies_init"
+    "repo_init"
+    "build_init"
+    "vsftpd_init"
+    
+    # Utility functions
+    "border"
+    "decho"
+    "decho_log"
+    "check_dir"
+    "check_file_silent"
+    "check_file"
+    "create_dir"
+    "pause_script"
+    "update_repo"
+    "update_linux"
+    "check_valid"
+    "commit_repo"
+    "push_repo"
+    "make_cmd"
+    "zip_image"
+    "cleanup_out"
+    "cleanup_path"
+    "restore_path"
+    "setup_dynamic"
+    "rom_copy_and_clean"
+    "timestamp"
+    "exit_timestamp"
+    "cmd_exec"
+    "monitor_exec"
+    "detach_exec"
+    "kill_exec"
+)
+
+functions_deinit() {
+    for func in ${env_functions[@]}; do
+        unset -f $func
+    done
+}
+functions_deinit
 
 ederevx_init() {
     local script_dir=~/scripts
@@ -550,4 +596,11 @@ kill_exec() {
 # Utility functions end
 
 # Initialize environment
+functions_init() {
+    for func in ${env_functions[@]}; do
+        export -f $func
+    done
+}
+functions_init
+
 env_init
