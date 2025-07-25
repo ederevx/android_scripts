@@ -433,16 +433,8 @@ zip_image() {
 
 cleanup_out() {
     local device=$1
-
     local rom_product="$ROM_DIR/$ROM_PRODUCT_DIR"
-
-    rm -rf $rom_product/$device/system
-    rm -rf $rom_product/$device/vendor
-    rm -rf $rom_product/$device/root
-    rm -rf $rom_product/$device/system_ext
-    rm -rf $rom_product/$device/symbols
-    rm -rf $rom_product/$device/recovery
-    rm -rf $rom_product/$device/super*
+    rm -rf $rom_product/$device
 }
 
 cleanup_path() {
