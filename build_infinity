@@ -81,6 +81,9 @@ param_func() {
                     shift
                 fi
             ;;
+            -v|--vanilla)
+                WITH_GAPPS=false
+            ;;
             -a|--all)
                 build_all=y
             ;;
