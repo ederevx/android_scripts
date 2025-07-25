@@ -124,7 +124,7 @@ ederevx_init() {
 script_init() {
     # Environment directories
     local kname=$(uname -r)
-    readonly SHARED_ROMS_DIR="$SHARED_ROOT_DIR/roms/project"
+    readonly SHARED_ROMS_DIR="$SHARED_ROOT_DIR/roms"
 
     readonly ROM_PRODUCT_DIR="out/target/product"
 
