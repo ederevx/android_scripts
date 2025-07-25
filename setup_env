@@ -36,6 +36,7 @@ env_functions=(
     "restore_path"
     "setup_dynamic"
     "rom_copy_and_clean"
+    "timestamp"
     "exit_timestamp"
     "cmd_exec"
     "monitor_exec"
@@ -153,7 +154,7 @@ env_init() {
         script_init
     fi
 
-    exit_timestamp 0
+    timestamp
 }
 
 dependencies_init() {
@@ -504,9 +505,13 @@ rom_copy_and_clean() {
     rm -f $rom_target*.zip*
 }
 
-exit_timestamp() {
+timestamp() {
     date_full=$(date -R)
     decho $date_full
+}
+
+exit_timestamp() {
+    timestamp
     exit $1
 }
 
