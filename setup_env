@@ -517,12 +517,13 @@ exit_timestamp() {
 
 cmd_exec() {
     wait_lock_exec() {
-        decho "Create $CANCEL_FILE if you want to cancel this exec"
         if check_file_silent $CANCEL_FILE; then
             rm $CANCEL_FILE
         fi
         while [ -f "$LOCK_FILE" ]
             do
+            decho "$LOCK_FILE detected"
+            decho "Create $CANCEL_FILE if you do not want to wait."
             if check_file_silent $CANCEL_FILE; then
                 decho "$CANCEL_FILE has been created, queued execs are cancelled"
                 return 1
