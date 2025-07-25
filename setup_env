@@ -13,6 +13,7 @@ ederevx_init() {
 
     # Used for exec functions
     export LOCK_FILE="$HOME/exec.lck"
+    export CANCEL_FILE="$HOME/kill.exec"
 
     # Export global clean and backup PATH
     export PATH_CLEAN=/usr/lib/ccache:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/ederevx/scripts:/home/ederevx/repo/bin
@@ -507,6 +508,20 @@ exit_timestamp() {
 export -f exit_timestamp
 
 cmd_exec() {
+    wait_lock_exec() {
+        decho "Create $CANCEL_FILE if you want to cancel this exec"
+        rm $CANCEL_FILE
+        while [ -f "$LOCK_FILE" ]
+            do
+            if check_file $CANCEL_FILE; then
+                decho "$CANCEL_FILE has been created, queued execs are cancelled"
+                return 1
+            fi
+            sleep 5
+        done
+        decho "exec has been unlocked!"
+    }
+
     lock_exec() {
         if check_file $LOCK_FILE; then
             decho "There is something building! Wait for it to complete!"
@@ -527,6 +542,9 @@ cmd_exec() {
         return 0
     }
 
+    decho "Waiting for exec to be unlocked..."
+    wait_lock_exec
+
     decho "$CMD_TO_BE_EXEC"
     if lock_exec; then
         bash -c "$CMD_TO_BE_EXEC"
@@ -543,13 +561,6 @@ monitor_exec() {
 export -f monitor_exec
 
 detach_exec() {
-    decho "Waiting for exec to be unlocked..."
-    while [ -f "$LOCK_FILE" ]
-        do
-        sleep 5
-    done
-    decho "exec has been unlocked!"
-
     export CMD_TO_BE_EXEC="$@"
     nohup bash -c cmd_exec > ~/cmd.log & disown
     monitor_exec
