@@ -255,6 +255,16 @@ check_dir() {
 }
 export -f check_dir
 
+check_file_silent() {
+    if [ ! -f "$@" ]; then 
+        decho "Can't find $@"
+        return 1
+    else
+        return 0
+    fi
+}
+export -f check_file_silent
+
 check_file() {
     if [ ! -f "$@" ]; then 
         decho "Can't find $@"
@@ -506,10 +516,12 @@ export -f exit_timestamp
 cmd_exec() {
     wait_lock_exec() {
         decho "Create $CANCEL_FILE if you want to cancel this exec"
-        rm $CANCEL_FILE
+        if check_file_silent $CANCEL_FILE; then
+            rm $CANCEL_FILE
+        fi
         while [ -f "$LOCK_FILE" ]
             do
-            if check_file $CANCEL_FILE; then
+            if check_file_silent $CANCEL_FILE; then
                 decho "$CANCEL_FILE has been created, queued execs are cancelled"
                 return 1
             fi
@@ -558,8 +570,8 @@ export -f monitor_exec
 
 detach_exec() {
     export CMD_TO_BE_EXEC="$@"
-    export LOCK_FILE="~/exec.lck"
-    export CANCEL_FILE="~/kill.exec"
+    export LOCK_FILE=~/exec.lck
+    export CANCEL_FILE=~/kill.exec
     nohup bash -c cmd_exec > ~/cmd.log & disown
     monitor_exec
 }
