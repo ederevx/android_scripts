@@ -11,10 +11,6 @@ ederevx_init() {
     # Allow other scripts to get script_dir
     export SCRIPTS_DIR=$script_dir
 
-    # Used for exec functions
-    export LOCK_FILE="$HOME/exec.lck"
-    export CANCEL_FILE="$HOME/kill.exec"
-
     # Export global clean and backup PATH
     export PATH_CLEAN=/usr/lib/ccache:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/ederevx/scripts:/home/ederevx/repo/bin
 
@@ -562,6 +558,8 @@ export -f monitor_exec
 
 detach_exec() {
     export CMD_TO_BE_EXEC="$@"
+    export LOCK_FILE="~/exec.lck"
+    export CANCEL_FILE="~/kill.exec"
     nohup bash -c cmd_exec > ~/cmd.log & disown
     monitor_exec
 }
