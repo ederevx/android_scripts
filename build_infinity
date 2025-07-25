@@ -60,7 +60,7 @@ infinity_build_vanilla() {
 
 infinity_build_both() {
     infinity_build_gms "$@"
-    infinity_build_vanilla "$@"
+#    infinity_build_vanilla "$@"
 }
 
 param_func() {
