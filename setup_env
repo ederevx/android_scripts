@@ -141,6 +141,12 @@ git_init() {
     git_auth="$(git config --get user.name) <$(git config --get user.email)>"
 }
 
+exec_init() {
+    export LOCK_FILE=~/exec.lck
+    export CANCEL_FILE=~/kill.exec
+    export CMD_LOG=~/cmd.log
+}
+
 env_init() {
     # Identifier
     userhost=$(whoami)
@@ -154,6 +160,8 @@ env_init() {
     if [[ -z $(echo $0 | grep -i bash) ]]; then
         script_init
     fi
+
+    exec_init
 
     timestamp
 }
@@ -173,8 +181,10 @@ repo_init() {
     create_dir ~/kernel
     create_dir ~/kernel/toolchain
 
-    git config --global user.name "Edrick Sinsuan"
-    git config --global user.email "evcsinsuan@gmail.com"
+    if [[ $userhost == "ederevx" ]]; then
+        git config --global user.name "Edrick Sinsuan"
+        git config --global user.email "evcsinsuan@gmail.com"
+    fi
     
     # Get repo bin from google
     curl -s https://storage.googleapis.com/git-repo-downloads/repo > ~/repo/bin/repo
@@ -571,12 +581,7 @@ monitor_exec() {
 }
 
 detach_exec() {
-    # Export all needed env variables
     export CMD_TO_BE_EXEC="$@"
-    export LOCK_FILE=~/exec.lck
-    export CANCEL_FILE=~/kill.exec
-    export CMD_LOG=~/cmd.log
-
     nohup bash -c cmd_exec > $CMD_LOG & disown
     monitor_exec
 }
