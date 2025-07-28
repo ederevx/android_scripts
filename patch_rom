@@ -72,6 +72,9 @@ patch_git() {
     local commit_sha
     local commit_cnt
     
+    local __revert=$revert
+    revert=n
+    
     dir="$ROM_ROOT/$dir"
 
     if is_skipped; then
@@ -95,7 +98,7 @@ patch_git() {
             return
         fi
 
-        if [[ $revert == "y" ]]; then
+        if [[ $__revert == "y" ]]; then
             decho "Reverting patches $commit_sha"
             git revert $commit_sha
         else
@@ -106,7 +109,7 @@ patch_git() {
             for ((i=0 ; i < ($(git rev-list --count $commit_sha) - 1) ; i++));
                 do
                 pause_script
-                if [[ $revert == "y" ]]; then
+                if [[ $__revert == "y" ]]; then
                     git revert --skip
                 else
                     git cherry-pick --skip
@@ -116,7 +119,7 @@ patch_git() {
             pause_script
         fi
 
-        if [[ $revert == "y" ]]; then
+        if [[ $__revert == "y" ]]; then
             git revert --abort &> /dev/null
         else
             git cherry-pick --abort &> /dev/null
@@ -271,6 +274,19 @@ patch_bison() {
     # Allow bison - yaap
     patch_git "https://github.com/ederevx/android_build_soong a15-yaap" \
         "75cdf0768d969b63fa37dd03d36a76bc0632c19"
+}
+
+patch_revertbionic() {
+    patch_id="revertbionic"
+    revert=y
+
+    dir=bionic
+    white_list=(
+        "infinity"
+    )
+    # Revert workaround for sched_param
+    patch_git "https://github.com/ProjectInfinity-X/bionic 16" \
+        "4bf50c190d3d5e0ad48540bd16a10fdcb76761be"
 }
 
 patch_volumepanel() {
@@ -463,10 +479,11 @@ patch_sepolicylegacy
 if [[ $all_patches == "y" ]] || [[ ! -z $target_patch ]]; then
     # Various build fixes
     patch_buildmake
-    patch_bison
+    #patch_bison
     #patch_volumepanel
     #patch_tsgestures
     #patch_sepolicybinder
+    patch_revertbionic
     patch_sepolicydrm
     patch_retrodyn
     patch_hardwarepixel
