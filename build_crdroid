@@ -31,6 +31,14 @@ build_number=bp1a
 # Build functions
 #
 
+define_gapps() {
+    if [[ $WITH_GMS == "true" ]]; then
+        gapps=y
+    else
+        gapps=n
+    fi
+}
+
 crdroid_build() {
     local target_device=$1
 
@@ -45,6 +53,7 @@ crdroid_build() {
     brunch lineage_$target_device-$build_number-$build_type -j$(nproc --all)
     restore_path
 
+    define_gapps
     rom_copy_and_clean "crDroid" $target_device $build_type
 }
 
