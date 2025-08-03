@@ -481,24 +481,27 @@ setup_dynamic() {
 rom_copy_and_clean() {
     local romname=$1
     local device=$2
-    local type=$3
 
     local rom_product="$ROM_DIR/$ROM_PRODUCT_DIR"
     local rom_target="$rom_product/$device/$romname"
 
     local target_dir
+    local type
 
     if [[ $support_nondyn_dyn == "y" ]] && 
         [[ $dyn_branch == "y" ]]; then
-        type=$type/dyn
+        type=dyn
     fi
 
     if [[ $gapps == "y" ]]; then
-        type=$type/gapps
+        type=gapps
     fi
 
     if check_file $rom_target*.zip; then
         rom_copy() {
+            if [[ ! -z $type ]]; then
+                target_dir="$target_dir/$type"
+            fi
             create_dir "$target_dir"
             decho "Copying $rom_target*.zip to $target_dir"
             cp $rom_target*.zip* $target_dir
