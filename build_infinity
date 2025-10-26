@@ -33,7 +33,6 @@ WITH_GAPPS=true
 infinity_build() {
     local target_device=$1
 
-    cleanup_out $target_device
     decho "Building Infinity: $target_device - $build_type"
 
     cleanup_path

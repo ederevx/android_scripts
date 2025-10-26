@@ -31,7 +31,6 @@ env_functions=(
     "push_repo"
     "make_cmd"
     "zip_image"
-    "cleanup_out"
     "cleanup_path"
     "restore_path"
     "setup_dynamic"
@@ -439,12 +438,6 @@ make_cmd() {
 zip_image() {
     decho_log "Zipping the image..."
     zip -r9 $1.zip * -x .git README.md 2>> $log
-}
-
-cleanup_out() {
-    local device=$1
-    local rom_product="$ROM_DIR/$ROM_PRODUCT_DIR"
-    rm -rf $rom_product/$device
 }
 
 cleanup_path() {

@@ -24,7 +24,7 @@ fi
 # Default properties
 build_device=dumpling
 build_type=user
-build_number=bp1a
+build_number=bp2a
 
 #
 # Build functions
@@ -33,7 +33,6 @@ build_number=bp1a
 derp_build() {
     local target_device=$1
 
-    cleanup_out $target_device
     decho "Building DerpFest: $target_device - $build_type"
 
     cleanup_path

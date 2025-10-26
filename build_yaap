@@ -41,7 +41,6 @@ define_gapps() {
 yaap_build() {
     local target_device=$1
 
-    cleanup_out $target_device
     decho "Building YAAP: $target_device - $build_type"
 
     cleanup_path

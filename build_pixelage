@@ -34,7 +34,6 @@ export WITH_GMS=true
 pixelage_build() {
     local target_device=$1
 
-    cleanup_out $target_device
     decho "Building Pixelage: $target_device - $build_type"
 
     cleanup_path

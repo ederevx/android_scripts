@@ -34,7 +34,6 @@ build_cmd=b
 rising_build() {
     local target_device=$1
 
-    cleanup_out $target_device
     decho "Building RisingOS: $target_device - $build_type WITH_GMS=$WITH_GMS"
 
     cleanup_path

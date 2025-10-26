@@ -33,7 +33,6 @@ build_type=user
 alpha_build() {
     local target_device=$1
 
-    cleanup_out $target_device
     decho "Building AlphaDroid: $target_device - $build_type TARGET_BUILD_PACKAGE=$TARGET_BUILD_PACKAGE"
 
     cleanup_path
