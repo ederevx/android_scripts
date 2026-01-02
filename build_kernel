@@ -120,7 +120,11 @@ define_kname() {
     if [[ $debug == "y" ]]; then
         kname="d-$kname"
         kname_s="d-$kname_s"
-   fi
+    fi
+    if [[ $ksu_build == "y" ]]; then
+        kname="k-$kname"
+        kname_s="k-$kname_s"
+    fi
 }
 
 define_clang() {
@@ -135,6 +139,12 @@ define_clang() {
 define_debug() {
     debugmkp="    \
         CONFIG_DEBUG_SECTION_MISMATCH=y \
+        "
+}
+
+define_ksu() {
+    ksumkp="    \
+        CONFIG_KSU=y \
         "
 }
 
@@ -178,6 +188,10 @@ define_env() {
         define_debug
     fi
 
+    if [[ $ksu_build == "y" ]]; then
+        define_ksu
+    fi
+
     local compiler="$($cc --version | head -1)"
     decho_log "Compiler being used: $compiler"
 
@@ -187,6 +201,7 @@ define_env() {
     mkp=" \
         $clangmkp \
         $debugmkp \
+        $ksumkp \
         CC_WRAPPER=ccache \
         ARCH=$arch \
         SUBARCH=$subarch \
@@ -357,6 +372,9 @@ param_func() {
             -mo|--make-only)
                 make_only=y
             ;;
+            -k|--ksu)
+                ksu_build=y
+            ;;
         esac
         shift
     done
@@ -385,10 +403,10 @@ srcn_dir=$SRC_DIR/$srcn
 if [[ $srcn == "x-ft" ]] && [[ $build_all == "y" ]]; then
     if [[ $test_build == "y" ]]; then
         param_main_func -b testing
-        param_main_func -b testing-ksu
+        param_main_func -b testing -k
     else
         param_main_func -b stable
-        param_main_func -b stable-ksu
+        param_main_func -b stable -k
     fi
 
     exit_timestamp 0
