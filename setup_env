@@ -73,6 +73,7 @@ ederevx_init() {
     export PATH_BKP=$PATH
 
     # Export shared directories
+    local kname=$(uname -r)
     if [[ ! -z $(echo $kname | grep -i wsl) ]]; then
         export C_USER_DIR=/mnt/c/Users/evcsi
         export SHARED_ROOT_DIR=$C_USER_DIR/WSL-Shared
@@ -96,7 +97,6 @@ ederevx_init() {
         decho $setup_env_sudo
     fi
 
-    local kname=$(uname -r)
     if [[ ! -z $(echo $kname | grep -i wsl) ]]; then
         if [[ ! -z $(echo $0 | grep -i bash) ]]; then
             # Only execute the following at session init
