@@ -90,7 +90,6 @@ ederevx_init() {
     local setup_env_sudo=/etc/sudoers.d/setup_env
     if ! check_file $setup_env_sudo; then
         {
-            echo "$userhost ALL=(ALL:ALL) NOPASSWD: /usr/sbin/hwclock"
             echo "$userhost ALL=(ALL:ALL) NOPASSWD: /usr/bin/apt-get"
             echo "$userhost ALL=(ALL:ALL) NOPASSWD: /usr/bin/cpupower"
         } | sudo tee $setup_env_sudo
@@ -102,9 +101,6 @@ ederevx_init() {
         if [[ ! -z $(echo $0 | grep -i bash) ]]; then
             # Only execute the following at session init
             decho "Current kernel: $kname"
-        else
-            # Update hwclock prior to executing scripts
-            sudo hwclock -s
         fi
     fi
 
