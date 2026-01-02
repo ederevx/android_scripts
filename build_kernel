@@ -145,6 +145,7 @@ define_debug() {
 define_ksu() {
     ksumkp="    \
         CONFIG_KSU=y \
+        CONFIG_KSU_KPROBES_HOOK=n \
         "
 }
 
