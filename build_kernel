@@ -61,6 +61,29 @@ define_x-ft() {
     export PATH="/usr/local/bin:$cc_path:$PATH"
 }
 
+define_msm8998-4-19() {
+    if [[ $debug == "y" ]]; then
+        dc="vendor/msm8998_oneplus_debug_android_defconfig"
+    else
+        dc="vendor/msm8998_oneplus_android_defconfig"
+    fi
+    af="arch/arm64/configs"
+    arch="arm64"
+    subarch=$arch
+    lwimg="Image.gz-dtb"
+
+    clang_path="$CLANG_DIR/clang-r530567/bin"
+    gcc_path="${GCC_DIR}64/bin:${GCC_DIR}32/bin"
+    cc_path="$clang_path:$cc_path"
+
+    c64="aarch64-linux-gnu-"
+    c32="arm-linux-gnueabi-"
+    cc="${c64}gcc"
+
+    use_clang=y
+    export PATH="/usr/local/bin:$cc_path:$PATH"
+}
+
 define_wsl2() {
     dcf="config-wsl-x86"
     af="arch/x86/configs"
@@ -79,6 +102,11 @@ define_wsl2() {
 define_srcn() {
     if [[ $srcn == "x-ft" ]]; then
         define_x-ft
+        return 0
+    fi
+
+    if [[ $srcn == "msm8998-4-19" ]]; then
+        define_msm8998-4-19
         return 0
     fi
 
