@@ -507,6 +507,7 @@ rom_copy_and_clean() {
 
 twrp_copy_and_clean() {
     local device=$1
+    local kname=$2
 
     local rom_product="$ROM_DIR/$ROM_PRODUCT_DIR"
     local rom_target="$rom_product/$device/recovery.img"
@@ -515,8 +516,8 @@ twrp_copy_and_clean() {
 
     if check_file $rom_target; then
         create_dir "$target_dir"
-        decho "Copying $rom_target to $target_dir"
-        cp $rom_target $target_dir
+        decho "Copying $rom_target to $target_dir/$kname.img"
+        cp $rom_target "$target_dir/$kname.img"
     fi
 
     # Cleanup afterwards to prevent overlapping builds

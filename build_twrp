@@ -24,15 +24,27 @@ fi
 # Default properties
 build_device=cheeseburger_dumpling
 build_type=eng
+build_ver=1
 
 #
 # Build functions
 #
 
+define_kname() {
+    kname="$userhost-twrp-$build_device-$curr_date-$build_ver"
+}
+
 twrp_build() {
     local target_device=$1
 
-    decho "Building TWRP: $target_device - $build_type"
+    define_kname
+    while [[ -f "$SHARED_ROOT_DIR/twrp/$kname.img" ]]
+        do
+        build_ver="$(($build_ver + 1))"
+        define_kname
+    done
+
+    decho "Building TWRP: $target_device - $build_type ($kname)"
 
     cleanup_path
     source build/envsetup.sh
@@ -44,7 +56,7 @@ twrp_build() {
     mka recoveryimage -j$(nproc --all)
     restore_path
 
-    twrp_copy_and_clean $target_device
+    twrp_copy_and_clean $target_device $kname
 }
 
 param_func() {
