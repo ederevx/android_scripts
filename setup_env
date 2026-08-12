@@ -35,6 +35,7 @@ env_functions=(
     "restore_path"
     "setup_dynamic"
     "rom_copy_and_clean"
+    "twrp_copy_and_clean"
     "timestamp"
     "exit_timestamp"
     "cmd_exec"
@@ -502,6 +503,24 @@ rom_copy_and_clean() {
 
     # Cleanup afterwards to prevent overlapping builds
     rm -f $rom_target*.zip*
+}
+
+twrp_copy_and_clean() {
+    local device=$1
+
+    local rom_product="$ROM_DIR/$ROM_PRODUCT_DIR"
+    local rom_target="$rom_product/$device/recovery.img"
+
+    local target_dir="$SHARED_ROOT_DIR/twrp"
+
+    if check_file $rom_target; then
+        create_dir "$target_dir"
+        decho "Copying $rom_target to $target_dir"
+        cp $rom_target $target_dir
+    fi
+
+    # Cleanup afterwards to prevent overlapping builds
+    rm -f $rom_target
 }
 
 timestamp() {

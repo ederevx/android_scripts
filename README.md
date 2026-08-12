@@ -23,6 +23,21 @@ Common Options:
 - `-t $type`: Build either `user`, `userdebug`, or `eng` build type.
 - `-g`: Build with `WITH_GMS=true` or its equivalent.
 
+## build_twrp script
+Description: Build a TWRP recovery image.
+
+Requirements:
+- Needs to be called in the source's root directory.
+	- e.g. `user@linux:~/roms/twrp$ ~/scripts/build_twrp`
+- Check function `twrp_copy_and_clean` in `setup_env`, the script will copy the output `recovery.img` towards `$SHARED_ROOT_DIR/twrp` defined in `setup_env`, make sure the directory exists and is writable.
+
+Defaults:
+- `-d cheeseburger_dumpling -t eng`
+
+Options:
+- `-d $device`: Define for what device the source is to be built.
+- `-t $type`: Build either `user`, `userdebug`, or `eng` build type.
+
 ## patch_rom script
 Description: Patch android sources to support OnePlus 5/T with Linux kernel 4.14.
 
