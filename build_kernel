@@ -21,8 +21,13 @@ readonly LOG_DIR=$KERNEL_PARENT_DIR/buildlog
 readonly CLANG_DIR=$KERNEL_PARENT_DIR/toolchain/clang
 readonly GCC_DIR=$KERNEL_PARENT_DIR/toolchain/gcc
 
+# TWRP directories, used when chaining a recovery build via -tw
+readonly TWRP_DIR=$HOME/roms/twrp
+readonly TWRP_DEVICE_DIR=$TWRP_DIR/device/oneplus/cheeseburger_dumpling
+
 # Default properties
 test_build=n
+twrp_update=n
 debug=n
 
 log=/dev/null
@@ -336,6 +341,32 @@ export_img() {
     return 0
 }
 
+update_twrp_kernel() {
+    if [[ $lwimg != "Image.gz-dtb" ]]; then
+        decho "twrp_update is only supported for Image.gz-dtb builds, skipping."
+        return 1
+    fi
+
+    if ! check_dir "$TWRP_DEVICE_DIR/prebuilt"; then
+        decho "Can't find $TWRP_DEVICE_DIR/prebuilt, skipping twrp update."
+        return 1
+    fi
+
+    decho "Copying $bti/$lwimg to $TWRP_DEVICE_DIR/prebuilt/$lwimg"
+    cp -f "$bti/$lwimg" "$TWRP_DEVICE_DIR/prebuilt/$lwimg"
+
+    local curr_dir=$(pwd)
+    if ! cd "$TWRP_DIR"; then
+        decho "Can't find $TWRP_DIR, skipping twrp build."
+        return 1
+    fi
+
+    decho "Building TWRP with the updated kernel..."
+    "$SCRIPTS_DIR/build_twrp"
+
+    cd "$curr_dir"
+}
+
 main_func() {
     if ! check_dir $srcn_dir; then
         decho_log "Abort, source directory must exist."
@@ -345,6 +376,9 @@ main_func() {
     build_func
 
     if check_file "$bti/$lwimg"; then
+        if [[ $twrp_update == "y" ]]; then
+            update_twrp_kernel
+        fi
         export_img
         decho "Log file: $log"
     elif [[ $log != "/dev/null" ]]; then
@@ -393,6 +427,9 @@ param_func() {
             ;;
             -t|--test)
                 test_build=y
+            ;;
+            -tw|--twrp)
+                twrp_update=y
             ;;
             -d|--debug)
                 debug=y
