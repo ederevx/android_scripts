@@ -304,12 +304,14 @@ check_file_silent() {
 }
 
 check_file() {
-    if [ ! -f "$@" ]; then 
-        decho "Can't find $@"
-        return 1
-    else
-        return 0
-    fi
+    local f
+    for f in "$@"; do
+        if [ ! -f "$f" ]; then
+            decho "Can't find $f"
+            return 1
+        fi
+    done
+    return 0
 }
 
 create_dir() {
