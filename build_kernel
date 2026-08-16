@@ -67,7 +67,9 @@ define_x-ft() {
 }
 
 define_msm8998-4-19() {
-    if [[ $debug == "y" ]]; then
+    if [[ $src_brnch == msm8998-new* ]]; then
+        dc="vendor/msm8998_defconfig"
+    elif [[ $debug == "y" ]]; then
         dc="vendor/msm8998_oneplus_debug_android_defconfig"
     else
         dc="vendor/msm8998_oneplus_android_defconfig"
