@@ -72,7 +72,7 @@ define_msm8998-4-19() {
     elif [[ $debug == "y" ]]; then
         dc="vendor/msm8998_oneplus_debug_android_defconfig"
     else
-        dc="vendor/msm8998_oneplus_android_defconfig"
+        dc="vendor/msm8998_oneplus-perf_defconfig"
     fi
     af="arch/arm64/configs"
     arch="arm64"
@@ -294,6 +294,10 @@ build_func() {
     fi
 
     time make_cmd
+
+    if [[ $lwimg == "Image.gz-dtb" ]]; then
+        time make_cmd $lwimg
+    fi
 }
 
 export_img_wsl2() {
