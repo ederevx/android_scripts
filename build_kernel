@@ -67,12 +67,16 @@ define_x-ft() {
 }
 
 define_msm8998-4-19() {
-    if [[ $src_brnch == msm8998-new* ]]; then
-        dc="vendor/msm8998_defconfig"
-    elif [[ $debug == "y" ]]; then
-        dc="vendor/msm8998_oneplus_debug_android_defconfig"
+    # Only the OnePlus branch carries the OnePlus defconfigs. Every other
+    # branch, the generic one included, builds the platform defconfig.
+    if [[ $src_brnch == msm8998-oneplus* ]]; then
+        if [[ $debug == "y" ]]; then
+            dc="vendor/msm8998_oneplus_debug_android_defconfig"
+        else
+            dc="vendor/msm8998_oneplus-perf_defconfig"
+        fi
     else
-        dc="vendor/msm8998_oneplus-perf_defconfig"
+        dc="vendor/msm8998-perf_defconfig"
     fi
     af="arch/arm64/configs"
     arch="arm64"
