@@ -3,12 +3,12 @@
 # SPDX-FileCopyrightText: 2024 Edrick Sinsuan
 # SPDX-License-Identifier: Apache-2.0
 
-script_dir=$(dirname $0)
-if ! check_file "$script_dir/setup_env"; then
-    decho "setup_env must be present in $script_dir!"
-    exit_timestamp 1
+script_dir=$(dirname "$0")
+if [[ ! -f "$script_dir/setup_env" ]]; then
+    echo "setup_env must be present in $script_dir!" >&2
+    exit 1
 fi
-source $script_dir/setup_env
+source "$script_dir/setup_env"
 
 # Kernel directories
 readonly KERNEL_PARENT_DIR=$HOME/kernel
