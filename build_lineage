@@ -24,7 +24,7 @@ fi
 # Default properties
 build_device=dumpling
 build_type=user
-build_number=bp2a
+build_number=bp4a
 
 #
 # Build functions
