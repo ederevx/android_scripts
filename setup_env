@@ -33,7 +33,6 @@ env_functions=(
     "zip_image"
     "cleanup_path"
     "restore_path"
-    "setup_dynamic"
     "rom_copy_and_clean"
     "twrp_copy_and_clean"
     "timestamp"
@@ -446,29 +445,6 @@ restore_path() {
     export PATH=$PATH_BKP
 }
 
-setup_dynamic() {
-    local commonbranch=$1
-    local device=$2
-    local curr_dir=$(pwd)
-
-    local device_common="$ROM_DIR/device/oneplus/msm8998-common"
-
-    if [[ $support_nondyn_dyn != "y" ]]; then
-        return
-    fi
-
-    cd $device_common
-
-    decho "Setting up dyn_branch=$dyn_branch..."
-    if [[ $dyn_branch == "y" ]]; then
-        commonbranch=$commonbranch-dyn
-    fi
-    git fetch ed
-    git checkout $commonbranch
-
-    cd $curr_dir
-}
-
 rom_copy_and_clean() {
     local romname=$1
     local device=$2
@@ -478,11 +454,6 @@ rom_copy_and_clean() {
 
     local target_dir
     local type
-
-    if [[ $support_nondyn_dyn == "y" ]] && 
-        [[ $dyn_branch == "y" ]]; then
-        type=dyn
-    fi
 
     if [[ $gapps == "y" ]]; then
         type=gapps
