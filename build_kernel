@@ -28,7 +28,7 @@ readonly TWRP_DEVICE_DIR=$TWRP_DIR/device/oneplus/cheeseburger_dumpling
 # Default properties
 test_build=n
 twrp_update=n
-debug=n
+debug=y
 
 log=/dev/null
 brnch_ver=$curr_date
@@ -231,7 +231,10 @@ define_env() {
     fi
 
     if [[ $debug == "y" ]]; then
+        decho "Building a debug kernel with $dc"
         define_debug
+    else
+        decho "Building a production kernel with $dc"
     fi
 
     if [[ $ksu_build == "y" ]]; then
@@ -452,6 +455,9 @@ param_func() {
             ;;
             -d|--debug)
                 debug=y
+            ;;
+            -p|--production)
+                debug=n
             ;;
             -mo|--make-only)
                 make_only=y
