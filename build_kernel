@@ -280,8 +280,12 @@ build_func() {
     define_env
 
     if create_dir "$out"; then
-        time make_cmd clean
-        time make_cmd mrproper 
+        # A guarded tree can refuse clean and mrproper; a refused clean is not
+        # a build error, but building on the tree it left is, so discard it.
+        if ! time make_cmd clean || ! time make_cmd mrproper; then
+            decho_log "clean/mrproper refused for $out, discarding it"
+            rm -rf "$out" || exit_timestamp 1
+        fi
     fi
 
     if [[ $configure == "y" ]]; then
