@@ -24,7 +24,7 @@ fi
 # Default properties
 build_device=dumpling
 build_type=user
-build_number=bp4a
+build_number=cp2a
 image_target=
 
 #
@@ -78,6 +78,12 @@ param_func() {
             ;;
             -a|--all)
                 build_all=y
+            ;;
+            -r|--release)
+                if check_valid "$2"; then
+                    build_number="$2"
+                    shift
+                fi
             ;;
             -i|--image)
                 if check_valid "$2"; then
